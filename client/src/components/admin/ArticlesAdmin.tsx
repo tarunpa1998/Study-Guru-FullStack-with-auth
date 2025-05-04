@@ -77,7 +77,7 @@ interface Article {
   };
   tableOfContents: {
     id: string;
-    title: string;
+    text: string;
     level: number;
   }[];
   faqs: {
@@ -887,7 +887,7 @@ const ArticlesAdmin = () => {
                         ...editForm,
                         tableOfContents: [...tableOfContents, { 
                           id: `section-${tableOfContents.length + 1}`, 
-                          title: '', 
+                          text: '', 
                           level: 1 
                         }]
                       });
@@ -946,12 +946,12 @@ const ArticlesAdmin = () => {
                             className="w-1/3"
                           />
                           <Input
-                            value={section.title}
+                            value={section.text}
                             onChange={(e) => {
                               const tableOfContents = [...editForm.tableOfContents];
                               tableOfContents[index] = {
                                 ...tableOfContents[index],
-                                title: e.target.value
+                                text: e.target.value
                               };
                               setEditForm({
                                 ...editForm,
