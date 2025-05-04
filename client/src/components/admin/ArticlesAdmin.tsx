@@ -70,15 +70,16 @@ interface Article {
     keywords: string[];
   };
   views: number;
-  readTime: number;
+  readTime: string | number;
   helpful: {
     yes: number;
     no: number;
   };
   tableOfContents: {
     id: string;
-    text: string;
+    title: string;
     level: number;
+    _id?: string;
   }[];
   faqs: {
     question: string;
@@ -644,10 +645,23 @@ const ArticlesAdmin = () => {
                   id="readTime"
                   name="readTime"
                   type="number"
-                  value={editForm.readTime}
-                  onChange={handleInputChange}
-                  placeholder="e.g. 5 min read"
+                  value={typeof editForm.readTime === 'string' 
+                    ? parseInt(editForm.readTime, 10) || 0 
+                    : editForm.readTime}
+                  onChange={(e) => {
+                    const minutes = parseInt(e.target.value, 10) || 0;
+                    setEditForm({
+                      ...editForm,
+                      readTime: `${minutes} min read`
+                    });
+                  }}
+                  placeholder="e.g. 5"
                 />
+                <p className="text-xs text-slate-500 mt-1">
+                  Will be saved as "{typeof editForm.readTime === 'string' 
+                    ? editForm.readTime 
+                    : `${editForm.readTime} min read`}"
+                </p>
               </div>
             </TabsContent>
 
@@ -887,7 +901,7 @@ const ArticlesAdmin = () => {
                         ...editForm,
                         tableOfContents: [...tableOfContents, { 
                           id: `section-${tableOfContents.length + 1}`, 
-                          text: '', 
+                          title: '', 
                           level: 1 
                         }]
                       });
@@ -946,12 +960,12 @@ const ArticlesAdmin = () => {
                             className="w-1/3"
                           />
                           <Input
-                            value={section.text}
+                            value={section.title || ''}
                             onChange={(e) => {
                               const tableOfContents = [...editForm.tableOfContents];
                               tableOfContents[index] = {
                                 ...tableOfContents[index],
-                                text: e.target.value
+                                title: e.target.value
                               };
                               setEditForm({
                                 ...editForm,
