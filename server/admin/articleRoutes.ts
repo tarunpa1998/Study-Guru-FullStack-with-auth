@@ -81,10 +81,26 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
       articleData.faqs = [];
     }
     
+    if (articleData.readTime === undefined || articleData.readTime === null) {
+      articleData.readTime = 0;
+    }
+    
+    if (!articleData.relatedArticles) {
+      articleData.relatedArticles = [];
+    }
+    
     // Set default values for other fields
     if (!articleData.publishDate) {
       articleData.publishDate = new Date().toISOString().split('T')[0];
     }
+    
+    console.log('Creating article with data:', JSON.stringify({
+      title: articleData.title,
+      readTime: articleData.readTime,
+      tableOfContents: articleData.tableOfContents,
+      relatedArticles: articleData.relatedArticles,
+      faqs: articleData.faqs
+    }));
     
     const newArticle = await mongoStorage.createArticle(articleData);
     res.status(201).json(newArticle);
@@ -119,6 +135,43 @@ router.put('/articles/:id', adminAuth, async (req: Request, res: Response) => {
     if (!existingArticle) {
       return res.status(404).json({ error: 'Article not found' });
     }
+    
+    // Ensure these fields have proper values even during updates
+    if (!articleData.seo) {
+      articleData.seo = existingArticle.seo || {
+        metaTitle: articleData.title,
+        metaDescription: articleData.summary.substring(0, 160),
+        keywords: []
+      };
+    }
+    
+    if (articleData.helpful === undefined) {
+      articleData.helpful = existingArticle.helpful || { yes: 0, no: 0 };
+    }
+    
+    if (articleData.tableOfContents === undefined) {
+      articleData.tableOfContents = existingArticle.tableOfContents || [];
+    }
+    
+    if (articleData.faqs === undefined) {
+      articleData.faqs = existingArticle.faqs || [];
+    }
+    
+    if (articleData.readTime === undefined || articleData.readTime === null) {
+      articleData.readTime = existingArticle.readTime || 0;
+    }
+    
+    if (articleData.relatedArticles === undefined) {
+      articleData.relatedArticles = existingArticle.relatedArticles || [];
+    }
+    
+    console.log('Updating article with data:', JSON.stringify({
+      title: articleData.title,
+      readTime: articleData.readTime,
+      tableOfContents: articleData.tableOfContents,
+      relatedArticles: articleData.relatedArticles,
+      faqs: articleData.faqs
+    }));
     
     // Update the article in MongoDB
     const updatedArticle = await mongoStorage.updateArticle(req.params.id, articleData);
