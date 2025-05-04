@@ -73,17 +73,24 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
       articleData.helpful = { yes: 0, no: 0 };
     }
     
-    // Handle conversion between title and text for tableOfContents
+    // Ensure isFeatured is a boolean
+    if (articleData.isFeatured === undefined) {
+      articleData.isFeatured = false;
+    } else {
+      articleData.isFeatured = Boolean(articleData.isFeatured);
+    }
+    
+    // Process tableOfContents for MongoDB format
     if (articleData.tableOfContents) {
       articleData.tableOfContents = articleData.tableOfContents.map(section => {
         // Clean up the section by removing MongoDB-specific fields
         const cleanSection = { ...section };
         if (cleanSection._id) delete cleanSection._id;
         
-        // Handle conversion between title and text
-        if (cleanSection.title && !cleanSection.text) {
-          cleanSection.text = cleanSection.title;
-          delete cleanSection.title;
+        // Make sure title is present (no need to convert to text as MongoDB uses title)
+        if (!cleanSection.title && cleanSection.text) {
+          cleanSection.title = cleanSection.text;
+          delete cleanSection.text;
         }
         
         return cleanSection;
@@ -103,13 +110,19 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
       articleData.faqs = [];
     }
     
-    // Convert readTime to number if it's a string
+    // Handle readTime and ensure it's in the format "X min read"
     if (articleData.readTime !== undefined) {
-      articleData.readTime = typeof articleData.readTime === 'string' 
-        ? parseInt(articleData.readTime, 10) || 0 
-        : articleData.readTime || 0;
+      if (typeof articleData.readTime === 'number') {
+        articleData.readTime = `${articleData.readTime} min read`;
+      } else if (typeof articleData.readTime === 'string') {
+        // If it's a string but doesn't have the proper format, fix it
+        if (!articleData.readTime.includes('min read')) {
+          const minutes = parseInt(articleData.readTime, 10) || 1;
+          articleData.readTime = `${minutes} min read`;
+        }
+      }
     } else {
-      articleData.readTime = 0;
+      articleData.readTime = '1 min read';
     }
     
     // Clean up relatedArticles array
@@ -179,17 +192,24 @@ router.put('/articles/:id', adminAuth, async (req: Request, res: Response) => {
       articleData.helpful = existingArticle.helpful || { yes: 0, no: 0 };
     }
     
-    // Handle conversion between title and text for tableOfContents
+    // Ensure isFeatured is a boolean
+    if (articleData.isFeatured === undefined) {
+      articleData.isFeatured = existingArticle.isFeatured || false;
+    } else {
+      articleData.isFeatured = Boolean(articleData.isFeatured);
+    }
+    
+    // Process tableOfContents for MongoDB format
     if (articleData.tableOfContents) {
       articleData.tableOfContents = articleData.tableOfContents.map(section => {
         // Clean up the section by removing MongoDB-specific fields
         const cleanSection = { ...section };
         if (cleanSection._id) delete cleanSection._id;
         
-        // Handle conversion between title and text
-        if (cleanSection.title && !cleanSection.text) {
-          cleanSection.text = cleanSection.title;
-          delete cleanSection.title;
+        // Make sure title is present (no need to convert to text as MongoDB uses title)
+        if (!cleanSection.title && cleanSection.text) {
+          cleanSection.title = cleanSection.text;
+          delete cleanSection.text;
         }
         
         return cleanSection;
@@ -209,13 +229,19 @@ router.put('/articles/:id', adminAuth, async (req: Request, res: Response) => {
       articleData.faqs = existingArticle.faqs || [];
     }
     
-    // Convert readTime to number if it's a string
+    // Handle readTime and ensure it's in the format "X min read"
     if (articleData.readTime !== undefined) {
-      articleData.readTime = typeof articleData.readTime === 'string' 
-        ? parseInt(articleData.readTime, 10) || 0 
-        : articleData.readTime || 0;
+      if (typeof articleData.readTime === 'number') {
+        articleData.readTime = `${articleData.readTime} min read`;
+      } else if (typeof articleData.readTime === 'string') {
+        // If it's a string but doesn't have the proper format, fix it
+        if (!articleData.readTime.includes('min read')) {
+          const minutes = parseInt(articleData.readTime, 10) || 1;
+          articleData.readTime = `${minutes} min read`;
+        }
+      }
     } else {
-      articleData.readTime = existingArticle.readTime || 0;
+      articleData.readTime = existingArticle.readTime || '1 min read';
     }
     
     // Clean up relatedArticles array
