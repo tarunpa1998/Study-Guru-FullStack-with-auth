@@ -73,19 +73,49 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
       articleData.helpful = { yes: 0, no: 0 };
     }
     
-    if (!articleData.tableOfContents) {
+    // Handle conversion between title and text for tableOfContents
+    if (articleData.tableOfContents) {
+      articleData.tableOfContents = articleData.tableOfContents.map(section => {
+        // Clean up the section by removing MongoDB-specific fields
+        const cleanSection = { ...section };
+        if (cleanSection._id) delete cleanSection._id;
+        
+        // Handle conversion between title and text
+        if (cleanSection.title && !cleanSection.text) {
+          cleanSection.text = cleanSection.title;
+          delete cleanSection.title;
+        }
+        
+        return cleanSection;
+      });
+    } else {
       articleData.tableOfContents = [];
     }
     
-    if (!articleData.faqs) {
+    // Clean up faqs array by removing MongoDB-specific fields
+    if (articleData.faqs) {
+      articleData.faqs = articleData.faqs.map(faq => {
+        const cleanFaq = { ...faq };
+        if (cleanFaq._id) delete cleanFaq._id;
+        return cleanFaq;
+      });
+    } else {
       articleData.faqs = [];
     }
     
-    if (articleData.readTime === undefined || articleData.readTime === null) {
+    // Convert readTime to number if it's a string
+    if (articleData.readTime !== undefined) {
+      articleData.readTime = typeof articleData.readTime === 'string' 
+        ? parseInt(articleData.readTime, 10) || 0 
+        : articleData.readTime || 0;
+    } else {
       articleData.readTime = 0;
     }
     
-    if (!articleData.relatedArticles) {
+    // Clean up relatedArticles array
+    if (articleData.relatedArticles) {
+      articleData.relatedArticles = articleData.relatedArticles.filter(slug => slug && slug.trim() !== '');
+    } else {
       articleData.relatedArticles = [];
     }
     
@@ -149,19 +179,49 @@ router.put('/articles/:id', adminAuth, async (req: Request, res: Response) => {
       articleData.helpful = existingArticle.helpful || { yes: 0, no: 0 };
     }
     
-    if (articleData.tableOfContents === undefined) {
+    // Handle conversion between title and text for tableOfContents
+    if (articleData.tableOfContents) {
+      articleData.tableOfContents = articleData.tableOfContents.map(section => {
+        // Clean up the section by removing MongoDB-specific fields
+        const cleanSection = { ...section };
+        if (cleanSection._id) delete cleanSection._id;
+        
+        // Handle conversion between title and text
+        if (cleanSection.title && !cleanSection.text) {
+          cleanSection.text = cleanSection.title;
+          delete cleanSection.title;
+        }
+        
+        return cleanSection;
+      });
+    } else {
       articleData.tableOfContents = existingArticle.tableOfContents || [];
     }
     
-    if (articleData.faqs === undefined) {
+    // Clean up faqs array by removing MongoDB-specific fields
+    if (articleData.faqs) {
+      articleData.faqs = articleData.faqs.map(faq => {
+        const cleanFaq = { ...faq };
+        if (cleanFaq._id) delete cleanFaq._id;
+        return cleanFaq;
+      });
+    } else {
       articleData.faqs = existingArticle.faqs || [];
     }
     
-    if (articleData.readTime === undefined || articleData.readTime === null) {
+    // Convert readTime to number if it's a string
+    if (articleData.readTime !== undefined) {
+      articleData.readTime = typeof articleData.readTime === 'string' 
+        ? parseInt(articleData.readTime, 10) || 0 
+        : articleData.readTime || 0;
+    } else {
       articleData.readTime = existingArticle.readTime || 0;
     }
     
-    if (articleData.relatedArticles === undefined) {
+    // Clean up relatedArticles array
+    if (articleData.relatedArticles) {
+      articleData.relatedArticles = articleData.relatedArticles.filter(slug => slug && slug.trim() !== '');
+    } else {
       articleData.relatedArticles = existingArticle.relatedArticles || [];
     }
     
