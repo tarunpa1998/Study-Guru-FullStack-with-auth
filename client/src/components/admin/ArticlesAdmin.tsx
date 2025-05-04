@@ -70,7 +70,7 @@ interface Article {
     keywords: string[];
   };
   views: number;
-  readingTime: string;
+  readTime: number;
   helpful: {
     yes: number;
     no: number;
@@ -106,7 +106,7 @@ const emptyArticle: Omit<Article, 'id' | '_id'> = {
     keywords: []
   },
   views: 0,
-  readingTime: "",
+  readTime: 0,
   helpful: {
     yes: 0,
     no: 0
@@ -639,11 +639,12 @@ const ArticlesAdmin = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="readingTime">Reading Time</Label>
+                <Label htmlFor="readTime">Reading Time (minutes)</Label>
                 <Input
-                  id="readingTime"
-                  name="readingTime"
-                  value={editForm.readingTime}
+                  id="readTime"
+                  name="readTime"
+                  type="number"
+                  value={editForm.readTime}
                   onChange={handleInputChange}
                   placeholder="e.g. 5 min read"
                 />
