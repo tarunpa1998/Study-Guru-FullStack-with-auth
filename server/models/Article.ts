@@ -19,6 +19,22 @@ export interface IArticle extends Document {
     metaDescription?: string;
     keywords?: string[];
   };
+  readingTime?: string;
+  relatedArticles?: string[] | mongoose.Types.ObjectId[];
+  tableOfContents?: Array<{
+    id: string;
+    title: string;
+    level: number;
+  }>;
+  faqs?: Array<{
+    question: string;
+    answer: string;
+  }>;
+  helpful?: {
+    yes: number;
+    no: number;
+  };
+  isFeatured?: boolean;
 }
 
 // Create Article Schema
@@ -70,6 +86,37 @@ const ArticleSchema = new Schema<IArticle>({
     metaTitle: String,
     metaDescription: String,
     keywords: [String]
+  },
+  readingTime: {
+    type: String,
+    default: "1 min read"
+  },
+  relatedArticles: [{
+    type: String,
+    default: []
+  }],
+  tableOfContents: [{
+    id: String,
+    title: String,
+    level: Number
+  }],
+  faqs: [{
+    question: String,
+    answer: String
+  }],
+  helpful: {
+    yes: {
+      type: Number,
+      default: 0
+    },
+    no: {
+      type: Number,
+      default: 0
+    }
+  },
+  isFeatured: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

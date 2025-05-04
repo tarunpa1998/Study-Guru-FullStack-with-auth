@@ -73,18 +73,84 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
       articleData.helpful = { yes: 0, no: 0 };
     }
     
-    if (!articleData.tableOfContents) {
+    // Ensure isFeatured is a boolean
+    if (articleData.isFeatured === undefined) {
+      articleData.isFeatured = false;
+    } else {
+      articleData.isFeatured = Boolean(articleData.isFeatured);
+    }
+    
+    // Process tableOfContents for MongoDB format
+    if (articleData.tableOfContents) {
+      articleData.tableOfContents = articleData.tableOfContents.map(section => {
+        // Clean up the section by removing MongoDB-specific fields
+        const cleanSection = { ...section };
+        if (cleanSection._id) delete cleanSection._id;
+        
+        // Make sure title is present (no need to convert to text as MongoDB uses title)
+        if (!cleanSection.title && cleanSection.text) {
+          cleanSection.title = cleanSection.text;
+          delete cleanSection.text;
+        }
+        
+        return cleanSection;
+      });
+    } else {
       articleData.tableOfContents = [];
     }
     
-    if (!articleData.faqs) {
+    // Clean up faqs array by removing MongoDB-specific fields
+    if (articleData.faqs) {
+      articleData.faqs = articleData.faqs.map(faq => {
+        const cleanFaq = { ...faq };
+        if (cleanFaq._id) delete cleanFaq._id;
+        return cleanFaq;
+      });
+    } else {
       articleData.faqs = [];
+    }
+    
+    // Handle readingTime as a string in format "X min read"
+    if (articleData.readTime !== undefined) {
+      // Convert readTime to readingTime
+      if (typeof articleData.readTime === 'number') {
+        articleData.readingTime = `${articleData.readTime} min read`;
+      } else if (typeof articleData.readTime === 'string') {
+        // Check if it already has the correct format
+        if (articleData.readTime.includes('min read')) {
+          articleData.readingTime = articleData.readTime;
+        } else {
+          // Extract number and format properly
+          const minutes = parseInt(articleData.readTime, 10) || 1;
+          articleData.readingTime = `${minutes} min read`;
+        }
+      }
+      // Remove the original readTime field
+      delete articleData.readTime;
+    } else if (articleData.readingTime === undefined) {
+      articleData.readingTime = "1 min read";
+    }
+    
+    // Clean up relatedArticles array
+    if (articleData.relatedArticles) {
+      articleData.relatedArticles = articleData.relatedArticles.filter(slug => slug && slug.trim() !== '');
+    } else {
+      articleData.relatedArticles = [];
     }
     
     // Set default values for other fields
     if (!articleData.publishDate) {
       articleData.publishDate = new Date().toISOString().split('T')[0];
     }
+    
+    console.log('Creating article with data:', JSON.stringify({
+      title: articleData.title,
+      readingTime: articleData.readingTime,
+      tableOfContents: articleData.tableOfContents,
+      relatedArticles: articleData.relatedArticles,
+      faqs: articleData.faqs,
+      isFeatured: articleData.isFeatured
+    }));
     
     const newArticle = await mongoStorage.createArticle(articleData);
     res.status(201).json(newArticle);
@@ -119,6 +185,93 @@ router.put('/articles/:id', adminAuth, async (req: Request, res: Response) => {
     if (!existingArticle) {
       return res.status(404).json({ error: 'Article not found' });
     }
+    
+    // Ensure these fields have proper values even during updates
+    if (!articleData.seo) {
+      articleData.seo = existingArticle.seo || {
+        metaTitle: articleData.title,
+        metaDescription: articleData.summary.substring(0, 160),
+        keywords: []
+      };
+    }
+    
+    if (articleData.helpful === undefined) {
+      articleData.helpful = existingArticle.helpful || { yes: 0, no: 0 };
+    }
+    
+    // Ensure isFeatured is a boolean
+    if (articleData.isFeatured === undefined) {
+      articleData.isFeatured = existingArticle.isFeatured || false;
+    } else {
+      articleData.isFeatured = Boolean(articleData.isFeatured);
+    }
+    
+    // Process tableOfContents for MongoDB format
+    if (articleData.tableOfContents) {
+      articleData.tableOfContents = articleData.tableOfContents.map(section => {
+        // Clean up the section by removing MongoDB-specific fields
+        const cleanSection = { ...section };
+        if (cleanSection._id) delete cleanSection._id;
+        
+        // Make sure title is present (no need to convert to text as MongoDB uses title)
+        if (!cleanSection.title && cleanSection.text) {
+          cleanSection.title = cleanSection.text;
+          delete cleanSection.text;
+        }
+        
+        return cleanSection;
+      });
+    } else {
+      articleData.tableOfContents = existingArticle.tableOfContents || [];
+    }
+    
+    // Clean up faqs array by removing MongoDB-specific fields
+    if (articleData.faqs) {
+      articleData.faqs = articleData.faqs.map(faq => {
+        const cleanFaq = { ...faq };
+        if (cleanFaq._id) delete cleanFaq._id;
+        return cleanFaq;
+      });
+    } else {
+      articleData.faqs = existingArticle.faqs || [];
+    }
+    
+    // Handle readingTime as a string in format "X min read"
+    if (articleData.readTime !== undefined) {
+      // Convert readTime to readingTime
+      if (typeof articleData.readTime === 'number') {
+        articleData.readingTime = `${articleData.readTime} min read`;
+      } else if (typeof articleData.readTime === 'string') {
+        // Check if it already has the correct format
+        if (articleData.readTime.includes('min read')) {
+          articleData.readingTime = articleData.readTime;
+        } else {
+          // Extract number and format properly
+          const minutes = parseInt(articleData.readTime, 10) || 1;
+          articleData.readingTime = `${minutes} min read`;
+        }
+      }
+      // Remove the original readTime field
+      delete articleData.readTime;
+    } else if (articleData.readingTime === undefined) {
+      articleData.readingTime = existingArticle.readingTime || "1 min read";
+    }
+    
+    // Clean up relatedArticles array
+    if (articleData.relatedArticles) {
+      articleData.relatedArticles = articleData.relatedArticles.filter(slug => slug && slug.trim() !== '');
+    } else {
+      articleData.relatedArticles = existingArticle.relatedArticles || [];
+    }
+    
+    console.log('Updating article with data:', JSON.stringify({
+      title: articleData.title,
+      readingTime: articleData.readingTime,
+      tableOfContents: articleData.tableOfContents,
+      relatedArticles: articleData.relatedArticles,
+      faqs: articleData.faqs,
+      isFeatured: articleData.isFeatured
+    }));
     
     // Update the article in MongoDB
     const updatedArticle = await mongoStorage.updateArticle(req.params.id, articleData);

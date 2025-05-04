@@ -70,7 +70,7 @@ interface Article {
     keywords: string[];
   };
   views: number;
-  readingTime: string;
+  readTime: string | number;
   helpful: {
     yes: number;
     no: number;
@@ -79,6 +79,7 @@ interface Article {
     id: string;
     title: string;
     level: number;
+    _id?: string;
   }[];
   faqs: {
     question: string;
@@ -106,7 +107,7 @@ const emptyArticle: Omit<Article, 'id' | '_id'> = {
     keywords: []
   },
   views: 0,
-  readingTime: "",
+  readTime: 0,
   helpful: {
     yes: 0,
     no: 0
@@ -639,14 +640,28 @@ const ArticlesAdmin = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="readingTime">Reading Time</Label>
+                <Label htmlFor="readTime">Reading Time (minutes)</Label>
                 <Input
-                  id="readingTime"
-                  name="readingTime"
-                  value={editForm.readingTime}
-                  onChange={handleInputChange}
-                  placeholder="e.g. 5 min read"
+                  id="readTime"
+                  name="readTime"
+                  type="number"
+                  value={typeof editForm.readTime === 'string' 
+                    ? parseInt(editForm.readTime, 10) || 0 
+                    : editForm.readTime}
+                  onChange={(e) => {
+                    const minutes = parseInt(e.target.value, 10) || 0;
+                    setEditForm({
+                      ...editForm,
+                      readTime: `${minutes} min read`
+                    });
+                  }}
+                  placeholder="e.g. 5"
                 />
+                <p className="text-xs text-slate-500 mt-1">
+                  Will be saved as "{typeof editForm.readTime === 'string' 
+                    ? editForm.readTime 
+                    : `${editForm.readTime} min read`}"
+                </p>
               </div>
             </TabsContent>
 
@@ -945,7 +960,7 @@ const ArticlesAdmin = () => {
                             className="w-1/3"
                           />
                           <Input
-                            value={section.title}
+                            value={section.title || ''}
                             onChange={(e) => {
                               const tableOfContents = [...editForm.tableOfContents];
                               tableOfContents[index] = {
