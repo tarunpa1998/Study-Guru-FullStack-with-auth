@@ -40,9 +40,14 @@ export class MongoStorage implements IStorage {
     if (obj.createdAt) delete obj.createdAt;
     if (obj.updatedAt) delete obj.updatedAt;
     
-    // Format readTime for articles (convert number to "X min read" format for UI)
-    if (obj.readTime !== undefined && typeof obj.readTime === 'number') {
-      obj.readTime = `${obj.readTime} min read`;
+    // Handle compatibility between readTime and readingTime fields
+    if (obj.readTime !== undefined) {
+      if (typeof obj.readTime === 'number') {
+        obj.readingTime = `${obj.readTime} min read`;
+      } else if (typeof obj.readTime === 'string') {
+        obj.readingTime = obj.readTime;
+      }
+      delete obj.readTime; // Remove the old field
     }
     
     return obj;

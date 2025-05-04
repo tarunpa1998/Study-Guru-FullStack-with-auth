@@ -110,21 +110,25 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
       articleData.faqs = [];
     }
     
-    // Handle readTime - convert to a number for storage
+    // Handle readingTime as a string in format "X min read"
     if (articleData.readTime !== undefined) {
+      // Convert readTime to readingTime
       if (typeof articleData.readTime === 'number') {
-        // Keep it as a number
+        articleData.readingTime = `${articleData.readTime} min read`;
       } else if (typeof articleData.readTime === 'string') {
-        // Extract number from string formats like "45 min read"
-        const match = articleData.readTime.match(/(\d+)/);
-        if (match && match[1]) {
-          articleData.readTime = parseInt(match[1], 10);
+        // Check if it already has the correct format
+        if (articleData.readTime.includes('min read')) {
+          articleData.readingTime = articleData.readTime;
         } else {
-          articleData.readTime = parseInt(articleData.readTime, 10) || 1;
+          // Extract number and format properly
+          const minutes = parseInt(articleData.readTime, 10) || 1;
+          articleData.readingTime = `${minutes} min read`;
         }
       }
-    } else {
-      articleData.readTime = 1;
+      // Remove the original readTime field
+      delete articleData.readTime;
+    } else if (articleData.readingTime === undefined) {
+      articleData.readingTime = "1 min read";
     }
     
     // Clean up relatedArticles array
@@ -141,10 +145,11 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
     
     console.log('Creating article with data:', JSON.stringify({
       title: articleData.title,
-      readTime: articleData.readTime,
+      readingTime: articleData.readingTime,
       tableOfContents: articleData.tableOfContents,
       relatedArticles: articleData.relatedArticles,
-      faqs: articleData.faqs
+      faqs: articleData.faqs,
+      isFeatured: articleData.isFeatured
     }));
     
     const newArticle = await mongoStorage.createArticle(articleData);
@@ -231,21 +236,25 @@ router.put('/articles/:id', adminAuth, async (req: Request, res: Response) => {
       articleData.faqs = existingArticle.faqs || [];
     }
     
-    // Handle readTime - convert to a number for storage
+    // Handle readingTime as a string in format "X min read"
     if (articleData.readTime !== undefined) {
+      // Convert readTime to readingTime
       if (typeof articleData.readTime === 'number') {
-        // Keep it as a number
+        articleData.readingTime = `${articleData.readTime} min read`;
       } else if (typeof articleData.readTime === 'string') {
-        // Extract number from string formats like "45 min read"
-        const match = articleData.readTime.match(/(\d+)/);
-        if (match && match[1]) {
-          articleData.readTime = parseInt(match[1], 10);
+        // Check if it already has the correct format
+        if (articleData.readTime.includes('min read')) {
+          articleData.readingTime = articleData.readTime;
         } else {
-          articleData.readTime = parseInt(articleData.readTime, 10) || 1;
+          // Extract number and format properly
+          const minutes = parseInt(articleData.readTime, 10) || 1;
+          articleData.readingTime = `${minutes} min read`;
         }
       }
-    } else {
-      articleData.readTime = existingArticle.readTime || 1;
+      // Remove the original readTime field
+      delete articleData.readTime;
+    } else if (articleData.readingTime === undefined) {
+      articleData.readingTime = existingArticle.readingTime || "1 min read";
     }
     
     // Clean up relatedArticles array
@@ -257,10 +266,11 @@ router.put('/articles/:id', adminAuth, async (req: Request, res: Response) => {
     
     console.log('Updating article with data:', JSON.stringify({
       title: articleData.title,
-      readTime: articleData.readTime,
+      readingTime: articleData.readingTime,
       tableOfContents: articleData.tableOfContents,
       relatedArticles: articleData.relatedArticles,
-      faqs: articleData.faqs
+      faqs: articleData.faqs,
+      isFeatured: articleData.isFeatured
     }));
     
     // Update the article in MongoDB
