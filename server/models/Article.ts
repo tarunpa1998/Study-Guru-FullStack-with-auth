@@ -23,7 +23,7 @@ export interface IArticle extends Document {
   relatedArticles?: string[] | mongoose.Types.ObjectId[];
   tableOfContents?: Array<{
     id: string;
-    text: string;
+    title: string;
     level: number;
   }>;
   faqs?: Array<{
@@ -96,7 +96,7 @@ const ArticleSchema = new Schema<IArticle>({
   }],
   tableOfContents: [{
     id: String,
-    text: String,
+    title: String,
     level: Number
   }],
   faqs: [{

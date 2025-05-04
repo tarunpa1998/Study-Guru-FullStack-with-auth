@@ -110,19 +110,21 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
       articleData.faqs = [];
     }
     
-    // Handle readTime and ensure it's in the format "X min read"
+    // Handle readTime - convert to a number for storage
     if (articleData.readTime !== undefined) {
       if (typeof articleData.readTime === 'number') {
-        articleData.readTime = `${articleData.readTime} min read`;
+        // Keep it as a number
       } else if (typeof articleData.readTime === 'string') {
-        // If it's a string but doesn't have the proper format, fix it
-        if (!articleData.readTime.includes('min read')) {
-          const minutes = parseInt(articleData.readTime, 10) || 1;
-          articleData.readTime = `${minutes} min read`;
+        // Extract number from string formats like "45 min read"
+        const match = articleData.readTime.match(/(\d+)/);
+        if (match && match[1]) {
+          articleData.readTime = parseInt(match[1], 10);
+        } else {
+          articleData.readTime = parseInt(articleData.readTime, 10) || 1;
         }
       }
     } else {
-      articleData.readTime = '1 min read';
+      articleData.readTime = 1;
     }
     
     // Clean up relatedArticles array
@@ -229,19 +231,21 @@ router.put('/articles/:id', adminAuth, async (req: Request, res: Response) => {
       articleData.faqs = existingArticle.faqs || [];
     }
     
-    // Handle readTime and ensure it's in the format "X min read"
+    // Handle readTime - convert to a number for storage
     if (articleData.readTime !== undefined) {
       if (typeof articleData.readTime === 'number') {
-        articleData.readTime = `${articleData.readTime} min read`;
+        // Keep it as a number
       } else if (typeof articleData.readTime === 'string') {
-        // If it's a string but doesn't have the proper format, fix it
-        if (!articleData.readTime.includes('min read')) {
-          const minutes = parseInt(articleData.readTime, 10) || 1;
-          articleData.readTime = `${minutes} min read`;
+        // Extract number from string formats like "45 min read"
+        const match = articleData.readTime.match(/(\d+)/);
+        if (match && match[1]) {
+          articleData.readTime = parseInt(match[1], 10);
+        } else {
+          articleData.readTime = parseInt(articleData.readTime, 10) || 1;
         }
       }
     } else {
-      articleData.readTime = existingArticle.readTime || '1 min read';
+      articleData.readTime = existingArticle.readTime || 1;
     }
     
     // Clean up relatedArticles array
