@@ -44,6 +44,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
+import RichTextContent from "@/components/RichTextContent";
 
 // Define the Article type
 interface Article {
