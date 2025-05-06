@@ -5,6 +5,17 @@ import FeaturedNewsItem from "./FeaturedNewsItem";
 import NewsCard from "./NewsCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi
+} from "@/components/ui/carousel";
+import { useInView } from "framer-motion";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface NewsItem {
   id: string | number;
@@ -22,8 +33,41 @@ const EducationNews = () => {
     queryKey: ['/api/news'],
   });
   
-  const featuredNews = newsItems.find((news) => news.isFeatured);
+  const [api, setApi] = useState<CarouselApi>();
+  const carouselRef = useRef(null);
+  const isInView = useInView(carouselRef, { once: false, amount: 0.3 });
+  const intervalRef = useRef<number | null>(null);
+  
+  // Check if screen is mobile
+  const isMobile = useMediaQuery("(max-width: 1023px)");
+  
+  const featuredNews = newsItems.filter((news) => news.isFeatured);
   const regularNews = newsItems.filter((news) => !news.isFeatured).slice(0, 2);
+
+  // Setup auto-scrolling when carousel is in view (only for mobile)
+  useEffect(() => {
+    if (!isMobile || !api || !isInView || featuredNews.length <= 1) {
+      // Clear interval if conditions aren't met
+      if (intervalRef.current !== null) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+    
+    // Start auto-scrolling when in view on mobile
+    intervalRef.current = window.setInterval(() => {
+      api.scrollNext();
+    }, 3000);
+    
+    // Cleanup interval
+    return () => {
+      if (intervalRef.current !== null) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [api, isInView, featuredNews.length, isMobile]);
 
   return (
     <section className="py-12 bg-background">
@@ -79,34 +123,94 @@ const EducationNews = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {featuredNews && (
-              <div className="lg:col-span-2">
-                <FeaturedNewsItem
-                  title={featuredNews.title}
-                  summary={featuredNews.summary}
-                  slug={featuredNews.slug}
-                  publishDate={featuredNews.publishDate}
-                  image={featuredNews.image}
-                  category={featuredNews.category}
-                />
+          <>
+            {/* Mobile View - Carousel */}
+            <div className="lg:hidden" ref={carouselRef}>
+              {featuredNews.length > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: true,
+                      skipSnaps: false,
+                    }}
+                    setApi={setApi}
+                    className="w-full"
+                  >
+                    <CarouselContent>
+                      {featuredNews.map((news) => (
+                        <CarouselItem key={news.id} className="basis-full">
+                          <FeaturedNewsItem
+                            title={news.title}
+                            summary={news.summary}
+                            slug={news.slug}
+                            publishDate={news.publishDate}
+                            image={news.image}
+                            category={news.category}
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    
+                    {featuredNews.length > 1 && (
+                      <div className="flex justify-center gap-2 mt-6">
+                        <CarouselPrevious className="static transform-none h-9 w-9 mr-2" />
+                        <CarouselNext className="static transform-none h-9 w-9" />
+                      </div>
+                    )}
+                  </Carousel>
+                </motion.div>
+              )}
+              <div className="space-y-6 mt-6">
+                {regularNews.map((news) => (
+                  <NewsCard
+                    key={news.id}
+                    title={news.title}
+                    summary={news.summary}
+                    slug={news.slug}
+                    publishDate={news.publishDate}
+                    image={news.image}
+                    category={news.category}
+                    layout="horizontal"
+                  />
+                ))}
               </div>
-            )}
-            <div className="space-y-6">
-              {regularNews.map((news) => (
-                <NewsCard
-                  key={news.id}
-                  title={news.title}
-                  summary={news.summary}
-                  slug={news.slug}
-                  publishDate={news.publishDate}
-                  image={news.image}
-                  category={news.category}
-                  layout="horizontal"
-                />
-              ))}
             </div>
-          </div>
+            
+            {/* Desktop View - Grid Layout */}
+            <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+              {featuredNews.length > 0 && (
+                <div className="lg:col-span-2">
+                  <FeaturedNewsItem
+                    title={featuredNews[0].title}
+                    summary={featuredNews[0].summary}
+                    slug={featuredNews[0].slug}
+                    publishDate={featuredNews[0].publishDate}
+                    image={featuredNews[0].image}
+                    category={featuredNews[0].category}
+                  />
+                </div>
+              )}
+              <div className="space-y-6">
+                {regularNews.map((news) => (
+                  <NewsCard
+                    key={news.id}
+                    title={news.title}
+                    summary={news.summary}
+                    slug={news.slug}
+                    publishDate={news.publishDate}
+                    image={news.image}
+                    category={news.category}
+                    layout="horizontal"
+                  />
+                ))}
+              </div>
+            </div>
+          </>
         )}
       </div>
     </section>
