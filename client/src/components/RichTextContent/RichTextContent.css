@@ -4,6 +4,23 @@
   line-height: 1.6;
 }
 
+/* Text formatting */
+.rich-text-content strong {
+  font-weight: 700;
+}
+
+.rich-text-content em {
+  font-style: italic;
+}
+
+.rich-text-content u {
+  text-decoration: underline;
+}
+
+.rich-text-content s {
+  text-decoration: line-through;
+}
+
 /* Heading styles */
 .rich-text-content h1 {
   font-size: 2.5rem;
@@ -90,13 +107,15 @@
 
 /* Blockquote styles */
 .rich-text-content blockquote {
-  border-left: 4px solid var(--primary-300);
+  border-left: 4px solid var(--primary-500);
   padding-left: 1rem;
   font-style: italic;
   margin: 1.5rem 0;
-  background-color: var(--primary-50);
+  background-color: #f8f9fa;
   padding: 1rem 1.5rem;
   border-radius: 0.25rem;
+  color: #333;
+  font-weight: normal;
 }
 
 /* Code block styles */
@@ -108,11 +127,15 @@
   overflow-x: auto;
   margin: 1.5rem 0;
   font-family: monospace;
+  display: block;
+  width: 100%;
 }
 
 .rich-text-content code {
   font-family: monospace;
   padding: 0.2rem 0.4rem;
+  background-color: #282c34;
+  color: #abb2bf;
   border-radius: 0.2rem;
   font-size: 0.9em;
 }
