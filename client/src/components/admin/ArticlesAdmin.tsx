@@ -47,6 +47,7 @@ import {
   FileText, 
   LayoutGrid 
 } from "lucide-react";
+import RichTextEditor from "../RichTextEditor";
 
 // Article interface based on the MongoDB model
 interface Article {
@@ -312,6 +313,13 @@ const ArticlesAdmin = () => {
     setEditForm({
       ...editForm,
       [name]: checked
+    });
+  };
+  
+  const handleRichTextChange = (content: string) => {
+    setEditForm({
+      ...editForm,
+      content
     });
   };
 
@@ -625,17 +633,14 @@ const ArticlesAdmin = () => {
             <TabsContent value="content" className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="content">Content *</Label>
-                <Textarea
-                  id="content"
-                  name="content"
-                  value={editForm.content}
-                  onChange={handleInputChange}
-                  placeholder="Article content"
-                  required
-                  rows={15}
+                <RichTextEditor
+                  content={editForm.content}
+                  onChange={handleRichTextChange}
+                  placeholder="Start writing your article..."
+                  className="min-h-[400px]"
                 />
                 <p className="text-xs text-slate-500">
-                  Supports Markdown formatting
+                  Supports rich text formatting and markdown
                 </p>
               </div>
 
