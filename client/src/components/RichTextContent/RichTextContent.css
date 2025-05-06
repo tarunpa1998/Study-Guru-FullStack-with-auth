@@ -108,36 +108,73 @@
 /* Blockquote styles */
 .rich-text-content blockquote {
   border-left: 4px solid var(--primary-500);
-  padding-left: 1rem;
-  font-style: italic;
   margin: 1.5rem 0;
   background-color: #f8f9fa;
-  padding: 1rem 1.5rem;
-  border-radius: 0.25rem;
+  padding: 1.2rem 1.5rem;
+  border-radius: 0.5rem;
   color: #333;
   font-weight: normal;
+  font-style: italic;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.rich-text-content blockquote::before {
+  content: '"';
+  position: absolute;
+  top: -0.5rem;
+  left: 1rem;
+  font-size: 3rem;
+  color: var(--primary-300);
+  font-family: Georgia, serif;
+  opacity: 0.5;
+}
+
+.rich-text-content blockquote p {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0;
 }
 
 /* Code block styles */
 .rich-text-content pre {
   background-color: #282c34;
   color: #abb2bf;
-  padding: 1rem;
-  border-radius: 0.25rem;
+  padding: 1.2rem;
+  border-radius: 0.5rem;
   overflow-x: auto;
   margin: 1.5rem 0;
-  font-family: monospace;
+  font-family: 'Courier New', Courier, monospace;
   display: block;
   width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .rich-text-content code {
-  font-family: monospace;
+  font-family: 'Courier New', Courier, monospace;
   padding: 0.2rem 0.4rem;
   background-color: #282c34;
   color: #abb2bf;
-  border-radius: 0.2rem;
+  border-radius: 0.3rem;
   font-size: 0.9em;
+  font-weight: normal;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Inline code styling */
+.rich-text-content code.inline-code {
+  display: inline;
+  padding: 0.1rem 0.4rem;
+  background-color: rgba(40, 44, 52, 0.9);
+  color: #f1f5f9;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-weight: normal;
+  margin: 0 0.2rem;
+  vertical-align: baseline;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .rich-text-content pre code {
@@ -223,8 +260,31 @@
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
   .rich-text-content blockquote {
-    background-color: var(--primary-900);
-    border-left-color: var(--primary-700);
+    background-color: #1e2937;
+    border-left-color: var(--primary-500);
+    color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .rich-text-content blockquote::before {
+    color: var(--primary-500);
+    opacity: 0.3;
+  }
+
+  .rich-text-content pre {
+    background-color: #1a1d23;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .rich-text-content code {
+    background-color: #1a1d23;
+  }
+  
+  .rich-text-content code.inline-code {
+    background-color: rgba(26, 29, 35, 0.9);
+    color: #e2e8f0;
+    border-color: rgba(255, 255, 255, 0.15);
   }
   
   .rich-text-content th {
