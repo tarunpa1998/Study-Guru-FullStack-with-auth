@@ -47,6 +47,7 @@ import {
   FileText, 
   LayoutGrid 
 } from "lucide-react";
+import RichTextEditor from "../RichTextEditor";
 
 // Article interface based on the MongoDB model
 interface Article {
@@ -293,13 +294,25 @@ const ArticlesAdmin = () => {
     // Handle nested properties
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
-      setEditForm({
-        ...editForm,
-        [parent]: {
-          ...editForm[parent as keyof typeof editForm],
-          [child]: value
-        }
-      });
+      const parentKey = parent as keyof typeof editForm;
+      
+      if (parentKey === 'seo') {
+        setEditForm({
+          ...editForm,
+          seo: {
+            ...editForm.seo,
+            [child]: value
+          }
+        });
+      } else {
+        setEditForm({
+          ...editForm,
+          [parent]: {
+            ...editForm[parentKey],
+            [child]: value
+          }
+        });
+      }
     } else {
       setEditForm({
         ...editForm,
@@ -312,6 +325,13 @@ const ArticlesAdmin = () => {
     setEditForm({
       ...editForm,
       [name]: checked
+    });
+  };
+  
+  const handleRichTextChange = (content: string) => {
+    setEditForm({
+      ...editForm,
+      content
     });
   };
 
@@ -425,7 +445,7 @@ const ArticlesAdmin = () => {
                                 variant="ghost"
                                 size="icon"
                                 className="text-red-500 hover:text-red-700"
-                                onClick={() => handleDelete(article.id || article._id)}
+                                onClick={() => handleDelete(article.id || article._id || "")}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -481,7 +501,7 @@ const ArticlesAdmin = () => {
                           variant="ghost"
                           size="icon"
                           className="text-red-500 hover:text-red-700"
-                          onClick={() => handleDelete(article.id || article._id)}
+                          onClick={() => handleDelete(article.id || article._id || "")}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -625,17 +645,14 @@ const ArticlesAdmin = () => {
             <TabsContent value="content" className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="content">Content *</Label>
-                <Textarea
-                  id="content"
-                  name="content"
-                  value={editForm.content}
-                  onChange={handleInputChange}
-                  placeholder="Article content"
-                  required
-                  rows={15}
+                <RichTextEditor
+                  content={editForm.content}
+                  onChange={handleRichTextChange}
+                  placeholder="Start writing your article..."
+                  className="min-h-[400px]"
                 />
                 <p className="text-xs text-slate-500">
-                  Supports Markdown formatting
+                  Supports rich text formatting and markdown
                 </p>
               </div>
 

@@ -31,6 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Plus, Pencil, Trash2, Search, Newspaper, LayoutGrid } from "lucide-react";
+import RichTextEditor from "../RichTextEditor";
 
 // News interface based on the MongoDB model
 interface News {
@@ -291,6 +292,13 @@ const NewsAdmin = () => {
     setEditForm({
       ...editForm,
       [name]: checked
+    });
+  };
+  
+  const handleRichTextChange = (content: string) => {
+    setEditForm({
+      ...editForm,
+      content
     });
   };
 
@@ -576,17 +584,14 @@ const NewsAdmin = () => {
             <TabsContent value="content" className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="content">Content *</Label>
-                <Textarea
-                  id="content"
-                  name="content"
-                  value={editForm.content}
-                  onChange={handleInputChange}
-                  placeholder="News content"
-                  required
-                  rows={15}
+                <RichTextEditor
+                  content={editForm.content}
+                  onChange={handleRichTextChange}
+                  placeholder="Start writing your news content..."
+                  className="min-h-[400px]"
                 />
                 <p className="text-xs text-slate-500">
-                  Supports Markdown formatting
+                  Supports rich text formatting and markdown
                 </p>
               </div>
 
