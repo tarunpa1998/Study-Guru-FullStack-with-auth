@@ -433,43 +433,8 @@ const ArticleDetail = () => {
               </div>
 
               {/* Main article content */}
-              <div className="article-content prose prose-blue dark:prose-invert max-w-none mb-8">
-                {article.tableOfContents && article.tableOfContents.length > 0 ? (
-                  // Content with headers from table of contents
-                  article.content.split('\n\n').map((paragraph, index) => {
-                    // Check if this paragraph matches a header from table of contents
-                    const headerMatch = article.tableOfContents?.find(
-                      toc => paragraph.includes(toc.title)
-                    );
-                    
-                    if (headerMatch) {
-                      // Render as heading with proper ID for scrolling
-                      return (
-                        <h2 
-                          key={index} 
-                          id={headerMatch.id}
-                          className="text-xl font-bold text-foreground mt-8 mb-4 scroll-mt-24"
-                        >
-                          {headerMatch.title}
-                        </h2>
-                      );
-                    } else {
-                      // Regular paragraph
-                      return (
-                        <p key={index} className="mb-4 text-foreground leading-relaxed">
-                          {paragraph}
-                        </p>
-                      );
-                    }
-                  })
-                ) : (
-                  // Regular content without table of contents
-                  article.content.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="mb-4 text-foreground leading-relaxed">
-                      {paragraph}
-                    </p>
-                  ))
-                )}
+              <div className="article-content mb-8">
+                <RichTextContent content={article.content} />
               </div>
 
               {/* Interaction section: Helpful + Share */}
