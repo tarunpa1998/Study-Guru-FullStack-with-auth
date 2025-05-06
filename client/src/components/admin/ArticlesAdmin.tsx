@@ -294,13 +294,25 @@ const ArticlesAdmin = () => {
     // Handle nested properties
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
-      setEditForm({
-        ...editForm,
-        [parent]: {
-          ...editForm[parent as keyof typeof editForm],
-          [child]: value
-        }
-      });
+      const parentKey = parent as keyof typeof editForm;
+      
+      if (parentKey === 'seo') {
+        setEditForm({
+          ...editForm,
+          seo: {
+            ...editForm.seo,
+            [child]: value
+          }
+        });
+      } else {
+        setEditForm({
+          ...editForm,
+          [parent]: {
+            ...editForm[parentKey],
+            [child]: value
+          }
+        });
+      }
     } else {
       setEditForm({
         ...editForm,
@@ -433,7 +445,7 @@ const ArticlesAdmin = () => {
                                 variant="ghost"
                                 size="icon"
                                 className="text-red-500 hover:text-red-700"
-                                onClick={() => handleDelete(article.id || article._id)}
+                                onClick={() => handleDelete(article.id || article._id || "")}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -489,7 +501,7 @@ const ArticlesAdmin = () => {
                           variant="ghost"
                           size="icon"
                           className="text-red-500 hover:text-red-700"
-                          onClick={() => handleDelete(article.id || article._id)}
+                          onClick={() => handleDelete(article.id || article._id || "")}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
