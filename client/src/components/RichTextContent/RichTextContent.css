@@ -151,6 +151,77 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+/* Code Renderer component styles */
+.code-renderer {
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.code-renderer .code-block {
+  margin: 0;
+}
+
+.code-renderer pre {
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.preview-toggle {
+  background-color: #323842;
+  padding: 0.5rem;
+  text-align: right;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preview-button {
+  background-color: #404754;
+  color: #abb2bf;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preview-button:hover {
+  background-color: #4a5161;
+}
+
+.preview-button.active {
+  background-color: var(--primary-600);
+  color: white;
+}
+
+.preview-area {
+  background-color: white;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.preview-header {
+  background-color: #f8f9fa;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  color: #666;
+}
+
+.preview-content {
+  padding: 1rem;
+  min-height: 150px;
+}
+
+.html-preview {
+  width: 100%;
+  height: 200px;
+  border: none;
+  background-color: transparent;
+}
+
 .rich-text-content code {
   font-family: 'Courier New', Courier, monospace;
   padding: 0.2rem 0.4rem;
@@ -285,6 +356,18 @@
     background-color: rgba(26, 29, 35, 0.9);
     color: #e2e8f0;
     border-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  /* Dark mode for code renderer */
+  .preview-header {
+    background-color: #1e2937;
+    color: #e2e8f0;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .preview-area {
+    background-color: #111827;
+    border-color: rgba(255, 255, 255, 0.1);
   }
   
   .rich-text-content th {
