@@ -5,6 +5,9 @@ import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import Table from '@tiptap/extension-table'
+import TableRow from '@tiptap/extension-table-row'
+import TableCell from '@tiptap/extension-table-cell'
+import TableHeader from '@tiptap/extension-table-header'
 import Heading from '@tiptap/extension-heading'
 import Strike from '@tiptap/extension-strike'
 import CodeBlock from '@tiptap/extension-code-block'
@@ -52,6 +55,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       Table.configure({
         resizable: true,
       }),
+      TableRow,
+      TableHeader,
+      TableCell,
       Heading.configure({
         levels: [1, 2, 3, 4, 5, 6],
       }),
@@ -281,6 +287,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         </button>
         <button onClick={addImage} title="Add Image">
           Image
+        </button>
+        <button 
+          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+          title="Insert Table"
+        >
+          Table
         </button>
         
         <span className="rich-text-separator" />
