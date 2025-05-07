@@ -4,6 +4,43 @@
   line-height: 1.6;
 }
 
+/* Link styles */
+.rich-text-content a {
+  color: hsl(var(--primary) / 0.85);
+  text-decoration: none;
+  position: relative;
+  font-weight: 500;
+  border-bottom: 1px solid hsl(var(--primary) / 0.3);
+  padding-bottom: 1px;
+  background-image: linear-gradient(to right, hsl(var(--primary) / 0.1), hsl(var(--primary) / 0.05));
+  background-size: 100% 0;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.3s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.rich-text-content a:hover {
+  color: hsl(var(--primary));
+  background-size: 100% 100%;
+  border-bottom: 1px solid hsl(var(--primary) / 0.7);
+}
+
+.rich-text-content a:focus {
+  outline: 2px solid hsl(var(--primary) / 0.3);
+  outline-offset: 2px;
+}
+
+.dark .rich-text-content a {
+  color: hsl(var(--primary) / 0.9);
+  border-bottom: 1px solid hsl(var(--primary) / 0.4);
+  background-image: linear-gradient(to right, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.1));
+}
+
+.dark .rich-text-content a:hover {
+  color: hsl(var(--primary) / 1);
+  border-bottom: 1px solid hsl(var(--primary) / 0.8);
+}
+
 /* Text formatting */
 .rich-text-content strong {
   font-weight: 700;
@@ -75,16 +112,7 @@
   margin-bottom: 1rem;
 }
 
-/* Link styles */
-.rich-text-content a {
-  color: var(--primary-500);
-  text-decoration: underline;
-  transition: color 0.2s ease;
-}
-
-.rich-text-content a:hover {
-  color: var(--primary-700);
-}
+/* This is being replaced by the new link styles at the top */
 
 /* List styles */
 .rich-text-content ul,
@@ -356,6 +384,28 @@
 
 .rich-text-content .table-of-contents ul {
   margin-bottom: 0;
+}
+
+/* Link styles for table of contents */
+.rich-text-content .table-of-contents a {
+  border-bottom: none;
+  padding: 0.1rem 0.3rem;
+  margin: -0.1rem -0.3rem;
+  border-radius: 0.25rem;
+  background-image: none;
+}
+
+.rich-text-content .table-of-contents a:hover {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}
+
+.dark .rich-text-content .table-of-contents a {
+  border-bottom: none;
+}
+
+.dark .rich-text-content .table-of-contents a:hover {
+  background-color: hsl(var(--primary) / 0.2);
 }
 
 .rich-text-content .toc-level-1 {
