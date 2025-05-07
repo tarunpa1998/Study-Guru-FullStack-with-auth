@@ -171,6 +171,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const newArticle = await storage.createArticle(validatedData);
     res.status(201).json(newArticle);
   }));
+  
+  // Article helpful votes endpoint
+  app.post("/api/articles/:slug/helpful", errorHandler(async (req, res) => {
+    const { slug } = req.params;
+    const { helpful } = req.body;
+    
+    if (!helpful || typeof helpful !== 'object' || typeof helpful.yes !== 'number' || typeof helpful.no !== 'number') {
+      return res.status(400).json({ error: "Invalid helpful vote data" });
+    }
+    
+    try {
+      // Try to use MongoDB first, fall back to memory storage if MongoDB unavailable
+      const conn = await connectToDatabase();
+      if (conn) {
+        try {
+          // Use MongoDB
+          const Article = require('./models/Article').default;
+          const article = await Article.findOne({ slug });
+          
+          if (!article) {
+            return res.status(404).json({ error: "Article not found" });
+          }
+          
+          // Update helpful votes
+          article.helpful = {
+            yes: helpful.yes,
+            no: helpful.no
+          };
+          
+          await article.save();
+          return res.json({ message: "Vote recorded successfully", helpful: article.helpful });
+        } catch (error) {
+          log(`MongoDB error updating article helpful votes: ${error}`, 'mongodb');
+          // Continue to fallback
+        }
+      }
+      
+      // Fallback to memory storage
+      const article = await storage.getArticleBySlug(slug);
+      if (!article) {
+        return res.status(404).json({ error: "Article not found" });
+      }
+      
+      // Update helpful votes in memory
+      const updatedArticle = { 
+        ...article, 
+        helpful: { 
+          yes: helpful.yes, 
+          no: helpful.no 
+        } 
+      };
+      
+      await storage.updateArticle(article.id, updatedArticle);
+      return res.json({ message: "Vote recorded successfully", helpful: updatedArticle.helpful });
+    } catch (error) {
+      log(`Error updating article helpful votes: ${error}`, 'error');
+      return res.status(500).json({ error: "Failed to update helpful votes" });
+    }
+  }));
 
   // Country routes (fallback to memory storage)
   app.get("/api/countries", errorHandler(async (req, res) => {
@@ -235,6 +294,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const validatedData = insertNewsSchema.parse(req.body);
     const newNewsItem = await storage.createNews(validatedData);
     res.status(201).json(newNewsItem);
+  }));
+  
+  // News helpful votes endpoint
+  app.post("/api/news/:slug/helpful", errorHandler(async (req, res) => {
+    const { slug } = req.params;
+    const { helpful } = req.body;
+    
+    if (!helpful || typeof helpful !== 'object' || typeof helpful.yes !== 'number' || typeof helpful.no !== 'number') {
+      return res.status(400).json({ error: "Invalid helpful vote data" });
+    }
+    
+    try {
+      // Try to use MongoDB first, fall back to memory storage if MongoDB unavailable
+      const conn = await connectToDatabase();
+      if (conn) {
+        try {
+          // Use MongoDB
+          const News = require('./models/News').default;
+          const newsItem = await News.findOne({ slug });
+          
+          if (!newsItem) {
+            return res.status(404).json({ error: "News item not found" });
+          }
+          
+          // Update helpful votes
+          newsItem.helpful = {
+            yes: helpful.yes,
+            no: helpful.no
+          };
+          
+          await newsItem.save();
+          return res.json({ message: "Vote recorded successfully", helpful: newsItem.helpful });
+        } catch (error) {
+          log(`MongoDB error updating news helpful votes: ${error}`, 'mongodb');
+          // Continue to fallback
+        }
+      }
+      
+      // Fallback to memory storage
+      const newsItem = await storage.getNewsBySlug(slug);
+      if (!newsItem) {
+        return res.status(404).json({ error: "News item not found" });
+      }
+      
+      // Update helpful votes in memory
+      const updatedNewsItem = { 
+        ...newsItem, 
+        helpful: { 
+          yes: helpful.yes, 
+          no: helpful.no 
+        } 
+      };
+      
+      await storage.updateNews(newsItem.id, updatedNewsItem);
+      return res.json({ message: "Vote recorded successfully", helpful: updatedNewsItem.helpful });
+    } catch (error) {
+      log(`Error updating news helpful votes: ${error}`, 'error');
+      return res.status(500).json({ error: "Failed to update helpful votes" });
+    }
   }));
 
   // Search route (fallback to memory storage)
