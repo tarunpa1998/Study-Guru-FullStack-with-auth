@@ -1,0 +1,155 @@
+import { useState, useEffect, useRef } from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+
+const FloatingWhatsApp = () => {
+  const [position, setPosition] = useState({ x: 20, y: window.innerHeight / 2 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
+  const buttonRef = useRef<HTMLDivElement>(null);
+  
+  // Load saved position from localStorage on component mount
+  useEffect(() => {
+    const savedPosition = localStorage.getItem('whatsappButtonPosition');
+    if (savedPosition) {
+      try {
+        const parsedPosition = JSON.parse(savedPosition);
+        setPosition(parsedPosition);
+      } catch (e) {
+        console.error('Error parsing saved position:', e);
+      }
+    }
+  }, []);
+
+  // Save position to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('whatsappButtonPosition', JSON.stringify(position));
+  }, [position]);
+
+  // Handle mouse/touch down events to start dragging
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDragging(true);
+    
+    // Get the starting position based on event type (mouse or touch)
+    if ('clientX' in e) {
+      setStartPosition({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y
+      });
+    } else {
+      const touch = e.touches[0];
+      setStartPosition({
+        x: touch.clientX - position.x,
+        y: touch.clientY - position.y
+      });
+    }
+    
+    // Prevent default behavior
+    e.preventDefault();
+  };
+
+  // Handle mouse/touch move events during dragging
+  const handleDrag = (e: MouseEvent | TouchEvent) => {
+    if (!isDragging) return;
+    
+    let clientX, clientY;
+    
+    // Get coordinates based on event type
+    if (e instanceof MouseEvent) {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    } else {
+      const touch = e.touches[0];
+      clientX = touch.clientX;
+      clientY = touch.clientY;
+    }
+    
+    // Calculate new position
+    const newX = clientX - startPosition.x;
+    const newY = clientY - startPosition.y;
+    
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    
+    // Determine which side to snap to (left or right)
+    let snappedX = newX;
+    if (newX > viewportWidth / 2) {
+      // Snap to right side
+      snappedX = viewportWidth - (buttonRef.current?.offsetWidth || 60) - 20;
+    } else {
+      // Snap to left side
+      snappedX = 20;
+    }
+    
+    // Keep button within vertical bounds of the viewport
+    const buttonHeight = buttonRef.current?.offsetHeight || 60;
+    const maxY = window.innerHeight - buttonHeight - 20;
+    const boundedY = Math.max(20, Math.min(newY, maxY));
+    
+    setPosition({
+      x: snappedX,
+      y: boundedY
+    });
+  };
+
+  // Handle mouse/touch up events to stop dragging
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Add and remove event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleDrag);
+      window.addEventListener('touchmove', handleDrag);
+      window.addEventListener('mouseup', handleDragEnd);
+      window.addEventListener('touchend', handleDragEnd);
+    } else {
+      window.removeEventListener('mousemove', handleDrag);
+      window.removeEventListener('touchmove', handleDrag);
+      window.removeEventListener('mouseup', handleDragEnd);
+      window.removeEventListener('touchend', handleDragEnd);
+    }
+    
+    return () => {
+      window.removeEventListener('mousemove', handleDrag);
+      window.removeEventListener('touchmove', handleDrag);
+      window.removeEventListener('mouseup', handleDragEnd);
+      window.removeEventListener('touchend', handleDragEnd);
+    };
+  }, [isDragging]);
+
+  // Handle click on the WhatsApp button
+  const handleWhatsAppClick = (e: React.MouseEvent) => {
+    // Only navigate if not currently dragging
+    if (!isDragging) {
+      window.open('https://wa.me/1234567890', '_blank');
+    }
+    e.stopPropagation();
+  };
+
+  return (
+    <div
+      ref={buttonRef}
+      className={`fixed z-50 cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        transform: 'translate(0, -50%)',
+        transition: isDragging ? 'none' : 'all 0.3s ease'
+      }}
+      onMouseDown={handleDragStart}
+      onTouchStart={handleDragStart}
+      onClick={handleWhatsAppClick}
+    >
+      <div className="rounded-full bg-white p-3 shadow-lg flex items-center justify-center">
+        <FaWhatsapp 
+          className="text-[#25D366] h-8 w-8 md:h-10 md:w-10" 
+          aria-hidden="true" 
+        />
+      </div>
+      <span className="sr-only">Contact us on WhatsApp</span>
+    </div>
+  );
+};
+
+export default FloatingWhatsApp;

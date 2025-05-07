@@ -11,6 +11,7 @@ import { AdminProtectedRoute } from "./lib/AdminProtectedRoute";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Home from "@/pages/Home";
 import ScholarshipsList from "@/pages/ScholarshipsList";
 import ScholarshipDetail from "@/pages/ScholarshipDetail";
@@ -127,6 +128,7 @@ function App() {
                   <Router />
                 </div>
                 {!isAdminRoute && <Footer />}
+                {!isAdminRoute && <FloatingWhatsApp />}
               </div>
             </TooltipProvider>
           </AuthProvider>
