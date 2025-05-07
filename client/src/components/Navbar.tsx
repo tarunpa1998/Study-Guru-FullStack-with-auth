@@ -121,9 +121,9 @@ const AuthButtons = () => {
   const handleSubcategoryClick = (url: string) => {
     // Check if this is a subcategory URL pattern
     const parts = url.split('/');
-    if (parts.length === 3 && ['scholarships', 'articles', 'universities'].includes(parts[1])) {
-      // Convert to filter URL instead of detail page
-      navigate(`/${parts[1]}?tag=${encodeURIComponent(parts[2])}`);
+    if (parts.length === 3 && ['scholarships', 'articles', 'universities', 'news'].includes(parts[1])) {
+      // Convert to filter URL instead of detail page - using 'category' parameter for consistency
+      navigate(`/${parts[1]}?category=${encodeURIComponent(parts[2])}`);
       return true;
     }
     return false;

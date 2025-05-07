@@ -35,12 +35,13 @@ const NewsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   
-  // Extract tag from URL if present
+  // Extract filter category from URL if present
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const tagParam = params.get('tag');
-    if (tagParam) {
-      setFilterCategory(tagParam);
+    // Check for either 'tag' (legacy) or 'category' (new) parameter
+    const categoryParam = params.get('category') || params.get('tag');
+    if (categoryParam) {
+      setFilterCategory(categoryParam);
     }
   }, [location]);
 
