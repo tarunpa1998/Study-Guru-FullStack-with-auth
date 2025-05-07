@@ -215,13 +215,24 @@ const NewsAdmin = () => {
       
       const method = isEditing ? 'PUT' : 'POST';
       
+      // Convert keywords from string to array if it's a string
+      const submissionData = {
+        ...editForm,
+        seo: {
+          ...editForm.seo,
+          keywords: typeof editForm.seo.keywords === 'string' 
+            ? editForm.seo.keywords.split(',').map(k => k.trim()).filter(Boolean) 
+            : editForm.seo.keywords
+        }
+      };
+      
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
           'x-auth-token': token
         },
-        body: JSON.stringify(editForm)
+        body: JSON.stringify(submissionData)
       });
 
       if (!response.ok) {
@@ -639,17 +650,12 @@ const NewsAdmin = () => {
                   name="seo.keywords"
                   value={Array.isArray(editForm.seo.keywords) ? editForm.seo.keywords.join(', ') : ''}
                   onChange={(e) => {
-                    // Split by commas and properly handle spaces
-                    const keywordsArray = e.target.value
-                      .split(',')
-                      .map(keyword => keyword.trim())
-                      .filter(Boolean); // Remove empty strings
-                    
+                    // Just store the text value and only convert to array on submit
                     setEditForm({
                       ...editForm,
                       seo: {
                         ...editForm.seo,
-                        keywords: keywordsArray
+                        keywords: e.target.value
                       }
                     });
                   }}

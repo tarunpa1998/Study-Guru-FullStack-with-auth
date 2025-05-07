@@ -232,6 +232,17 @@ const ArticlesAdmin = () => {
         throw new Error('Title, content, and summary are required');
       }
 
+      // Convert keywords from string to array if it's a string
+      const submissionData = {
+        ...editForm,
+        seo: {
+          ...editForm.seo,
+          keywords: typeof editForm.seo.keywords === 'string' 
+            ? editForm.seo.keywords.split(',').map(k => k.trim()).filter(Boolean) 
+            : editForm.seo.keywords
+        }
+      };
+
       // Use the appropriate ID field (supporting both formats)
       const articleId = currentArticle?.id || currentArticle?._id;
       const url = isEditing
@@ -246,7 +257,7 @@ const ArticlesAdmin = () => {
           'Content-Type': 'application/json',
           'x-auth-token': token
         },
-        body: JSON.stringify(editForm)
+        body: JSON.stringify(submissionData)
       });
 
       if (!response.ok) {
@@ -714,17 +725,12 @@ const ArticlesAdmin = () => {
                   name="seo.keywords"
                   value={Array.isArray(editForm.seo.keywords) ? editForm.seo.keywords.join(', ') : ''}
                   onChange={(e) => {
-                    // Split by commas and properly handle spaces
-                    const keywordsArray = e.target.value
-                      .split(',')
-                      .map(keyword => keyword.trim())
-                      .filter(Boolean); // Remove empty strings
-                    
+                    // Just store the text value and only convert to array on submit
                     setEditForm({
                       ...editForm,
                       seo: {
                         ...editForm.seo,
-                        keywords: keywordsArray
+                        keywords: e.target.value
                       }
                     });
                   }}
