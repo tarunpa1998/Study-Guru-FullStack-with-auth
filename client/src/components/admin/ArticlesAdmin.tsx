@@ -714,7 +714,12 @@ const ArticlesAdmin = () => {
                   name="seo.keywords"
                   value={Array.isArray(editForm.seo.keywords) ? editForm.seo.keywords.join(', ') : ''}
                   onChange={(e) => {
-                    const keywordsArray = e.target.value.split(',').map(keyword => keyword.trim()).filter(Boolean);
+                    // Split by commas and properly handle spaces
+                    const keywordsArray = e.target.value
+                      .split(',')
+                      .map(keyword => keyword.trim())
+                      .filter(Boolean); // Remove empty strings
+                    
                     setEditForm({
                       ...editForm,
                       seo: {
@@ -723,7 +728,7 @@ const ArticlesAdmin = () => {
                       }
                     });
                   }}
-                  placeholder="Enter keywords separated by commas"
+                  placeholder="Enter keywords separated by commas (e.g., study abroad, visa, UK)"
                   rows={2}
                 />
                 <p className="text-xs text-slate-500">

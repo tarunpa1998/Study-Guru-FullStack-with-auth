@@ -186,8 +186,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const conn = await connectToDatabase();
       if (conn) {
         try {
-          // Use MongoDB
-          const Article = require('./models/Article').default;
+          // Use MongoDB with ES6 dynamic import
+          const { default: Article } = await import('./models/Article');
           const article = await Article.findOne({ slug });
           
           if (!article) {
@@ -310,8 +310,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const conn = await connectToDatabase();
       if (conn) {
         try {
-          // Use MongoDB
-          const News = require('./models/News').default;
+          // Use MongoDB with ES6 dynamic import
+          const { default: News } = await import('./models/News');
           const newsItem = await News.findOne({ slug });
           
           if (!newsItem) {
@@ -370,7 +370,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // API endpoint to trigger data migration (only when needed)
   app.post("/api/migrate", errorHandler(async (req, res) => {
-    const { migrateDataToMongoDB } = require('./migrate');
+    const { migrateDataToMongoDB } = await import('./migrate');
     await migrateDataToMongoDB();
     res.json({ message: "Data migration completed" });
   }));
