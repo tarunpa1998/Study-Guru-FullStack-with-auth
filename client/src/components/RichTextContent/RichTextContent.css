@@ -275,19 +275,17 @@
 }
 
 /* Dark mode adjustments for the table container */
-@media (prefers-color-scheme: dark) {
-  .rich-text-content .table-container {
-    border-color: var(--primary-800);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(to right, #1a1d23 30%, rgba(26, 29, 35, 0)), 
-                linear-gradient(to right, rgba(26, 29, 35, 0), #1a1d23 70%) 100% 0,
-                radial-gradient(farthest-side at 0 50%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)),
-                radial-gradient(farthest-side at 100% 50%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)) 100% 0;
-    background-repeat: no-repeat;
-    background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
-    background-position: 0 0, 100% 0, 0 0, 100% 0;
-    background-attachment: local, local, scroll, scroll;
-  }
+.dark .rich-text-content .table-container {
+  border-color: var(--primary-800);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(to right, #1a1d23 30%, rgba(26, 29, 35, 0)), 
+              linear-gradient(to right, rgba(26, 29, 35, 0), #1a1d23 70%) 100% 0,
+              radial-gradient(farthest-side at 0 50%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)),
+              radial-gradient(farthest-side at 100% 50%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-position: 0 0, 100% 0, 0 0, 100% 0;
+  background-attachment: local, local, scroll, scroll;
 }
 
 .rich-text-content table {
@@ -317,30 +315,28 @@
 }
 
 /* Dark mode adjustments for tables */
-@media (prefers-color-scheme: dark) {
-  .rich-text-content table {
-    background-color: #1a1d23; /* Base background for the entire table */
-  }
-  
-  .rich-text-content th {
-    background-color: #111827; /* Darker background for headers */
-    color: var(--primary-300);
-    border-color: var(--primary-800);
-  }
-  
-  .rich-text-content td {
-    background-color: #1a1d23; /* Consistent background for all cells */
-    color: rgba(255, 255, 255, 0.9);
-    border-color: var(--primary-800);
-  }
-  
-  .rich-text-content tr:nth-child(even) td {
-    background-color: #111827; /* Slightly different for even rows */
-  }
-  
-  .rich-text-content tr:nth-child(odd) td {
-    background-color: #1a1d23; /* Explicit style for odd rows */
-  }
+.dark .rich-text-content table {
+  background-color: #1a1d23; /* Base background for the entire table */
+}
+
+.dark .rich-text-content th {
+  background-color: #111827; /* Darker background for headers */
+  color: var(--primary-300);
+  border-color: var(--primary-800);
+}
+
+.dark .rich-text-content td {
+  background-color: #1a1d23; /* Consistent background for all cells */
+  color: rgba(255, 255, 255, 0.9);
+  border-color: var(--primary-800);
+}
+
+.dark .rich-text-content tr:nth-child(even) td {
+  background-color: #111827; /* Slightly different for even rows */
+}
+
+.dark .rich-text-content tr:nth-child(odd) td {
+  background-color: #1a1d23; /* Explicit style for odd rows */
 }
 
 /* Table of contents styles */
@@ -395,51 +391,47 @@
 }
 
 /* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  .rich-text-content blockquote {
-    background-color: #1e2937;
-    border-left-color: var(--primary-500);
-    color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-  
-  .rich-text-content blockquote::before {
-    color: var(--primary-500);
-    opacity: 0.3;
-  }
+.dark .rich-text-content blockquote {
+  background-color: #1e2937;
+  border-left-color: var(--primary-500);
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
 
-  .rich-text-content pre {
-    background-color: #1a1d23;
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
+.dark .rich-text-content blockquote::before {
+  color: var(--primary-500);
+  opacity: 0.3;
+}
 
-  .rich-text-content code {
-    background-color: #1a1d23;
-  }
-  
-  .rich-text-content code.inline-code {
-    background-color: rgba(26, 29, 35, 0.9);
-    color: #e2e8f0;
-    border-color: rgba(255, 255, 255, 0.15);
-  }
-  
-  /* Dark mode for code renderer */
-  .preview-header {
-    background-color: #1e2937;
-    color: #e2e8f0;
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .preview-area {
-    background-color: #111827;
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  /* Table styles handled in the dedicated table dark mode section above */
-  
-  .rich-text-content .table-of-contents {
-    background-color: var(--primary-900);
-    border-color: var(--primary-700);
-  }
+.dark .rich-text-content pre {
+  background-color: #1a1d23;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dark .rich-text-content code {
+  background-color: #1a1d23;
+}
+
+.dark .rich-text-content code.inline-code {
+  background-color: rgba(26, 29, 35, 0.9);
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Dark mode for code renderer */
+.dark .preview-header {
+  background-color: #1e2937;
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .preview-area {
+  background-color: #111827;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .rich-text-content .table-of-contents {
+  background-color: var(--primary-900);
+  border-color: var(--primary-700);
 }
