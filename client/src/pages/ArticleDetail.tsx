@@ -132,7 +132,14 @@ const ArticleDetail = () => {
   const { slug } = useParams();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
-  const [helpfulVote, setHelpfulVote] = useState<'yes' | 'no' | null>(null);
+  // Initialize helpful vote from localStorage if available
+  const [helpfulVote, setHelpfulVote] = useState<'yes' | 'no' | null>(() => {
+    if (typeof window !== 'undefined') {
+      const savedVote = localStorage.getItem(`article-vote-${slug}`);
+      return (savedVote === 'yes' || savedVote === 'no') ? savedVote : null;
+    }
+    return null;
+  });
   const [relatedArticlesData, setRelatedArticlesData] = useState<Article[]>([]);
   
   const { data: article, isLoading, error } = useQuery<Article>({
@@ -213,6 +220,13 @@ const ArticleDetail = () => {
     const newVoteValue = helpfulVote === vote ? null : vote;
     setHelpfulVote(newVoteValue);
     
+    // Store vote in localStorage
+    if (newVoteValue) {
+      localStorage.setItem(`article-vote-${slug}`, newVoteValue);
+    } else {
+      localStorage.removeItem(`article-vote-${slug}`);
+    }
+    
     try {
       // Calculate the new vote counts - if removing a vote, decrement current value
       const currentYesCount = article.helpful?.yes || 0;
@@ -264,17 +278,34 @@ const ArticleDetail = () => {
             no: newNoCount 
           } 
         };
-        // This would normally be handled by re-fetching or using React Query's mutation
-        // But for simplicity, we're manually updating the UI
+        
+        // Update article in the UI without refetching
+        // @ts-ignore - we know this property exists
+        article.helpful = {
+          yes: newYesCount,
+          no: newNoCount
+        };
       } else {
         console.error('Failed to update helpful vote');
         // Revert UI state if server request failed
         setHelpfulVote(helpfulVote);
+        // Also remove from localStorage if server request failed
+        if (helpfulVote) {
+          localStorage.setItem(`article-vote-${slug}`, helpfulVote);
+        } else {
+          localStorage.removeItem(`article-vote-${slug}`);
+        }
       }
     } catch (error) {
       console.error('Error updating helpful vote:', error);
       // Revert UI state if there was an error
       setHelpfulVote(helpfulVote);
+      // Also revert localStorage
+      if (helpfulVote) {
+        localStorage.setItem(`article-vote-${slug}`, helpfulVote);
+      } else {
+        localStorage.removeItem(`article-vote-${slug}`);
+      }
     }
   };
 
