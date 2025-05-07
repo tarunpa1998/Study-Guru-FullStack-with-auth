@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Helmet } from "react-helmet";
@@ -13,20 +13,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { 
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi
-} from "@/components/ui/carousel";
-import { useInView } from "framer-motion";
-import { motion } from "framer-motion";
 import NewsCard from "@/components/NewsCard";
 import FeaturedNewsItem from "@/components/FeaturedNewsItem";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useMediaQuery } from "@/hooks/use-media-query";
 
 // Define NewsItem interface
 interface NewsItem {
@@ -72,49 +61,9 @@ const NewsList = () => {
   // Extract unique categories for filters
   const uniqueCategories = Array.from(new Set(newsItems.map((n) => n.category)));
 
-  // Get featured news items and regular news
-  const allFeaturedNews = newsItems.filter((news) => news.isFeatured === true);
-  
-  // If we don't have any featured news, use the first news item as featured
-  const featuredNews = allFeaturedNews.length > 0 ? allFeaturedNews : (newsItems.length > 0 ? [newsItems[0]] : []);
-  
-  // Filter regular news based on search and category criteria
-  const regularNews = filteredNews.filter((news) => 
-    !allFeaturedNews.some(featured => featured.id === news.id));
-  
-  console.log("Featured news:", featuredNews);
-  
-  // Carousel setup
-  const [api, setApi] = useState<CarouselApi>();
-  const carouselRef = useRef(null);
-  const isInView = useInView(carouselRef, { once: false, amount: 0.3 });
-  const intervalRef = useRef<number | null>(null);
-  const isMobile = useMediaQuery("(max-width: 768px)");
-  
-  // Set up auto-scrolling
-  useEffect(() => {
-    if (!api || !isInView || featuredNews.length <= 1) {
-      // Clear interval if carousel is not in view
-      if (intervalRef.current !== null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      return;
-    }
-    
-    // Start auto-scrolling when in view
-    intervalRef.current = window.setInterval(() => {
-      api.scrollNext();
-    }, 3000);
-    
-    // Cleanup interval on unmount or when dependencies change
-    return () => {
-      if (intervalRef.current !== null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [api, isInView, featuredNews.length]);
+  // Find featured news item
+  const featuredNews = newsItems.find((news) => news.isFeatured);
+  const regularNews = filteredNews.filter((news) => !news.isFeatured);
 
   return (
     <>
@@ -195,62 +144,17 @@ const NewsList = () => {
           </>
         ) : (
           <>
-            {featuredNews.length > 0 && (
-              <div className="mb-8" ref={carouselRef}>
+            {featuredNews && !filterCategory && !searchQuery && (
+              <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">Featured News</h2>
-                
-                {/* Desktop view: single featured news */}
-                {!isMobile && featuredNews.length > 0 && (
-                  <FeaturedNewsItem 
-                    title={featuredNews[0].title}
-                    summary={featuredNews[0].summary}
-                    slug={featuredNews[0].slug}
-                    publishDate={featuredNews[0].publishDate}
-                    image={featuredNews[0].image}
-                    category={featuredNews[0].category}
-                  />
-                )}
-                
-                {/* Mobile view: carousel */}
-                {isMobile && featuredNews.length > 0 && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <Carousel
-                      opts={{
-                        align: "start",
-                        loop: true,
-                        skipSnaps: false,
-                      }}
-                      setApi={setApi}
-                      className="w-full"
-                    >
-                      <CarouselContent>
-                        {featuredNews.map((news) => (
-                          <CarouselItem key={news.id} className="basis-full">
-                            <FeaturedNewsItem
-                              title={news.title}
-                              summary={news.summary}
-                              slug={news.slug}
-                              publishDate={news.publishDate}
-                              image={news.image}
-                              category={news.category}
-                            />
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                      
-                      {featuredNews.length > 1 && (
-                        <div className="flex justify-center gap-2 mt-6">
-                          <CarouselPrevious className="static transform-none h-9 w-9 mr-2" />
-                          <CarouselNext className="static transform-none h-9 w-9" />
-                        </div>
-                      )}
-                    </Carousel>
-                  </motion.div>
-                )}
+                <FeaturedNewsItem 
+                  title={featuredNews.title}
+                  summary={featuredNews.summary}
+                  slug={featuredNews.slug}
+                  publishDate={featuredNews.publishDate}
+                  image={featuredNews.image}
+                  category={featuredNews.category}
+                />
               </div>
             )}
 
