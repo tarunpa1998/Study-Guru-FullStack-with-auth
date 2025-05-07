@@ -633,6 +633,30 @@ const NewsAdmin = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="seo.keywords">Keywords</Label>
+                <Textarea
+                  id="seo.keywords"
+                  name="seo.keywords"
+                  value={Array.isArray(editForm.seo.keywords) ? editForm.seo.keywords.join(', ') : ''}
+                  onChange={(e) => {
+                    const keywordsArray = e.target.value.split(',').map(keyword => keyword.trim()).filter(Boolean);
+                    setEditForm({
+                      ...editForm,
+                      seo: {
+                        ...editForm.seo,
+                        keywords: keywordsArray
+                      }
+                    });
+                  }}
+                  placeholder="Enter keywords separated by commas"
+                  rows={2}
+                />
+                <p className="text-xs text-slate-500">
+                  Separate keywords with commas (e.g., news, visa, study abroad)
+                </p>
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="slug">URL Slug</Label>
                 <Input
                   id="slug"

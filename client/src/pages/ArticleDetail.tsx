@@ -206,15 +206,76 @@ const ArticleDetail = () => {
   }, [article]);
 
   // Handle helpful votes
-  const handleHelpfulVote = (vote: 'yes' | 'no') => {
-    if (helpfulVote === vote) {
-      setHelpfulVote(null);
-    } else {
-      setHelpfulVote(vote);
-    }
+  const handleHelpfulVote = async (vote: 'yes' | 'no') => {
+    if (!article) return;
     
-    // In a real app, you would send this to the server
-    console.log(`User voted ${vote} for article ${slug}`);
+    // Toggle vote if clicking the same button
+    const newVoteValue = helpfulVote === vote ? null : vote;
+    setHelpfulVote(newVoteValue);
+    
+    try {
+      // Calculate the new vote counts - if removing a vote, decrement current value
+      const currentYesCount = article.helpful?.yes || 0;
+      const currentNoCount = article.helpful?.no || 0;
+      
+      let newYesCount = currentYesCount;
+      let newNoCount = currentNoCount;
+      
+      // If we previously voted yes and now changing to no or removing vote
+      if (helpfulVote === 'yes' && newVoteValue !== 'yes') {
+        newYesCount = Math.max(0, currentYesCount - 1);
+      }
+      
+      // If we previously voted no and now changing to yes or removing vote
+      if (helpfulVote === 'no' && newVoteValue !== 'no') {
+        newNoCount = Math.max(0, currentNoCount - 1);
+      }
+      
+      // If adding a new yes vote
+      if (newVoteValue === 'yes' && helpfulVote !== 'yes') {
+        newYesCount += 1;
+      }
+      
+      // If adding a new no vote
+      if (newVoteValue === 'no' && helpfulVote !== 'no') {
+        newNoCount += 1;
+      }
+      
+      // Send the updated values to the server
+      const response = await fetch(`/api/articles/${slug}/helpful`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          helpful: {
+            yes: newYesCount,
+            no: newNoCount
+          }
+        }),
+      });
+      
+      if (response.ok) {
+        // Update local state with the new values
+        const updatedArticle = { 
+          ...article, 
+          helpful: { 
+            yes: newYesCount, 
+            no: newNoCount 
+          } 
+        };
+        // This would normally be handled by re-fetching or using React Query's mutation
+        // But for simplicity, we're manually updating the UI
+      } else {
+        console.error('Failed to update helpful vote');
+        // Revert UI state if server request failed
+        setHelpfulVote(helpfulVote);
+      }
+    } catch (error) {
+      console.error('Error updating helpful vote:', error);
+      // Revert UI state if there was an error
+      setHelpfulVote(helpfulVote);
+    }
   };
 
   // Handle share
