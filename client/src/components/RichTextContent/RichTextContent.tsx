@@ -82,7 +82,7 @@ const RichTextContent: React.FC<RichTextContentProps> = ({
             const toggleButton = document.createElement('button');
             toggleButton.className = 'preview-button active';
             toggleButton.textContent = 'Hide Preview';
-            toggleButton.onclick = function(this: HTMLButtonElement) {
+            toggleButton.addEventListener('click', function(this: HTMLButtonElement, _: Event) {
               const previewArea = container.querySelector('.preview-area') as HTMLElement;
               if (previewArea) {
                 const isVisible = previewArea.style.display !== 'none';
@@ -90,7 +90,7 @@ const RichTextContent: React.FC<RichTextContentProps> = ({
                 this.textContent = isVisible ? 'Show Preview' : 'Hide Preview';
                 this.classList.toggle('active');
               }
-            };
+            } as EventListener);
             toggleDiv.appendChild(toggleButton);
             container.appendChild(toggleDiv);
             
