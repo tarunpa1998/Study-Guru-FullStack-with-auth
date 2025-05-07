@@ -16,6 +16,7 @@ import {
   Moon,
   Sun
 } from "lucide-react";
+import { FaInstagram, FaFacebook, FaWhatsapp, FaTelegram } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import SearchBar from "./SearchBar";
 import { useAuth } from "../contexts/AuthContext";
@@ -92,22 +93,132 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             Logout
           </button>
         </div>
+        
+        {/* Social Media Icons */}
+        <div className="pt-4 mt-4 border-t border-border">
+          <p className="text-sm text-muted-foreground mb-2">Follow us on social media:</p>
+          <div className="flex justify-between">
+            <a 
+              href="https://instagram.com/studyguru" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center"
+            >
+              <div className="p-2 bg-accent/30 rounded-full hover:bg-accent transition-colors duration-200">
+                <FaInstagram className="h-5 w-5 text-foreground" />
+              </div>
+              <span className="text-xs mt-1 text-muted-foreground">Instagram</span>
+            </a>
+            
+            <a 
+              href="https://facebook.com/studyguru" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center"
+            >
+              <div className="p-2 bg-accent/30 rounded-full hover:bg-accent transition-colors duration-200">
+                <FaFacebook className="h-5 w-5 text-foreground" />
+              </div>
+              <span className="text-xs mt-1 text-muted-foreground">Facebook</span>
+            </a>
+            
+            <a 
+              href="https://wa.me/1234567890" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center"
+            >
+              <div className="p-2 bg-accent/30 rounded-full hover:bg-accent transition-colors duration-200">
+                <FaWhatsapp className="h-5 w-5 text-foreground" />
+              </div>
+              <span className="text-xs mt-1 text-muted-foreground">WhatsApp</span>
+            </a>
+            
+            <a 
+              href="https://t.me/studyguru" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center"
+            >
+              <div className="p-2 bg-accent/30 rounded-full hover:bg-accent transition-colors duration-200">
+                <FaTelegram className="h-5 w-5 text-foreground" />
+              </div>
+              <span className="text-xs mt-1 text-muted-foreground">Telegram</span>
+            </a>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex space-x-3">
-      <Link href="/login" className="flex-1" onClick={closeMobileMenu}>
-        <button className="w-full py-2 px-3 bg-accent text-accent-foreground rounded-md shadow-sm text-sm font-medium hover:bg-accent/80 transition-colors duration-200">
-          Login
-        </button>
-      </Link>
-      <Link href="/register" className="flex-1" onClick={closeMobileMenu}>
-        <button className="w-full py-2 px-3 bg-primary text-primary-foreground rounded-md shadow-sm text-sm font-medium hover:bg-primary/90 transition-colors duration-200">
-          Sign Up
-        </button>
-      </Link>
+    <div className="flex flex-col space-y-4">
+      <div className="flex space-x-3">
+        <Link href="/login" className="flex-1" onClick={closeMobileMenu}>
+          <button className="w-full py-2 px-3 bg-accent text-accent-foreground rounded-md shadow-sm text-sm font-medium hover:bg-accent/80 transition-colors duration-200">
+            Login
+          </button>
+        </Link>
+        <Link href="/register" className="flex-1" onClick={closeMobileMenu}>
+          <button className="w-full py-2 px-3 bg-primary text-primary-foreground rounded-md shadow-sm text-sm font-medium hover:bg-primary/90 transition-colors duration-200">
+            Sign Up
+          </button>
+        </Link>
+      </div>
+      
+      {/* Social Media Icons */}
+      <div className="pt-2 border-t border-border">
+        <p className="text-sm text-muted-foreground mb-2">Follow us on social media:</p>
+        <div className="flex justify-between">
+          <a 
+            href="https://instagram.com/studyguru" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex flex-col items-center"
+          >
+            <div className="p-2 bg-accent/30 rounded-full hover:bg-accent transition-colors duration-200">
+              <FaInstagram className="h-5 w-5 text-foreground" />
+            </div>
+            <span className="text-xs mt-1 text-muted-foreground">Instagram</span>
+          </a>
+          
+          <a 
+            href="https://facebook.com/studyguru" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex flex-col items-center"
+          >
+            <div className="p-2 bg-accent/30 rounded-full hover:bg-accent transition-colors duration-200">
+              <FaFacebook className="h-5 w-5 text-foreground" />
+            </div>
+            <span className="text-xs mt-1 text-muted-foreground">Facebook</span>
+          </a>
+          
+          <a 
+            href="https://wa.me/1234567890" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex flex-col items-center"
+          >
+            <div className="p-2 bg-accent/30 rounded-full hover:bg-accent transition-colors duration-200">
+              <FaWhatsapp className="h-5 w-5 text-foreground" />
+            </div>
+            <span className="text-xs mt-1 text-muted-foreground">WhatsApp</span>
+          </a>
+          
+          <a 
+            href="https://t.me/studyguru" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex flex-col items-center"
+          >
+            <div className="p-2 bg-accent/30 rounded-full hover:bg-accent transition-colors duration-200">
+              <FaTelegram className="h-5 w-5 text-foreground" />
+            </div>
+            <span className="text-xs mt-1 text-muted-foreground">Telegram</span>
+          </a>
+        </div>
+      </div>
     </div>
   );
 };
