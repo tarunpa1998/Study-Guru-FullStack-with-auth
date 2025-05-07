@@ -138,6 +138,23 @@ const RichTextContent: React.FC<RichTextContentProps> = ({
           blockquote.innerHTML = `<p>${blockquoteContent}</p>`;
         }
       });
+      
+      // Wrap all tables with a scrollable container
+      const tables = contentRef.current.querySelectorAll('table');
+      tables.forEach(table => {
+        // Check if table is not already wrapped
+        if (table.parentElement && !table.parentElement.classList.contains('table-container')) {
+          // Create wrapper container
+          const tableContainer = document.createElement('div');
+          tableContainer.className = 'table-container';
+          
+          // Insert container before table in the DOM
+          table.parentNode?.insertBefore(tableContainer, table);
+          
+          // Move table inside container
+          tableContainer.appendChild(table);
+        }
+      });
     }
   }, [processedContent, codeBlocks]);
 
