@@ -547,7 +547,7 @@ const ArticleDetail = () => {
                               onClick={() => handleHelpfulVote('yes')}
                             >
                               <ThumbsUp className="h-4 w-4 mr-1" />
-                              <span>{article.helpful?.yes || 0}</span>
+                              <span>{helpfulVote === 'yes' ? (article.helpful?.yes || 0) + 1 : article.helpful?.yes || 0}</span>
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -568,7 +568,7 @@ const ArticleDetail = () => {
                               onClick={() => handleHelpfulVote('no')}
                             >
                               <ThumbsDown className="h-4 w-4 mr-1" />
-                              <span>{article.helpful?.no || 0}</span>
+                              <span>{helpfulVote === 'no' ? (article.helpful?.no || 0) + 1 : article.helpful?.no || 0}</span>
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>

@@ -648,16 +648,16 @@ const NewsAdmin = () => {
                 <Textarea
                   id="seo.keywords"
                   name="seo.keywords"
-                  value={Array.isArray(editForm.seo.keywords) ? editForm.seo.keywords.join(', ') : ''}
+                  value={Array.isArray(editForm.seo.keywords) ? editForm.seo.keywords.join(', ') : String(editForm.seo.keywords || '')}
                   onChange={(e) => {
-                    // Just store the text value and only convert to array on submit
-                    setEditForm({
-                      ...editForm,
+                    // Store as string and convert on submit
+                    setEditForm(prev => ({
+                      ...prev,
                       seo: {
-                        ...editForm.seo,
+                        ...prev.seo,
                         keywords: e.target.value
                       }
-                    });
+                    }));
                   }}
                   placeholder="Enter keywords separated by commas (e.g., news, education, visa)"
                   rows={2}
