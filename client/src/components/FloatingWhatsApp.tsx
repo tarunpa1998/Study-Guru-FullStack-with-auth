@@ -2,9 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 
 const FloatingWhatsApp = () => {
-  const [position, setPosition] = useState({ x: 20, y: window.innerHeight / 2 });
+  // Set initial position to left side at 70% of screen height
+  const defaultPosition = {
+    x: 15, // Closer to edge (15px instead of 20px)
+    y: Math.round(window.innerHeight * 0.7)
+  };
+  
+  const [position, setPosition] = useState(defaultPosition);
   const [isDragging, setIsDragging] = useState(false);
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
+  const [showMessage, setShowMessage] = useState(false);
   const buttonRef = useRef<HTMLDivElement>(null);
   
   // Load saved position from localStorage on component mount
@@ -18,6 +25,20 @@ const FloatingWhatsApp = () => {
         console.error('Error parsing saved position:', e);
       }
     }
+    
+    // Show message shortly after component mounts
+    const timer = setTimeout(() => {
+      setShowMessage(true);
+      
+      // Auto-hide message after 5 seconds
+      const hideTimer = setTimeout(() => {
+        setShowMessage(false);
+      }, 5000);
+      
+      return () => clearTimeout(hideTimer);
+    }, 1500);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // Save position to localStorage whenever it changes
@@ -28,6 +49,7 @@ const FloatingWhatsApp = () => {
   // Handle mouse/touch down events to start dragging
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     setIsDragging(true);
+    setShowMessage(false); // Hide message when dragging starts
     
     // Get the starting position based on event type (mouse or touch)
     if ('clientX' in e) {
@@ -63,7 +85,7 @@ const FloatingWhatsApp = () => {
       clientY = touch.clientY;
     }
     
-    // Calculate new position
+    // Calculate new position with smoother animation
     const newX = clientX - startPosition.x;
     const newY = clientY - startPosition.y;
     
@@ -74,16 +96,17 @@ const FloatingWhatsApp = () => {
     let snappedX = newX;
     if (newX > viewportWidth / 2) {
       // Snap to right side
-      snappedX = viewportWidth - (buttonRef.current?.offsetWidth || 60) - 20;
+      snappedX = viewportWidth - (buttonRef.current?.offsetWidth || 60) - 15; // Closer to edge
     } else {
       // Snap to left side
-      snappedX = 20;
+      snappedX = 15; // Closer to edge
     }
     
     // Keep button within vertical bounds of the viewport
     const buttonHeight = buttonRef.current?.offsetHeight || 60;
-    const maxY = window.innerHeight - buttonHeight - 20;
-    const boundedY = Math.max(20, Math.min(newY, maxY));
+    const maxY = window.innerHeight - buttonHeight / 2 - 20;
+    const minY = buttonHeight / 2 + 20;
+    const boundedY = Math.max(minY, Math.min(newY, maxY));
     
     setPosition({
       x: snappedX,
@@ -99,8 +122,8 @@ const FloatingWhatsApp = () => {
   // Add and remove event listeners for dragging
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleDrag);
-      window.addEventListener('touchmove', handleDrag);
+      window.addEventListener('mousemove', handleDrag, { passive: false });
+      window.addEventListener('touchmove', handleDrag, { passive: false });
       window.addEventListener('mouseup', handleDragEnd);
       window.addEventListener('touchend', handleDragEnd);
     } else {
@@ -127,6 +150,9 @@ const FloatingWhatsApp = () => {
     e.stopPropagation();
   };
 
+  // Calculate which side the button is on to position the message bubble
+  const isOnRightSide = position.x > window.innerWidth / 2;
+
   return (
     <div
       ref={buttonRef}
@@ -135,15 +161,48 @@ const FloatingWhatsApp = () => {
         left: `${position.x}px`,
         top: `${position.y}px`,
         transform: 'translate(0, -50%)',
-        transition: isDragging ? 'none' : 'all 0.3s ease'
+        transition: isDragging ? 'none' : 'transform 0.2s ease, top 0.3s ease, left 0.3s ease'
       }}
-      onMouseDown={handleDragStart}
-      onTouchStart={handleDragStart}
-      onClick={handleWhatsAppClick}
     >
-      <div className="rounded-full bg-white p-3 shadow-lg flex items-center justify-center">
+      {/* WhatsApp Chat Bubble */}
+      {showMessage && (
+        <div 
+          className={`absolute ${isOnRightSide ? 'right-16' : 'left-16'} top-0 transform -translate-y-1/4 bg-white text-gray-800 p-3 rounded-lg shadow-md animate-fadeIn max-w-[180px] text-sm`}
+          style={{
+            backgroundColor: '#DCF8C6', // WhatsApp message bubble color
+            borderRadius: '8px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
+          }}
+        >
+          <div className="relative">
+            {/* Triangle for the message bubble */}
+            <div 
+              className={`absolute top-1/2 ${isOnRightSide ? 'right-full -mr-1.5' : 'left-full -ml-1.5'} -translate-y-1/2`}
+              style={{
+                width: '0',
+                height: '0',
+                borderTop: '8px solid transparent',
+                borderBottom: '8px solid transparent',
+                borderRight: isOnRightSide ? 'none' : '8px solid #DCF8C6',
+                borderLeft: isOnRightSide ? '8px solid #DCF8C6' : 'none',
+              }}
+            ></div>
+            
+            <p className="font-medium mb-1">Hi there! 👋</p>
+            <p>Chat with us or call us now</p>
+          </div>
+        </div>
+      )}
+      
+      {/* WhatsApp Button */}
+      <div 
+        className="rounded-full bg-white p-3 shadow-md flex items-center justify-center"
+        onMouseDown={handleDragStart}
+        onTouchStart={handleDragStart}
+        onClick={handleWhatsAppClick}
+      >
         <FaWhatsapp 
-          className="text-[#25D366] h-8 w-8 md:h-10 md:w-10" 
+          className="text-[#25D366] h-7 w-7 md:h-8 md:w-8" 
           aria-hidden="true" 
         />
       </div>
