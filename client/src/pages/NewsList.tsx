@@ -35,19 +35,27 @@ const NewsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   
+  const { data: newsItems = [], isLoading } = useQuery<NewsItem[]>({
+    queryKey: ['/api/news']
+  });
+
   // Extract filter category from URL if present
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     // Check for either 'tag' (legacy) or 'category' (new) parameter
     const categoryParam = params.get('category') || params.get('tag');
-    if (categoryParam) {
-      setFilterCategory(categoryParam);
+    
+    if (categoryParam && newsItems?.length > 0) {
+      // We'll verify if the category exists in our data before setting it
+      const availableCategories = Array.from(new Set(newsItems.map(n => n.category)));
+      if (availableCategories.includes(categoryParam)) {
+        setFilterCategory(categoryParam);
+      } else {
+        // If category doesn't exist, reset to show all news
+        setFilterCategory("all");
+      }
     }
-  }, [location]);
-
-  const { data: newsItems = [], isLoading } = useQuery<NewsItem[]>({
-    queryKey: ['/api/news']
-  });
+  }, [location, newsItems]);
 
   // Apply filters
   const filteredNews = newsItems.filter((news) => {
@@ -145,7 +153,7 @@ const NewsList = () => {
           </>
         ) : (
           <>
-            {featuredNews && !filterCategory && !searchQuery && (
+            {featuredNews && filterCategory === "all" && !searchQuery && (
               <div className="mb-8">
                 <h2 className="text-2xl font-bold mb-4">Featured News</h2>
                 <FeaturedNewsItem 
