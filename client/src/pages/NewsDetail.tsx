@@ -145,6 +145,21 @@ const NewsDetail = () => {
     queryKey: ['/api/news'],
   });
 
+  // Update view count when news item loads
+  useEffect(() => {
+    if (newsItem && newsItem.slug) {
+      // Increment view count in the database
+      fetch(`/api/news/${newsItem.slug}/view`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .catch(error => console.error('Error updating news view count:', error));
+    }
+  }, [newsItem?.slug]);
+
   // Fetch related news items when news is loaded
   useEffect(() => {
     if (newsItem?.relatedArticles && newsItem.relatedArticles.length > 0) {
