@@ -277,8 +277,8 @@
 /* Dark mode adjustments for the table container */
 @media (prefers-color-scheme: dark) {
   .rich-text-content .table-container {
-    border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border-color: var(--primary-800);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
     background: linear-gradient(to right, #1a1d23 30%, rgba(26, 29, 35, 0)), 
                 linear-gradient(to right, rgba(26, 29, 35, 0), #1a1d23 70%) 100% 0,
                 radial-gradient(farthest-side at 0 50%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)),
@@ -318,17 +318,28 @@
 
 /* Dark mode adjustments for tables */
 @media (prefers-color-scheme: dark) {
-  .rich-text-content th {
-    background-color: var(--primary-900);
+  .rich-text-content table {
+    background-color: #1a1d23; /* Base background for the entire table */
   }
   
-  .rich-text-content td,
   .rich-text-content th {
-    border-color: rgba(255, 255, 255, 0.1);
+    background-color: #111827; /* Darker background for headers */
+    color: var(--primary-300);
+    border-color: var(--primary-800);
   }
   
-  .rich-text-content tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.05);
+  .rich-text-content td {
+    background-color: #1a1d23; /* Consistent background for all cells */
+    color: rgba(255, 255, 255, 0.9);
+    border-color: var(--primary-800);
+  }
+  
+  .rich-text-content tr:nth-child(even) td {
+    background-color: #111827; /* Slightly different for even rows */
+  }
+  
+  .rich-text-content tr:nth-child(odd) td {
+    background-color: #1a1d23; /* Explicit style for odd rows */
   }
 }
 
@@ -425,18 +436,7 @@
     border-color: rgba(255, 255, 255, 0.1);
   }
   
-  .rich-text-content th {
-    background-color: var(--primary-800);
-  }
-  
-  .rich-text-content tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-  
-  .rich-text-content table th,
-  .rich-text-content table td {
-    border-color: var(--primary-700);
-  }
+  /* Table styles handled in the dedicated table dark mode section above */
   
   .rich-text-content .table-of-contents {
     background-color: var(--primary-900);
