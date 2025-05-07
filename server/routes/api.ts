@@ -750,6 +750,101 @@ router.post('/dev/seed', async (req: Request, res: Response) => {
   }
 });
 
+// View count routes for articles and news
+router.post('/articles/:slug/view', async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+    
+    const db = await connectToDatabase();
+    if (db) {
+      // Get the article
+      const article = await mongoStorage.getArticleBySlug(slug);
+      if (!article) {
+        return res.status(404).json({ error: 'Article not found' });
+      }
+
+      // Update the article's view count
+      const currentViews = article.views || 0;
+      const updatedArticle = await mongoStorage.updateArticle(article.id, {
+        views: currentViews + 1
+      });
+
+      if (!updatedArticle) {
+        return res.status(500).json({ error: 'Failed to update article' });
+      }
+
+      return res.status(200).json({ views: updatedArticle.views });
+    } else {
+      // Fallback to memory storage
+      const article = await storage.getArticleBySlug(slug);
+      if (!article) {
+        return res.status(404).json({ error: 'Article not found' });
+      }
+
+      const currentViews = article.views || 0;
+      const updatedArticle = await storage.updateArticle(article.id, {
+        views: currentViews + 1
+      });
+
+      if (!updatedArticle) {
+        return res.status(500).json({ error: 'Failed to update article' });
+      }
+
+      return res.status(200).json({ views: updatedArticle.views });
+    }
+  } catch (error) {
+    log(`Error updating article view count: ${error}`, 'api');
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/news/:slug/view', async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params;
+    
+    const db = await connectToDatabase();
+    if (db) {
+      // Get the news item
+      const newsItem = await mongoStorage.getNewsBySlug(slug);
+      if (!newsItem) {
+        return res.status(404).json({ error: 'News item not found' });
+      }
+
+      // Update the news item's view count
+      const currentViews = newsItem.views || 0;
+      const updatedNewsItem = await mongoStorage.updateNews(newsItem.id, {
+        views: currentViews + 1
+      });
+
+      if (!updatedNewsItem) {
+        return res.status(500).json({ error: 'Failed to update news item' });
+      }
+
+      return res.status(200).json({ views: updatedNewsItem.views });
+    } else {
+      // Fallback to memory storage
+      const newsItem = await storage.getNewsBySlug(slug);
+      if (!newsItem) {
+        return res.status(404).json({ error: 'News item not found' });
+      }
+
+      const currentViews = newsItem.views || 0;
+      const updatedNewsItem = await storage.updateNews(newsItem.id, {
+        views: currentViews + 1
+      });
+
+      if (!updatedNewsItem) {
+        return res.status(500).json({ error: 'Failed to update news item' });
+      }
+
+      return res.status(200).json({ views: updatedNewsItem.views });
+    }
+  } catch (error) {
+    log(`Error updating news view count: ${error}`, 'api');
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Helpful votes routes for articles and news
 router.post('/articles/:slug/helpful', async (req: Request, res: Response) => {
   try {
