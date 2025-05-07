@@ -73,8 +73,16 @@ const NewsList = () => {
   const uniqueCategories = Array.from(new Set(newsItems.map((n) => n.category)));
 
   // Get featured news items and regular news
-  const featuredNews = newsItems.filter((news) => news.isFeatured);
-  const regularNews = filteredNews.filter((news) => !news.isFeatured);
+  const allFeaturedNews = newsItems.filter((news) => news.isFeatured === true);
+  
+  // If we don't have any featured news, use the first news item as featured
+  const featuredNews = allFeaturedNews.length > 0 ? allFeaturedNews : (newsItems.length > 0 ? [newsItems[0]] : []);
+  
+  // Filter regular news based on search and category criteria
+  const regularNews = filteredNews.filter((news) => 
+    !allFeaturedNews.some(featured => featured.id === news.id));
+  
+  console.log("Featured news:", featuredNews);
   
   // Carousel setup
   const [api, setApi] = useState<CarouselApi>();
@@ -187,7 +195,7 @@ const NewsList = () => {
           </>
         ) : (
           <>
-            {featuredNews.length > 0 && !filterCategory && !searchQuery && (
+            {featuredNews.length > 0 && (
               <div className="mb-8" ref={carouselRef}>
                 <h2 className="text-2xl font-bold mb-4">Featured News</h2>
                 
