@@ -12,6 +12,7 @@ const FloatingWhatsApp = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
   const [showMessage, setShowMessage] = useState(false);
+  const [buttonSide, setButtonSide] = useState<'left' | 'right'>('left');
   const buttonRef = useRef<HTMLDivElement>(null);
   
   // Load saved position from localStorage on component mount
@@ -21,6 +22,13 @@ const FloatingWhatsApp = () => {
       try {
         const parsedPosition = JSON.parse(savedPosition);
         setPosition(parsedPosition);
+        
+        // Set initial side based on loaded position
+        if (parsedPosition.x > window.innerWidth / 2) {
+          setButtonSide('right');
+        } else {
+          setButtonSide('left');
+        }
       } catch (e) {
         console.error('Error parsing saved position:', e);
       }
@@ -73,6 +81,9 @@ const FloatingWhatsApp = () => {
   const handleDrag = (e: MouseEvent | TouchEvent) => {
     if (!isDragging) return;
     
+    // Prevent default behavior to stop page scrolling during drag
+    e.preventDefault();
+    
     let clientX, clientY;
     
     // Get coordinates based on event type
@@ -89,27 +100,21 @@ const FloatingWhatsApp = () => {
     const newX = clientX - startPosition.x;
     const newY = clientY - startPosition.y;
     
-    // Get viewport dimensions
+    // Keep button within bounds of the viewport
+    const buttonWidth = buttonRef.current?.offsetWidth || 50;
+    const buttonHeight = buttonRef.current?.offsetHeight || 50;
     const viewportWidth = window.innerWidth;
     
-    // Determine which side to snap to (left or right)
-    let snappedX = newX;
-    if (newX > viewportWidth / 2) {
-      // Snap to right side
-      snappedX = viewportWidth - (buttonRef.current?.offsetWidth || 50) - 4; // Extremely close to edge
-    } else {
-      // Snap to left side
-      snappedX = 4; // Extremely close to edge
-    }
+    const maxX = viewportWidth - buttonWidth;
+    const maxY = window.innerHeight - buttonHeight / 2;
+    const minY = buttonHeight / 2;
     
-    // Keep button within vertical bounds of the viewport
-    const buttonHeight = buttonRef.current?.offsetHeight || 60;
-    const maxY = window.innerHeight - buttonHeight / 2 - 20;
-    const minY = buttonHeight / 2 + 20;
+    // Allow full movement across screen while dragging (no snapping yet)
+    const boundedX = Math.max(0, Math.min(newX, maxX));
     const boundedY = Math.max(minY, Math.min(newY, maxY));
     
     setPosition({
-      x: snappedX,
+      x: boundedX,
       y: boundedY
     });
   };
@@ -117,6 +122,32 @@ const FloatingWhatsApp = () => {
   // Handle mouse/touch up events to stop dragging
   const handleDragEnd = () => {
     setIsDragging(false);
+    
+    // After dragging ends, determine which edge to snap to
+    const viewportWidth = window.innerWidth;
+    const buttonWidth = buttonRef.current?.offsetWidth || 50;
+    
+    // Calculate distances to left and right edges
+    const distanceToLeft = position.x;
+    const distanceToRight = viewportWidth - position.x - buttonWidth;
+    
+    // Determine which edge is closer and snap to it
+    let snappedX;
+    if (distanceToLeft <= distanceToRight) {
+      // Snap to left edge
+      snappedX = 4; // 4px from left
+      setButtonSide('left');
+    } else {
+      // Snap to right edge
+      snappedX = viewportWidth - buttonWidth - 4; // 4px from right
+      setButtonSide('right');
+    }
+    
+    // Update position with snapped X coordinate
+    setPosition(prev => ({
+      ...prev,
+      x: snappedX
+    }));
   };
 
   // Add and remove event listeners for dragging
@@ -139,7 +170,7 @@ const FloatingWhatsApp = () => {
       window.removeEventListener('mouseup', handleDragEnd);
       window.removeEventListener('touchend', handleDragEnd);
     };
-  }, [isDragging]);
+  }, [isDragging, position]);
 
   // Handle click on the WhatsApp button
   const handleWhatsAppClick = (e: React.MouseEvent) => {
@@ -149,9 +180,6 @@ const FloatingWhatsApp = () => {
     }
     e.stopPropagation();
   };
-
-  // Calculate which side the button is on to position the message bubble
-  const isOnRightSide = position.x > window.innerWidth / 2;
 
   return (
     <div
@@ -164,10 +192,10 @@ const FloatingWhatsApp = () => {
         transition: isDragging ? 'none' : 'transform 0.2s ease, top 0.3s ease, left 0.3s ease'
       }}
     >
-      {/* WhatsApp Chat Bubble */}
+      {/* WhatsApp Chat Bubble - Positioned even closer to icon */}
       {showMessage && (
         <div 
-          className={`absolute ${isOnRightSide ? 'right-12' : 'left-12'} top-0 transform -translate-y-1/2 animate-bubbleIn`}
+          className={`absolute ${buttonSide === 'right' ? 'right-8' : 'left-8'} top-0 transform -translate-y-1/2 animate-bubbleIn`}
           style={{
             maxWidth: '260px',
             minWidth: '200px',
@@ -184,14 +212,14 @@ const FloatingWhatsApp = () => {
           >
             {/* Triangle for the message bubble */}
             <div 
-              className={`absolute top-1/2 ${isOnRightSide ? 'right-full -mr-1' : 'left-full -ml-1'} -translate-y-1/2`}
+              className={`absolute top-1/2 ${buttonSide === 'right' ? 'right-full -mr-1' : 'left-full -ml-1'} -translate-y-1/2`}
               style={{
                 width: '0',
                 height: '0',
                 borderTop: '6px solid transparent',
                 borderBottom: '6px solid transparent',
-                borderRight: isOnRightSide ? 'none' : '6px solid #DCF8C6',
-                borderLeft: isOnRightSide ? '6px solid #DCF8C6' : 'none',
+                borderRight: buttonSide === 'right' ? 'none' : '6px solid #DCF8C6',
+                borderLeft: buttonSide === 'right' ? '6px solid #DCF8C6' : 'none',
               }}
             ></div>
             
