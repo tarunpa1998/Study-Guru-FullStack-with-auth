@@ -676,30 +676,7 @@ const NewsDetail = () => {
                   </Card>
                 )}
 
-                {/* Keywords Card */}
-                {newsItem.seo?.keywords && newsItem.seo.keywords.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <Search className="h-5 w-5 mr-2 text-primary-600 dark:text-primary-400" />
-                        Keywords
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-2">
-                        {newsItem.seo.keywords.map((keyword, index) => (
-                          <div 
-                            key={index}
-                            className="bg-muted dark:bg-muted/50 text-foreground px-3 py-1 rounded-full text-xs hover:bg-primary-100 dark:hover:bg-primary-900 hover:text-primary-700 dark:hover:text-primary-300 transition-colors duration-200 cursor-pointer"
-                            onClick={() => window.location.href = `/search?q=${encodeURIComponent(keyword)}`}
-                          >
-                            {keyword}
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                {/* Keywords are hidden from users as per requirements - only used for SEO */}
 
                 {/* Search news card */}
                 <Card>
