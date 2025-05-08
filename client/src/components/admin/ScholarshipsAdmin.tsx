@@ -47,10 +47,10 @@ interface Scholarship {
   duration: string;
   level: string;
   fieldsCovered: string[];
-  eligibility: string;
+  eligibility: string[] | string; // Support both string and array formats
   isRenewable: boolean;
   benefits: string[];
-  applicationProcedure: string;
+  applicationProcedure: string[] | string; // Support both string and array formats
   country: string;
   tags: string[];
   link?: string;
@@ -95,6 +95,8 @@ const ScholarshipsAdmin = () => {
   const [fieldInput, setFieldInput] = useState("");
   const [benefitInput, setBenefitInput] = useState("");
   const [tagInput, setTagInput] = useState("");
+  const [eligibilityInput, setEligibilityInput] = useState("");
+  const [applicationProcedureInput, setApplicationProcedureInput] = useState("");
 
   useEffect(() => {
     fetchScholarships();
