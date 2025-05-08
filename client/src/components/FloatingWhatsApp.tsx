@@ -4,7 +4,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 const FloatingWhatsApp = () => {
   // Set initial position to left side at 70% of screen height
   const defaultPosition = {
-    x: 15, // Closer to edge (15px instead of 20px)
+    x: 8, // Even closer to edge (8px instead of 15px)
     y: Math.round(window.innerHeight * 0.7)
   };
   
@@ -26,17 +26,17 @@ const FloatingWhatsApp = () => {
       }
     }
     
-    // Show message shortly after component mounts
+    // Show message 8 seconds after component mounts
     const timer = setTimeout(() => {
       setShowMessage(true);
       
-      // Auto-hide message after 5 seconds
+      // Auto-hide message after 3 seconds
       const hideTimer = setTimeout(() => {
         setShowMessage(false);
-      }, 5000);
+      }, 3000);
       
       return () => clearTimeout(hideTimer);
-    }, 1500);
+    }, 8000);
     
     return () => clearTimeout(timer);
   }, []);
@@ -96,10 +96,10 @@ const FloatingWhatsApp = () => {
     let snappedX = newX;
     if (newX > viewportWidth / 2) {
       // Snap to right side
-      snappedX = viewportWidth - (buttonRef.current?.offsetWidth || 60) - 15; // Closer to edge
+      snappedX = viewportWidth - (buttonRef.current?.offsetWidth || 60) - 8; // Even closer to edge
     } else {
       // Snap to left side
-      snappedX = 15; // Closer to edge
+      snappedX = 8; // Even closer to edge
     }
     
     // Keep button within vertical bounds of the viewport
@@ -167,17 +167,24 @@ const FloatingWhatsApp = () => {
       {/* WhatsApp Chat Bubble */}
       {showMessage && (
         <div 
-          className={`absolute ${isOnRightSide ? 'right-16' : 'left-16'} top-0 transform -translate-y-1/4 bg-white text-gray-800 p-3 rounded-lg shadow-md animate-fadeIn max-w-[180px] text-sm`}
+          className={`absolute ${isOnRightSide ? 'right-16' : 'left-16'} top-0 transform -translate-y-1/4 animate-fadeIn`}
           style={{
-            backgroundColor: '#DCF8C6', // WhatsApp message bubble color
-            borderRadius: '8px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
+            maxWidth: '260px',
+            minWidth: '200px',
           }}
         >
-          <div className="relative">
+          <div 
+            className="relative py-2 px-3 text-sm"
+            style={{
+              backgroundColor: '#DCF8C6', // WhatsApp message bubble color
+              borderRadius: '7.5px',
+              boxShadow: '0 1px 0.5px rgba(0,0,0,0.13)',
+              width: 'fit-content',
+            }}
+          >
             {/* Triangle for the message bubble */}
             <div 
-              className={`absolute top-1/2 ${isOnRightSide ? 'right-full -mr-1.5' : 'left-full -ml-1.5'} -translate-y-1/2`}
+              className={`absolute top-1/2 ${isOnRightSide ? 'right-full' : 'left-full'} -translate-y-1/2`}
               style={{
                 width: '0',
                 height: '0',
@@ -190,6 +197,12 @@ const FloatingWhatsApp = () => {
             
             <p className="font-medium mb-1">Hi there! 👋</p>
             <p>Chat with us or call us now</p>
+            
+            {/* WhatsApp timestamp */}
+            <div className="text-right mt-1" style={{ fontSize: '11px', color: 'rgba(0,0,0,0.45)' }}>
+              {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              <span className="ml-1">✓</span>
+            </div>
           </div>
         </div>
       )}
