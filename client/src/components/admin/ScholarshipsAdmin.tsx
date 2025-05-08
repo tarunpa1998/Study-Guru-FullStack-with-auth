@@ -340,11 +340,71 @@ const ScholarshipsAdmin = () => {
     });
   };
 
+  // Handler for eligibility criteria items
+  const addEligibilityItem = () => {
+    if (eligibilityInput.trim()) {
+      // Convert existing string to array if needed
+      let currentEligibility: string[] = [];
+      if (Array.isArray(editForm.eligibility)) {
+        currentEligibility = [...editForm.eligibility];
+      } else if (typeof editForm.eligibility === 'string' && editForm.eligibility.trim()) {
+        // If it's currently a non-empty string, convert to array with that string as first item
+        currentEligibility = [editForm.eligibility.trim()];
+      }
+      
+      setEditForm({
+        ...editForm,
+        eligibility: [...currentEligibility, eligibilityInput.trim()]
+      });
+      setEligibilityInput("");
+    }
+  };
+
+  const removeEligibilityItem = (index: number) => {
+    if (Array.isArray(editForm.eligibility)) {
+      setEditForm({
+        ...editForm,
+        eligibility: editForm.eligibility.filter((_, i) => i !== index)
+      });
+    }
+  };
+
+  // Handler for application procedure items
+  const addApplicationProcedureItem = () => {
+    if (applicationProcedureInput.trim()) {
+      // Convert existing string to array if needed
+      let currentProcedure: string[] = [];
+      if (Array.isArray(editForm.applicationProcedure)) {
+        currentProcedure = [...editForm.applicationProcedure];
+      } else if (typeof editForm.applicationProcedure === 'string' && editForm.applicationProcedure.trim()) {
+        // If it's currently a non-empty string, convert to array with that string as first item
+        currentProcedure = [editForm.applicationProcedure.trim()];
+      }
+      
+      setEditForm({
+        ...editForm,
+        applicationProcedure: [...currentProcedure, applicationProcedureInput.trim()]
+      });
+      setApplicationProcedureInput("");
+    }
+  };
+
+  const removeApplicationProcedureItem = (index: number) => {
+    if (Array.isArray(editForm.applicationProcedure)) {
+      setEditForm({
+        ...editForm,
+        applicationProcedure: editForm.applicationProcedure.filter((_, i) => i !== index)
+      });
+    }
+  };
+
   const clearArrayInputs = () => {
     setHighlightInput("");
     setFieldInput("");
     setBenefitInput("");
     setTagInput("");
+    setEligibilityInput("");
+    setApplicationProcedureInput("");
   };
 
   const filteredScholarships = scholarships.filter(scholarship => 
@@ -827,27 +887,135 @@ const ScholarshipsAdmin = () => {
             {/* Eligibility & Application Tab */}
             <TabsContent value="eligibility" className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="eligibility">Eligibility Criteria</Label>
+                <Label htmlFor="eligibility">Eligibility Criteria (List Items)</Label>
+                
+                <div className="flex items-center gap-2 mb-2">
+                  <Input
+                    id="eligibilityInput"
+                    value={eligibilityInput}
+                    onChange={(e) => setEligibilityInput(e.target.value)}
+                    placeholder="Add eligibility requirement"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addEligibilityItem();
+                      }
+                    }}
+                  />
+                  <Button 
+                    type="button" 
+                    onClick={addEligibilityItem}
+                    variant="secondary"
+                  >
+                    Add
+                  </Button>
+                </div>
+                
+                {/* Show existing items as tags with remove button */}
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {Array.isArray(editForm.eligibility) ? (
+                    editForm.eligibility.map((item, index) => (
+                      <Badge 
+                        key={index} 
+                        variant="secondary"
+                        className="flex items-center gap-1"
+                      >
+                        {item}
+                        <button 
+                          type="button" 
+                          className="text-red-500 hover:text-red-700 ml-1 focus:outline-none"
+                          onClick={() => removeEligibilityItem(index)}
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">
+                      No eligibility requirements added yet. Add items to create a list.
+                    </p>
+                  )}
+                </div>
+                
+                {/* Keep textarea for initial data or direct editing */}
                 <Textarea
                   id="eligibility"
                   name="eligibility"
-                  value={editForm.eligibility}
+                  value={typeof editForm.eligibility === 'string' ? editForm.eligibility : Array.isArray(editForm.eligibility) ? editForm.eligibility.join('\n') : ''}
                   onChange={handleInputChange}
-                  placeholder="Eligibility requirements for applicants"
+                  placeholder="Or enter requirements as text (each line will be a list item)"
                   rows={4}
+                  className="mt-2"
                 />
+                <p className="text-xs text-muted-foreground">
+                  If typing directly in the textarea, each line will be treated as a separate list item.
+                </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="applicationProcedure">Application Procedure</Label>
+                <Label htmlFor="applicationProcedure">Application Procedure (List Items)</Label>
+                
+                <div className="flex items-center gap-2 mb-2">
+                  <Input
+                    id="applicationProcedureInput"
+                    value={applicationProcedureInput}
+                    onChange={(e) => setApplicationProcedureInput(e.target.value)}
+                    placeholder="Add application step"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addApplicationProcedureItem();
+                      }
+                    }}
+                  />
+                  <Button 
+                    type="button" 
+                    onClick={addApplicationProcedureItem}
+                    variant="secondary"
+                  >
+                    Add
+                  </Button>
+                </div>
+                
+                {/* Show existing items as tags with remove button */}
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {Array.isArray(editForm.applicationProcedure) ? (
+                    editForm.applicationProcedure.map((item, index) => (
+                      <Badge 
+                        key={index} 
+                        variant="secondary"
+                        className="flex items-center gap-1"
+                      >
+                        {item}
+                        <button 
+                          type="button" 
+                          className="text-red-500 hover:text-red-700 ml-1 focus:outline-none"
+                          onClick={() => removeApplicationProcedureItem(index)}
+                        >
+                          ×
+                        </button>
+                      </Badge>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">
+                      No application steps added yet. Add items to create a list.
+                    </p>
+                  )}
+                </div>
+                
+                {/* Keep textarea for initial data or direct editing */}
                 <Textarea
                   id="applicationProcedure"
                   name="applicationProcedure"
-                  value={editForm.applicationProcedure}
+                  value={typeof editForm.applicationProcedure === 'string' ? editForm.applicationProcedure : Array.isArray(editForm.applicationProcedure) ? editForm.applicationProcedure.join('\n') : ''}
                   onChange={handleInputChange}
-                  placeholder="Steps to apply for this scholarship"
+                  placeholder="Or enter application steps as text (each line will be a list item)"
                   rows={4}
+                  className="mt-2"
                 />
+                <p className="text-xs text-muted-foreground">
+                  If typing directly in the textarea, each line will be treated as a separate list item.
+                </p>
               </div>
 
               <div className="space-y-2">
