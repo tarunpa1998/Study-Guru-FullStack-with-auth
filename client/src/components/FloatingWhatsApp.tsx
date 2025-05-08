@@ -15,7 +15,7 @@ const FloatingWhatsApp = () => {
   const [buttonSide, setButtonSide] = useState<'left' | 'right'>('left');
   const buttonRef = useRef<HTMLDivElement>(null);
   
-  // Load saved position from localStorage on component mount
+  // Load saved position from localStorage on component mount and determine side
   useEffect(() => {
     const savedPosition = localStorage.getItem('whatsappButtonPosition');
     if (savedPosition) {
@@ -24,14 +24,32 @@ const FloatingWhatsApp = () => {
         setPosition(parsedPosition);
         
         // Set initial side based on loaded position
-        if (parsedPosition.x > window.innerWidth / 2) {
+        const viewportWidth = window.innerWidth;
+        const buttonWidth = 50; // Default button width
+        
+        if (parsedPosition.x > viewportWidth / 2) {
+          // If position is on the right half, snap to right
           setButtonSide('right');
+          // Ensure the button is properly snapped to the right edge
+          setPosition(prev => ({
+            ...prev,
+            x: viewportWidth - buttonWidth - 4
+          }));
         } else {
+          // If position is on the left half, snap to left
           setButtonSide('left');
+          // Ensure the button is properly snapped to the left edge
+          setPosition(prev => ({
+            ...prev,
+            x: 4
+          }));
         }
       } catch (e) {
         console.error('Error parsing saved position:', e);
       }
+    } else {
+      // If no saved position, set to default left side
+      setButtonSide('left');
     }
     
     // Show message 8 seconds after component mounts
@@ -173,12 +191,25 @@ const FloatingWhatsApp = () => {
   }, [isDragging, position]);
 
   // Handle click on the WhatsApp button
-  const handleWhatsAppClick = (e: React.MouseEvent) => {
-    // Only navigate if not currently dragging
-    if (!isDragging) {
-      window.open('https://wa.me/1234567890', '_blank');
-    }
+  const handleWhatsAppClick = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
+    
+    // Only navigate if not currently dragging
+    if (isDragging) {
+      return;
+    }
+    
+    // If the message is showing, hide it when clicked
+    if (showMessage) {
+      setShowMessage(false);
+      return;
+    }
+    
+    // Open WhatsApp with a predefined message
+    window.open(
+      `https://wa.me/+919999999999?text=${encodeURIComponent('Hello, I have a question about study abroad opportunities.')}`, 
+      '_blank'
+    );
   };
 
   return (
@@ -192,10 +223,10 @@ const FloatingWhatsApp = () => {
         transition: isDragging ? 'none' : 'transform 0.2s ease, top 0.3s ease, left 0.3s ease'
       }}
     >
-      {/* WhatsApp Chat Bubble - Positioned even closer to icon */}
+      {/* WhatsApp Chat Bubble - Positioned to prevent overlap */}
       {showMessage && (
         <div 
-          className={`absolute ${buttonSide === 'right' ? 'right-8' : 'left-8'} top-0 transform -translate-y-1/2 animate-bubbleIn`}
+          className={`absolute ${buttonSide === 'right' ? 'right-16' : 'left-16'} top-0 transform -translate-y-1/2 animate-bubbleIn`}
           style={{
             maxWidth: '260px',
             minWidth: '200px',
