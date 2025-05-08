@@ -104,8 +104,16 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
               rel="noopener noreferrer"
               className="flex flex-col items-center"
             >
-              <div className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors duration-200 shadow-sm">
-                <FaInstagram className="h-5 w-5 text-[#E1306C]" />
+              <div 
+                className="p-2 rounded-full flex items-center justify-center"
+                style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                  backdropFilter: 'blur(5px)',
+                  border: '1.5px solid rgba(255,255,255,0.7)'
+                }}
+              >
+                <FaInstagram className="h-5 w-5 text-[#E1306C] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
               </div>
               <span className="text-xs mt-1 text-muted-foreground">Instagram</span>
             </a>
@@ -116,8 +124,16 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
               rel="noopener noreferrer"
               className="flex flex-col items-center"
             >
-              <div className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors duration-200 shadow-sm">
-                <FaFacebook className="h-5 w-5 text-[#1877F2]" />
+              <div 
+                className="p-2 rounded-full flex items-center justify-center"
+                style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                  backdropFilter: 'blur(5px)',
+                  border: '1.5px solid rgba(255,255,255,0.7)'
+                }}
+              >
+                <FaFacebook className="h-5 w-5 text-[#1877F2] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
               </div>
               <span className="text-xs mt-1 text-muted-foreground">Facebook</span>
             </a>
@@ -128,8 +144,16 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
               rel="noopener noreferrer"
               className="flex flex-col items-center"
             >
-              <div className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors duration-200 shadow-sm">
-                <FaWhatsapp className="h-5 w-5 text-[#25D366]" />
+              <div 
+                className="p-2 rounded-full flex items-center justify-center"
+                style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                  backdropFilter: 'blur(5px)',
+                  border: '1.5px solid rgba(255,255,255,0.7)'
+                }}
+              >
+                <FaWhatsapp className="h-5 w-5 text-[#25D366] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
               </div>
               <span className="text-xs mt-1 text-muted-foreground">WhatsApp</span>
             </a>
@@ -140,8 +164,16 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
               rel="noopener noreferrer"
               className="flex flex-col items-center"
             >
-              <div className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors duration-200 shadow-sm">
-                <FaTelegram className="h-5 w-5 text-[#0088cc]" />
+              <div 
+                className="p-2 rounded-full flex items-center justify-center"
+                style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                  backdropFilter: 'blur(5px)',
+                  border: '1.5px solid rgba(255,255,255,0.7)'
+                }}
+              >
+                <FaTelegram className="h-5 w-5 text-[#0088cc] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
               </div>
               <span className="text-xs mt-1 text-muted-foreground">Telegram</span>
             </a>
@@ -176,8 +208,16 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             rel="noopener noreferrer"
             className="flex flex-col items-center"
           >
-            <div className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors duration-200 shadow-sm">
-              <FaInstagram className="h-5 w-5 text-[#E1306C]" />
+            <div 
+              className="p-2 rounded-full flex items-center justify-center"
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                backdropFilter: 'blur(5px)',
+                border: '1.5px solid rgba(255,255,255,0.7)'
+              }}
+            >
+              <FaInstagram className="h-5 w-5 text-[#E1306C] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
             </div>
             <span className="text-xs mt-1 text-muted-foreground">Instagram</span>
           </a>
@@ -188,8 +228,16 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             rel="noopener noreferrer"
             className="flex flex-col items-center"
           >
-            <div className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors duration-200 shadow-sm">
-              <FaFacebook className="h-5 w-5 text-[#1877F2]" />
+            <div 
+              className="p-2 rounded-full flex items-center justify-center"
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                backdropFilter: 'blur(5px)',
+                border: '1.5px solid rgba(255,255,255,0.7)'
+              }}
+            >
+              <FaFacebook className="h-5 w-5 text-[#1877F2] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
             </div>
             <span className="text-xs mt-1 text-muted-foreground">Facebook</span>
           </a>
@@ -200,8 +248,16 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             rel="noopener noreferrer"
             className="flex flex-col items-center"
           >
-            <div className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors duration-200 shadow-sm">
-              <FaWhatsapp className="h-5 w-5 text-[#25D366]" />
+            <div 
+              className="p-2 rounded-full flex items-center justify-center"
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                backdropFilter: 'blur(5px)',
+                border: '1.5px solid rgba(255,255,255,0.7)'
+              }}
+            >
+              <FaWhatsapp className="h-5 w-5 text-[#25D366] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
             </div>
             <span className="text-xs mt-1 text-muted-foreground">WhatsApp</span>
           </a>
@@ -212,8 +268,16 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             rel="noopener noreferrer"
             className="flex flex-col items-center"
           >
-            <div className="p-2 bg-white/90 rounded-full hover:bg-white transition-colors duration-200 shadow-sm">
-              <FaTelegram className="h-5 w-5 text-[#0088cc]" />
+            <div 
+              className="p-2 rounded-full flex items-center justify-center"
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                backdropFilter: 'blur(5px)',
+                border: '1.5px solid rgba(255,255,255,0.7)'
+              }}
+            >
+              <FaTelegram className="h-5 w-5 text-[#0088cc] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
             </div>
             <span className="text-xs mt-1 text-muted-foreground">Telegram</span>
           </a>
