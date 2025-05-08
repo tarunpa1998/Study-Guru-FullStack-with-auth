@@ -223,13 +223,16 @@ const FloatingWhatsApp = () => {
         transition: isDragging ? 'none' : 'transform 0.2s ease, top 0.3s ease, left 0.3s ease'
       }}
     >
-      {/* WhatsApp Chat Bubble - Consistent 12px gap on both sides */}
+      {/* WhatsApp Chat Bubble - Precisely positioned with exact 12px gap */}
       {showMessage && (
         <div 
-          className={`absolute ${buttonSide === 'right' ? 'right-12' : 'left-12'} top-0 transform -translate-y-1/2 animate-bubbleIn`}
+          className="absolute top-0 transform -translate-y-1/2 animate-bubbleIn"
           style={{
             maxWidth: '260px',
             minWidth: '200px',
+            ...(buttonSide === 'right' 
+              ? { right: 'calc(100% + 12px)' } 
+              : { left: 'calc(100% + 12px)' }),
           }}
         >
           <div 
@@ -241,9 +244,9 @@ const FloatingWhatsApp = () => {
               width: 'fit-content',
             }}
           >
-            {/* Triangle for the message bubble */}
+            {/* Triangle for the message bubble - Precisely positioned */}
             <div 
-              className={`absolute top-1/2 ${buttonSide === 'right' ? 'right-full -mr-1' : 'left-full -ml-1'} -translate-y-1/2`}
+              className="absolute top-1/2 -translate-y-1/2"
               style={{
                 width: '0',
                 height: '0',
@@ -251,6 +254,9 @@ const FloatingWhatsApp = () => {
                 borderBottom: '6px solid transparent',
                 borderRight: buttonSide === 'right' ? 'none' : '6px solid #DCF8C6',
                 borderLeft: buttonSide === 'right' ? '6px solid #DCF8C6' : 'none',
+                ...(buttonSide === 'right' 
+                  ? { right: '100%', marginRight: '-1px' } 
+                  : { left: '100%', marginLeft: '-1px' }),
               }}
             ></div>
             
