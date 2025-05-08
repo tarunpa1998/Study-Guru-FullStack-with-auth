@@ -232,17 +232,6 @@ const ArticlesAdmin = () => {
         throw new Error('Title, content, and summary are required');
       }
 
-      // Convert keywords from string to array if it's a string
-      const submissionData = {
-        ...editForm,
-        seo: {
-          ...editForm.seo,
-          keywords: typeof editForm.seo.keywords === 'string' 
-            ? editForm.seo.keywords.split(',').map(k => k.trim()).filter(Boolean) 
-            : editForm.seo.keywords
-        }
-      };
-
       // Use the appropriate ID field (supporting both formats)
       const articleId = currentArticle?.id || currentArticle?._id;
       const url = isEditing
@@ -257,7 +246,7 @@ const ArticlesAdmin = () => {
           'Content-Type': 'application/json',
           'x-auth-token': token
         },
-        body: JSON.stringify(submissionData)
+        body: JSON.stringify(editForm)
       });
 
       if (!response.ok) {
@@ -716,30 +705,6 @@ const ArticlesAdmin = () => {
                   placeholder="SEO meta description"
                   rows={3}
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="seo.keywords">Keywords</Label>
-                <Textarea
-                  id="seo.keywords"
-                  name="seo.keywords"
-                  value={Array.isArray(editForm.seo.keywords) ? editForm.seo.keywords.join(', ') : String(editForm.seo.keywords || '')}
-                  onChange={(e) => {
-                    // Store as string and convert on submit
-                    setEditForm(prev => ({
-                      ...prev,
-                      seo: {
-                        ...prev.seo,
-                        keywords: e.target.value
-                      }
-                    }));
-                  }}
-                  placeholder="Enter keywords separated by commas (e.g., study abroad, visa, UK)"
-                  rows={2}
-                />
-                <p className="text-xs text-slate-500">
-                  Separate keywords with commas (e.g., study abroad, visa, scholarship)
-                </p>
               </div>
 
               <div className="space-y-2">

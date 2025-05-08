@@ -457,43 +457,6 @@ export class MemStorage implements IStorage {
     return article;
   }
   
-  async getArticleById(id: number | string): Promise<Article | undefined> {
-    // Convert id to number if it's a string containing a number
-    const numId = typeof id === 'string' ? parseInt(id) : id;
-    if (Number.isNaN(numId)) {
-      // If id is not a number (likely MongoDB ObjectId), find by checking all IDs as strings
-      return Array.from(this.articlesMap.values()).find(
-        (article) => article.id.toString() === id.toString()
-      );
-    }
-    return this.articlesMap.get(numId);
-  }
-  
-  async updateArticle(id: number | string, articleData: Partial<InsertArticle>): Promise<Article | undefined> {
-    const article = await this.getArticleById(id);
-    if (!article) {
-      return undefined;
-    }
-    
-    const updatedArticle = { ...article, ...articleData };
-    
-    // Make sure we use the numeric ID for the map
-    const numId = typeof id === 'string' ? parseInt(id) : id;
-    if (!Number.isNaN(numId)) {
-      this.articlesMap.set(numId, updatedArticle);
-    } else {
-      // Find the article by id string and update it
-      for (const [key, value] of this.articlesMap.entries()) {
-        if (value.id.toString() === id.toString()) {
-          this.articlesMap.set(key, updatedArticle);
-          break;
-        }
-      }
-    }
-    
-    return updatedArticle;
-  }
-  
   // Country methods
   async getAllCountries(): Promise<Country[]> {
     return Array.from(this.countriesMap.values());
@@ -611,65 +574,6 @@ export class MemStorage implements IStorage {
     const newsItem: News = { ...insertNews, id };
     this.newsMap.set(id, newsItem);
     return newsItem;
-  }
-  
-  async getNewsById(id: number | string): Promise<News | undefined> {
-    // Convert id to number if it's a string containing a number
-    const numId = typeof id === 'string' ? parseInt(id) : id;
-    if (Number.isNaN(numId)) {
-      // If id is not a number (likely MongoDB ObjectId), find by checking all IDs as strings
-      return Array.from(this.newsMap.values()).find(
-        (newsItem) => newsItem.id.toString() === id.toString()
-      );
-    }
-    return this.newsMap.get(numId);
-  }
-  
-  async updateNews(id: number | string, newsData: Partial<InsertNews>): Promise<News | undefined> {
-    const newsItem = await this.getNewsById(id);
-    if (!newsItem) {
-      return undefined;
-    }
-    
-    const updatedNewsItem = { ...newsItem, ...newsData };
-    
-    // Make sure we use the numeric ID for the map
-    const numId = typeof id === 'string' ? parseInt(id) : id;
-    if (!Number.isNaN(numId)) {
-      this.newsMap.set(numId, updatedNewsItem);
-    } else {
-      // Find the news item by id string and update it
-      for (const [key, value] of this.newsMap.entries()) {
-        if (value.id.toString() === id.toString()) {
-          this.newsMap.set(key, updatedNewsItem);
-          break;
-        }
-      }
-    }
-    
-    return updatedNewsItem;
-  }
-  
-  async deleteNews(id: number | string): Promise<boolean> {
-    const newsItem = await this.getNewsById(id);
-    if (!newsItem) {
-      return false;
-    }
-    
-    // Convert id to number if it's a string containing a number
-    const numId = typeof id === 'string' ? parseInt(id) : id;
-    if (!Number.isNaN(numId)) {
-      return this.newsMap.delete(numId);
-    } else {
-      // For string IDs (likely MongoDB ObjectIds), find and delete by ID
-      for (const [key, value] of this.newsMap.entries()) {
-        if (value.id.toString() === id.toString()) {
-          return this.newsMap.delete(key);
-        }
-      }
-    }
-    
-    return false;
   }
   
   // Menu methods

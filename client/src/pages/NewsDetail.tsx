@@ -127,14 +127,7 @@ const NewsDetail = () => {
   const { slug } = useParams();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [showTableOfContents, setShowTableOfContents] = useState(false);
-  // Initialize helpful vote from localStorage if available
-  const [helpfulVote, setHelpfulVote] = useState<'yes' | 'no' | null>(() => {
-    if (typeof window !== 'undefined') {
-      const savedVote = localStorage.getItem(`news-vote-${slug}`);
-      return (savedVote === 'yes' || savedVote === 'no') ? savedVote : null;
-    }
-    return null;
-  });
+  const [helpfulVote, setHelpfulVote] = useState<'yes' | 'no' | null>(null);
   const [relatedNewsData, setRelatedNewsData] = useState<NewsItem[]>([]);
   
   const { data: newsItem, isLoading: newsLoading } = useQuery<NewsItem>({
@@ -144,21 +137,6 @@ const NewsDetail = () => {
   const { data: allNews = [], isLoading: allNewsLoading } = useQuery<NewsItem[]>({
     queryKey: ['/api/news'],
   });
-
-  // Update view count when news item loads
-  useEffect(() => {
-    if (newsItem && newsItem.slug) {
-      // Increment view count in the database
-      fetch(`/api/news/${newsItem.slug}/view`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(response => response.json())
-        .catch(error => console.error('Error updating news view count:', error));
-    }
-  }, [newsItem?.slug]);
 
   // Fetch related news items when news is loaded
   useEffect(() => {
@@ -233,100 +211,15 @@ const NewsDetail = () => {
   }, [newsItem]);
 
   // Handle helpful votes
-  const handleHelpfulVote = async (vote: 'yes' | 'no') => {
-    if (!newsItem) return;
-    
-    // Toggle vote if clicking the same button
-    const newVoteValue = helpfulVote === vote ? null : vote;
-    setHelpfulVote(newVoteValue);
-    
-    // Store vote in localStorage
-    if (newVoteValue) {
-      localStorage.setItem(`news-vote-${slug}`, newVoteValue);
+  const handleHelpfulVote = (vote: 'yes' | 'no') => {
+    if (helpfulVote === vote) {
+      setHelpfulVote(null);
     } else {
-      localStorage.removeItem(`news-vote-${slug}`);
+      setHelpfulVote(vote);
     }
     
-    try {
-      // Calculate the new vote counts - if removing a vote, decrement current value
-      const currentYesCount = newsItem.helpful?.yes || 0;
-      const currentNoCount = newsItem.helpful?.no || 0;
-      
-      let newYesCount = currentYesCount;
-      let newNoCount = currentNoCount;
-      
-      // If we previously voted yes and now changing to no or removing vote
-      if (helpfulVote === 'yes' && newVoteValue !== 'yes') {
-        newYesCount = Math.max(0, currentYesCount - 1);
-      }
-      
-      // If we previously voted no and now changing to yes or removing vote
-      if (helpfulVote === 'no' && newVoteValue !== 'no') {
-        newNoCount = Math.max(0, currentNoCount - 1);
-      }
-      
-      // If adding a new yes vote
-      if (newVoteValue === 'yes' && helpfulVote !== 'yes') {
-        newYesCount += 1;
-      }
-      
-      // If adding a new no vote
-      if (newVoteValue === 'no' && helpfulVote !== 'no') {
-        newNoCount += 1;
-      }
-      
-      // Send the updated values to the server
-      const response = await fetch(`/api/news/${slug}/helpful`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          helpful: {
-            yes: newYesCount,
-            no: newNoCount
-          }
-        }),
-      });
-      
-      if (response.ok) {
-        // Update local state with the new values
-        const updatedNewsItem = { 
-          ...newsItem, 
-          helpful: { 
-            yes: newYesCount, 
-            no: newNoCount 
-          } 
-        };
-        
-        // Update newsItem in the UI without refetching
-        // @ts-ignore - we know this property exists
-        newsItem.helpful = {
-          yes: newYesCount,
-          no: newNoCount
-        };
-      } else {
-        console.error('Failed to update helpful vote');
-        // Revert UI state if server request failed
-        setHelpfulVote(helpfulVote);
-        // Also revert localStorage if server request failed
-        if (helpfulVote) {
-          localStorage.setItem(`news-vote-${slug}`, helpfulVote);
-        } else {
-          localStorage.removeItem(`news-vote-${slug}`);
-        }
-      }
-    } catch (error) {
-      console.error('Error updating helpful vote:', error);
-      // Revert UI state if there was an error
-      setHelpfulVote(helpfulVote);
-      // Also revert localStorage
-      if (helpfulVote) {
-        localStorage.setItem(`news-vote-${slug}`, helpfulVote);
-      } else {
-        localStorage.removeItem(`news-vote-${slug}`);
-      }
-    }
+    // In a real app, you would send this to the server
+    console.log(`User voted ${vote} for news ${slug}`);
   };
 
   // Handle share
@@ -541,7 +434,7 @@ const NewsDetail = () => {
                               onClick={() => handleHelpfulVote('yes')}
                             >
                               <ThumbsUp className="h-4 w-4 mr-1" />
-                              <span>{helpfulVote === 'yes' ? (newsItem.helpful?.yes || 0) + 1 : newsItem.helpful?.yes || 0}</span>
+                              <span>{newsItem.helpful?.yes || 0}</span>
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -562,7 +455,7 @@ const NewsDetail = () => {
                               onClick={() => handleHelpfulVote('no')}
                             >
                               <ThumbsDown className="h-4 w-4 mr-1" />
-                              <span>{helpfulVote === 'no' ? (newsItem.helpful?.no || 0) + 1 : newsItem.helpful?.no || 0}</span>
+                              <span>{newsItem.helpful?.no || 0}</span>
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>

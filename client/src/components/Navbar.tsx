@@ -16,7 +16,6 @@ import {
   Moon,
   Sun
 } from "lucide-react";
-import { FaInstagram, FaFacebook, FaWhatsapp, FaTelegram } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import SearchBar from "./SearchBar";
 import { useAuth } from "../contexts/AuthContext";
@@ -93,196 +92,22 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             Logout
           </button>
         </div>
-        
-        {/* Social Media Icons */}
-        <div className="pt-4 mt-4 border-t border-border">
-          <p className="text-sm text-muted-foreground mb-2">Follow us on social media:</p>
-          <div className="flex justify-between">
-            <a 
-              href="https://instagram.com/studyguru" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center"
-            >
-              <div 
-                className="p-2 rounded-full flex items-center justify-center"
-                style={{
-                  background: 'rgba(255,255,255,0.15)',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                  backdropFilter: 'blur(5px)',
-                  border: '1.5px solid rgba(255,255,255,0.7)'
-                }}
-              >
-                <FaInstagram className="h-5 w-5 text-[#E1306C] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
-              </div>
-              <span className="text-xs mt-1 text-muted-foreground">Instagram</span>
-            </a>
-            
-            <a 
-              href="https://facebook.com/studyguru" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center"
-            >
-              <div 
-                className="p-2 rounded-full flex items-center justify-center"
-                style={{
-                  background: 'rgba(255,255,255,0.15)',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                  backdropFilter: 'blur(5px)',
-                  border: '1.5px solid rgba(255,255,255,0.7)'
-                }}
-              >
-                <FaFacebook className="h-5 w-5 text-[#1877F2] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
-              </div>
-              <span className="text-xs mt-1 text-muted-foreground">Facebook</span>
-            </a>
-            
-            <a 
-              href="https://wa.me/1234567890" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center"
-            >
-              <div 
-                className="p-2 rounded-full flex items-center justify-center"
-                style={{
-                  background: 'rgba(255,255,255,0.15)',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                  backdropFilter: 'blur(5px)',
-                  border: '1.5px solid rgba(255,255,255,0.7)'
-                }}
-              >
-                <FaWhatsapp className="h-5 w-5 text-[#25D366] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
-              </div>
-              <span className="text-xs mt-1 text-muted-foreground">WhatsApp</span>
-            </a>
-            
-            <a 
-              href="https://t.me/studyguru" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex flex-col items-center"
-            >
-              <div 
-                className="p-2 rounded-full flex items-center justify-center"
-                style={{
-                  background: 'rgba(255,255,255,0.15)',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                  backdropFilter: 'blur(5px)',
-                  border: '1.5px solid rgba(255,255,255,0.7)'
-                }}
-              >
-                <FaTelegram className="h-5 w-5 text-[#0088cc] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
-              </div>
-              <span className="text-xs mt-1 text-muted-foreground">Telegram</span>
-            </a>
-          </div>
-        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="flex space-x-3">
-        <Link href="/login" className="flex-1" onClick={closeMobileMenu}>
-          <button className="w-full py-2 px-3 bg-accent text-accent-foreground rounded-md shadow-sm text-sm font-medium hover:bg-accent/80 transition-colors duration-200">
-            Login
-          </button>
-        </Link>
-        <Link href="/register" className="flex-1" onClick={closeMobileMenu}>
-          <button className="w-full py-2 px-3 bg-primary text-primary-foreground rounded-md shadow-sm text-sm font-medium hover:bg-primary/90 transition-colors duration-200">
-            Sign Up
-          </button>
-        </Link>
-      </div>
-      
-      {/* Social Media Icons */}
-      <div className="pt-2 border-t border-border">
-        <p className="text-sm text-muted-foreground mb-2">Follow us on social media:</p>
-        <div className="flex justify-between">
-          <a 
-            href="https://instagram.com/studyguru" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex flex-col items-center"
-          >
-            <div 
-              className="p-2 rounded-full flex items-center justify-center"
-              style={{
-                background: 'rgba(255,255,255,0.15)',
-                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                backdropFilter: 'blur(5px)',
-                border: '1.5px solid rgba(255,255,255,0.7)'
-              }}
-            >
-              <FaInstagram className="h-5 w-5 text-[#E1306C] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
-            </div>
-            <span className="text-xs mt-1 text-muted-foreground">Instagram</span>
-          </a>
-          
-          <a 
-            href="https://facebook.com/studyguru" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex flex-col items-center"
-          >
-            <div 
-              className="p-2 rounded-full flex items-center justify-center"
-              style={{
-                background: 'rgba(255,255,255,0.15)',
-                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                backdropFilter: 'blur(5px)',
-                border: '1.5px solid rgba(255,255,255,0.7)'
-              }}
-            >
-              <FaFacebook className="h-5 w-5 text-[#1877F2] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
-            </div>
-            <span className="text-xs mt-1 text-muted-foreground">Facebook</span>
-          </a>
-          
-          <a 
-            href="https://wa.me/1234567890" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex flex-col items-center"
-          >
-            <div 
-              className="p-2 rounded-full flex items-center justify-center"
-              style={{
-                background: 'rgba(255,255,255,0.15)',
-                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                backdropFilter: 'blur(5px)',
-                border: '1.5px solid rgba(255,255,255,0.7)'
-              }}
-            >
-              <FaWhatsapp className="h-5 w-5 text-[#25D366] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
-            </div>
-            <span className="text-xs mt-1 text-muted-foreground">WhatsApp</span>
-          </a>
-          
-          <a 
-            href="https://t.me/studyguru" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex flex-col items-center"
-          >
-            <div 
-              className="p-2 rounded-full flex items-center justify-center"
-              style={{
-                background: 'rgba(255,255,255,0.15)',
-                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
-                backdropFilter: 'blur(5px)',
-                border: '1.5px solid rgba(255,255,255,0.7)'
-              }}
-            >
-              <FaTelegram className="h-5 w-5 text-[#0088cc] filter drop-shadow(0px 1px 3px rgba(0,0,0,0.2))" />
-            </div>
-            <span className="text-xs mt-1 text-muted-foreground">Telegram</span>
-          </a>
-        </div>
-      </div>
+    <div className="flex space-x-3">
+      <Link href="/login" className="flex-1" onClick={closeMobileMenu}>
+        <button className="w-full py-2 px-3 bg-accent text-accent-foreground rounded-md shadow-sm text-sm font-medium hover:bg-accent/80 transition-colors duration-200">
+          Login
+        </button>
+      </Link>
+      <Link href="/register" className="flex-1" onClick={closeMobileMenu}>
+        <button className="w-full py-2 px-3 bg-primary text-primary-foreground rounded-md shadow-sm text-sm font-medium hover:bg-primary/90 transition-colors duration-200">
+          Sign Up
+        </button>
+      </Link>
     </div>
   );
 };
@@ -296,9 +121,9 @@ const AuthButtons = () => {
   const handleSubcategoryClick = (url: string) => {
     // Check if this is a subcategory URL pattern
     const parts = url.split('/');
-    if (parts.length === 3 && ['scholarships', 'articles', 'universities', 'news'].includes(parts[1])) {
-      // Convert to filter URL instead of detail page - using 'category' parameter for consistency
-      navigate(`/${parts[1]}?category=${encodeURIComponent(parts[2])}`);
+    if (parts.length === 3 && ['scholarships', 'articles', 'universities'].includes(parts[1])) {
+      // Convert to filter URL instead of detail page
+      navigate(`/${parts[1]}?tag=${encodeURIComponent(parts[2])}`);
       return true;
     }
     return false;

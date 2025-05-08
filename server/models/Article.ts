@@ -34,7 +34,6 @@ export interface IArticle extends Document {
     yes: number;
     no: number;
   };
-  views?: number;
   isFeatured?: boolean;
 }
 
@@ -114,10 +113,6 @@ const ArticleSchema = new Schema<IArticle>({
       type: Number,
       default: 0
     }
-  },
-  views: {
-    type: Number,
-    default: 0
   },
   isFeatured: {
     type: Boolean,

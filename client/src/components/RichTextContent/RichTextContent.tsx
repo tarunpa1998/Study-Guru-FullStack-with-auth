@@ -82,7 +82,7 @@ const RichTextContent: React.FC<RichTextContentProps> = ({
             const toggleButton = document.createElement('button');
             toggleButton.className = 'preview-button active';
             toggleButton.textContent = 'Hide Preview';
-            toggleButton.addEventListener('click', function(this: HTMLButtonElement, _: Event) {
+            toggleButton.onclick = function(this: HTMLButtonElement) {
               const previewArea = container.querySelector('.preview-area') as HTMLElement;
               if (previewArea) {
                 const isVisible = previewArea.style.display !== 'none';
@@ -90,7 +90,7 @@ const RichTextContent: React.FC<RichTextContentProps> = ({
                 this.textContent = isVisible ? 'Show Preview' : 'Hide Preview';
                 this.classList.toggle('active');
               }
-            } as EventListener);
+            };
             toggleDiv.appendChild(toggleButton);
             container.appendChild(toggleDiv);
             
@@ -136,23 +136,6 @@ const RichTextContent: React.FC<RichTextContentProps> = ({
         if (!blockquote.querySelector('p')) {
           const blockquoteContent = blockquote.innerHTML;
           blockquote.innerHTML = `<p>${blockquoteContent}</p>`;
-        }
-      });
-      
-      // Wrap all tables with a scrollable container
-      const tables = contentRef.current.querySelectorAll('table');
-      tables.forEach(table => {
-        // Check if table is not already wrapped
-        if (table.parentElement && !table.parentElement.classList.contains('table-container')) {
-          // Create wrapper container
-          const tableContainer = document.createElement('div');
-          tableContainer.className = 'table-container';
-          
-          // Insert container before table in the DOM
-          table.parentNode?.insertBefore(tableContainer, table);
-          
-          // Move table inside container
-          tableContainer.appendChild(table);
         }
       });
     }
