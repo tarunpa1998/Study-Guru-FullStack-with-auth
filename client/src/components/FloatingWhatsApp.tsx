@@ -207,18 +207,31 @@ const FloatingWhatsApp = () => {
         </div>
       )}
       
-      {/* WhatsApp Button */}
+      {/* WhatsApp Button - Styled to match screenshot exactly */}
       <div 
-        className="rounded-full bg-white p-2 shadow-sm flex items-center justify-center"
-        style={{ width: '45px', height: '45px' }}
+        className="rounded-full bg-white flex items-center justify-center"
+        style={{ 
+          width: '55px', 
+          height: '55px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          border: '1px solid rgba(0,0,0,0.05)'
+        }}
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
         onClick={handleWhatsAppClick}
       >
-        <FaWhatsapp 
-          className="text-[#25D366] h-6 w-6 md:h-7 md:w-7" 
-          aria-hidden="true" 
-        />
+        <div 
+          className="rounded-full flex items-center justify-center"
+          style={{
+            width: '42px',
+            height: '42px',
+          }}
+        >
+          <FaWhatsapp 
+            className="text-[#25D366] h-9 w-9" 
+            aria-hidden="true" 
+          />
+        </div>
       </div>
       <span className="sr-only">Contact us on WhatsApp</span>
     </div>
