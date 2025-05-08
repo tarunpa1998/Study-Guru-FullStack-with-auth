@@ -4,7 +4,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 const FloatingWhatsApp = () => {
   // Set initial position to left side at 70% of screen height
   const defaultPosition = {
-    x: 8, // Even closer to edge (8px instead of 15px)
+    x: 4, // Extremely close to edge (4px instead of 8px)
     y: Math.round(window.innerHeight * 0.7)
   };
   
@@ -30,10 +30,10 @@ const FloatingWhatsApp = () => {
     const timer = setTimeout(() => {
       setShowMessage(true);
       
-      // Auto-hide message after 3 seconds
+      // Auto-hide message after 8 seconds
       const hideTimer = setTimeout(() => {
         setShowMessage(false);
-      }, 3000);
+      }, 8000);
       
       return () => clearTimeout(hideTimer);
     }, 8000);
@@ -96,10 +96,10 @@ const FloatingWhatsApp = () => {
     let snappedX = newX;
     if (newX > viewportWidth / 2) {
       // Snap to right side
-      snappedX = viewportWidth - (buttonRef.current?.offsetWidth || 60) - 8; // Even closer to edge
+      snappedX = viewportWidth - (buttonRef.current?.offsetWidth || 50) - 4; // Extremely close to edge
     } else {
       // Snap to left side
-      snappedX = 8; // Even closer to edge
+      snappedX = 4; // Extremely close to edge
     }
     
     // Keep button within vertical bounds of the viewport
@@ -167,14 +167,14 @@ const FloatingWhatsApp = () => {
       {/* WhatsApp Chat Bubble */}
       {showMessage && (
         <div 
-          className={`absolute ${isOnRightSide ? 'right-16' : 'left-16'} top-0 transform -translate-y-1/4 animate-fadeIn`}
+          className={`absolute ${isOnRightSide ? 'right-12' : 'left-12'} top-0 transform -translate-y-1/2 animate-bubbleIn`}
           style={{
             maxWidth: '260px',
             minWidth: '200px',
           }}
         >
           <div 
-            className="relative py-2 px-3 text-sm"
+            className="relative py-2 px-3 text-sm text-black dark:text-black"
             style={{
               backgroundColor: '#DCF8C6', // WhatsApp message bubble color
               borderRadius: '7.5px',
@@ -184,19 +184,19 @@ const FloatingWhatsApp = () => {
           >
             {/* Triangle for the message bubble */}
             <div 
-              className={`absolute top-1/2 ${isOnRightSide ? 'right-full' : 'left-full'} -translate-y-1/2`}
+              className={`absolute top-1/2 ${isOnRightSide ? 'right-full -mr-1' : 'left-full -ml-1'} -translate-y-1/2`}
               style={{
                 width: '0',
                 height: '0',
-                borderTop: '8px solid transparent',
-                borderBottom: '8px solid transparent',
-                borderRight: isOnRightSide ? 'none' : '8px solid #DCF8C6',
-                borderLeft: isOnRightSide ? '8px solid #DCF8C6' : 'none',
+                borderTop: '6px solid transparent',
+                borderBottom: '6px solid transparent',
+                borderRight: isOnRightSide ? 'none' : '6px solid #DCF8C6',
+                borderLeft: isOnRightSide ? '6px solid #DCF8C6' : 'none',
               }}
             ></div>
             
-            <p className="font-medium mb-1">Hi there! 👋</p>
-            <p>Chat with us or call us now</p>
+            <p className="font-medium mb-1 text-black dark:text-black">Hi there! 👋</p>
+            <p className="text-black dark:text-black">Chat with us or call us now</p>
             
             {/* WhatsApp timestamp */}
             <div className="text-right mt-1" style={{ fontSize: '11px', color: 'rgba(0,0,0,0.45)' }}>
@@ -209,13 +209,14 @@ const FloatingWhatsApp = () => {
       
       {/* WhatsApp Button */}
       <div 
-        className="rounded-full bg-white p-3 shadow-md flex items-center justify-center"
+        className="rounded-full bg-white p-2 shadow-sm flex items-center justify-center"
+        style={{ width: '45px', height: '45px' }}
         onMouseDown={handleDragStart}
         onTouchStart={handleDragStart}
         onClick={handleWhatsAppClick}
       >
         <FaWhatsapp 
-          className="text-[#25D366] h-7 w-7 md:h-8 md:w-8" 
+          className="text-[#25D366] h-6 w-6 md:h-7 md:w-7" 
           aria-hidden="true" 
         />
       </div>
