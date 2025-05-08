@@ -223,10 +223,10 @@ const FloatingWhatsApp = () => {
         transition: isDragging ? 'none' : 'transform 0.2s ease, top 0.3s ease, left 0.3s ease'
       }}
     >
-      {/* WhatsApp Chat Bubble - Positioned to prevent overlap */}
+      {/* WhatsApp Chat Bubble - Consistent 12px gap on both sides */}
       {showMessage && (
         <div 
-          className={`absolute ${buttonSide === 'right' ? 'right-16' : 'left-16'} top-0 transform -translate-y-1/2 animate-bubbleIn`}
+          className={`absolute ${buttonSide === 'right' ? 'right-12' : 'left-12'} top-0 transform -translate-y-1/2 animate-bubbleIn`}
           style={{
             maxWidth: '260px',
             minWidth: '200px',
