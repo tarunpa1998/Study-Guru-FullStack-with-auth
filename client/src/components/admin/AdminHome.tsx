@@ -96,6 +96,7 @@ const AdminHome = () => {
           color="blue"
           onClick={() => navigateTo('articles')}
         />
+        
         <StatsCard
           title="News"
           icon={<Newspaper className="h-5 w-5 text-amber-600" />}
