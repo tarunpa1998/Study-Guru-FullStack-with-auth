@@ -258,6 +258,27 @@ const ScholarshipsAdmin = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Special handling for eligibility and applicationProcedure to convert from textareas to arrays
+    if (name === 'eligibility' || name === 'applicationProcedure') {
+      // If the value contains newlines, convert it to an array
+      if (value.includes('\n')) {
+        const items = value
+          .split('\n')
+          .map(item => item.trim())
+          .filter(item => item.length > 0); // Remove empty lines
+        
+        if (items.length > 0) {
+          setEditForm({
+            ...editForm,
+            [name]: items
+          });
+          return;
+        }
+      }
+    }
+    
+    // Default handling for other fields
     setEditForm({
       ...editForm,
       [name]: value

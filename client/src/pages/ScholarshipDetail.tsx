@@ -43,11 +43,11 @@ interface Scholarship {
   duration: string;
   level: string;
   fieldsCovered: string[];
-  eligibility: string;
+  eligibility: string[] | string;
   isRenewable: boolean;
   
   benefits: string[];
-  applicationProcedure: string;
+  applicationProcedure: string[] | string;
   country: string;
   tags: string[];
   link?: string;
@@ -245,7 +245,15 @@ const ScholarshipDetail = () => {
                     How to Apply
                   </h2>
                   <div className="bg-muted border border-border rounded-xl p-5">
-                    <p className="text-foreground">{scholarship.applicationProcedure}</p>
+                    {Array.isArray(scholarship.applicationProcedure) ? (
+                      <ol className="space-y-2 pl-5 list-decimal">
+                        {scholarship.applicationProcedure.map((step, index) => (
+                          <li key={index} className="text-foreground">{step}</li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p className="text-foreground">{scholarship.applicationProcedure}</p>
+                    )}
                   </div>
                 </div>
               )}
@@ -344,7 +352,15 @@ const ScholarshipDetail = () => {
                   {/* Eligibility criteria */}
                   <div className="mt-6">
                     <h3 className="font-medium mb-2 text-foreground">Eligibility Criteria</h3>
-                    <p className="text-muted-foreground text-sm">{scholarship.eligibility}</p>
+                    {Array.isArray(scholarship.eligibility) ? (
+                      <ul className="space-y-1 pl-5 list-disc text-muted-foreground text-sm">
+                        {scholarship.eligibility.map((criteria, index) => (
+                          <li key={index}>{criteria}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-muted-foreground text-sm">{scholarship.eligibility}</p>
+                    )}
                   </div>
                   
                   {/* Apply button */}
