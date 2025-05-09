@@ -16,6 +16,7 @@ import {
 // Import routes
 import apiRoutes from './routes/api';
 import swaggerRoutes from './routes/swagger';
+import sitemapRoutes from './routes/sitemap';
 import { registerAdminRoutes } from './admin/index';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -42,6 +43,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Swagger documentation
   app.use('/', swaggerRoutes);
+  
+  // Register Sitemap route
+  app.use('/', sitemapRoutes);
 
   // Menu routes (with MongoDB or fallback to memory storage)
   app.get("/api/menu", errorHandler(async (req, res) => {
