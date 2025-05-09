@@ -13,11 +13,11 @@ export interface IScholarship extends Document {
   duration: string;
   level: string;
   fieldsCovered: string[];
-  eligibility: string;
+  eligibility: string | string[];
   isRenewable: boolean;
   
   benefits: string[];
-  applicationProcedure: string;
+  applicationProcedure: string | string[];
   country: string;
   tags: string[];
   link?: string;
@@ -70,7 +70,7 @@ const ScholarshipSchema = new Schema<IScholarship>(
       default: []
     },
     eligibility: {
-      type: String,
+      type: Schema.Types.Mixed,
       default: ''
     },
     isRenewable: {
@@ -83,7 +83,7 @@ const ScholarshipSchema = new Schema<IScholarship>(
       default: []
     },
     applicationProcedure: {
-      type: String,
+      type: Schema.Types.Mixed,
       default: ''
     },
     country: {
