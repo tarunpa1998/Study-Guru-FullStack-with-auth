@@ -91,6 +91,7 @@ interface FormData {
 // Component implementation
 const HomeChatBot = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedHeight, setExpandedHeight] = useState('350px');  // Start with smaller height
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -111,6 +112,7 @@ const HomeChatBot = () => {
   
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   // Study level options
   const studyLevelOptions = ["Bachelor's", "Master's", "PhD", "Diploma or Certification", "Other"];
@@ -127,10 +129,19 @@ const HomeChatBot = () => {
   // Language score options
   const languageScoreOptions = ["Yes", "No", "Planning to take it soon"];
 
+  // Handle message scrolling and autofocus
   useEffect(() => {
     // Scroll to bottom of chat when new messages are added
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (chatEndRef.current && messagesContainerRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      
+      // Only scroll the messages container, not the entire page
+      if (messagesContainerRef.current.scrollTo) {
+        messagesContainerRef.current.scrollTo({
+          top: messagesContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
     }
     
     // Focus on the input field after adding messages if input is visible
@@ -140,6 +151,60 @@ const HomeChatBot = () => {
       }, 300);
     }
   }, [messages, showInput, isExpanded]);
+  
+  // Handle dynamic height based on message count
+  useEffect(() => {
+    // Start with a smaller chat and grow it as conversation progresses
+    if (messages.length === 0) {
+      setExpandedHeight('350px');
+    } else if (messages.length <= 4) {
+      setExpandedHeight('450px');
+    } else if (messages.length <= 8) {
+      setExpandedHeight('550px');
+    } else {
+      setExpandedHeight('650px'); // Full height once conversation is flowing
+    }
+  }, [messages.length]);
+  
+  // Handle mobile keyboard issues
+  useEffect(() => {
+    const handleFocus = () => {
+      // Add class to body when input is focused (keyboard appears)
+      if (inputRef.current === document.activeElement) {
+        document.body.classList.add('keyboard-open');
+        
+        // Ensure the active input is visible by scrolling to it
+        if (messagesContainerRef.current) {
+          setTimeout(() => {
+            messagesContainerRef.current?.scrollTo({
+              top: messagesContainerRef.current.scrollHeight,
+              behavior: 'smooth'
+            });
+          }, 300);
+        }
+      }
+    };
+    
+    const handleBlur = () => {
+      // Remove class when input loses focus (keyboard disappears)
+      document.body.classList.remove('keyboard-open');
+    };
+    
+    // Add listeners for input focus/blur
+    if (inputRef.current) {
+      inputRef.current.addEventListener('focus', handleFocus);
+      inputRef.current.addEventListener('blur', handleBlur);
+    }
+    
+    return () => {
+      // Clean up event listeners
+      if (inputRef.current) {
+        inputRef.current.removeEventListener('focus', handleFocus);
+        inputRef.current.removeEventListener('blur', handleBlur);
+      }
+      document.body.classList.remove('keyboard-open');
+    };
+  }, [isExpanded, showInput]);
 
   const startChat = () => {
     setIsExpanded(true);
@@ -358,21 +423,28 @@ const HomeChatBot = () => {
   };
 
   const handleInitialHi = () => {
-    // Manually add the user's "hi" message
-    addMessage('user', 'Hi');
+    // First set a minimal height to start the animation
+    setExpandedHeight('300px');
+    setIsExpanded(true);
     
-    // Show loading animation
-    setLoading(true);
-    
-    // Animation delay before showing bot response
+    // Short delay to allow UI to render the initial state
     setTimeout(() => {
-      setIsExpanded(true);
-      addMessage('bot', 'Great to meet you! What\'s your full name?');
-      setShowInput(true);
-      setShowOptions(false);
-      setCurrentStep(1);
-      // Loading state is handled by the addMessage function
-    }, 1000);
+      // Manually add the user's "hi" message
+      addMessage('user', 'Hi');
+      
+      // Show loading animation
+      setLoading(true);
+      
+      // Animation delay before showing bot response
+      setTimeout(() => {
+        addMessage('bot', 'Great to meet you! What\'s your full name?');
+        setShowInput(true);
+        setShowOptions(false);
+        setCurrentStep(1);
+        
+        // Loading state is handled by addMessage function
+      }, 1000);
+    }, 300);
   };
 
   return (
@@ -388,13 +460,13 @@ const HomeChatBot = () => {
         </div>
         
         <div className="max-w-4xl mx-auto">
-          <div className={`relative flex flex-col items-center transition-all duration-500 ease-in-out ${isExpanded ? 'min-h-[650px]' : 'min-h-[320px]'}`}>
+          <div className={`relative flex flex-col items-center transition-all duration-500 ease-in-out ${isExpanded ? 'min-h-[350px]' : 'min-h-[320px]'}`}>
             {/* Main chat container */}
             <motion.div 
               layout
               initial={{ height: 'auto', width: 'auto' }}
               animate={{ 
-                height: isExpanded ? '650px' : 'auto',
+                height: isExpanded ? expandedHeight : 'auto',
                 width: '100%'
               }}
               transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
@@ -440,12 +512,13 @@ const HomeChatBot = () => {
               {isExpanded && (
                 <motion.div 
                   layout
-                  className="flex-1 p-4 overflow-y-auto"
+                  className="flex-1 p-4 overflow-y-auto messages-container-wrapper"
+                  style={{ maxHeight: "calc(100% - 140px)" }} 
                   initial="hidden"
                   animate="visible"
                   variants={fadeIn}
                 >
-                  <div className="messages-container">
+                  <div ref={messagesContainerRef} className="messages-container">
                     {/* All chat messages */}
                     {messages.map((message) => (
                       <motion.div

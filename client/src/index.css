@@ -129,6 +129,38 @@ section.from-primary-700.via-primary-600.to-primary-500 {
   .mobile-menu-dropdown-item {
     @apply block px-4 py-3 text-sm font-medium transition-colors duration-200 border-b border-border last:border-b-0;
   }
+  
+  /* Chat UI specific styles */
+  .messages-container-wrapper {
+    @apply flex flex-col;
+    max-height: calc(100% - 140px);
+    overscroll-behavior: contain;
+  }
+  
+  .messages-container {
+    @apply flex-1 flex flex-col;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+    padding-bottom: 8px;
+  }
+  
+  /* Fix mobile keyboard issues */
+  @media (max-width: 640px) {
+    .messages-container-wrapper {
+      position: relative;
+      z-index: 10;
+    }
+    
+    /* Prevent body scroll when keyboard is open */
+    body.keyboard-open {
+      overflow: hidden;
+      height: 100%;
+      position: fixed;
+      width: 100%;
+    }
+  }
 }
 
 
