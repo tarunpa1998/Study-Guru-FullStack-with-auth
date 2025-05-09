@@ -334,6 +334,15 @@ const Footer = () => {
               variants={linkHoverVariants}
               initial="initial"
               whileHover="hover"
+              onClick={() => handleNavigate('/about')}
+            >
+              About Us
+            </motion.div>
+            <motion.div 
+              className="text-slate-400 hover:text-white text-sm cursor-pointer"
+              variants={linkHoverVariants}
+              initial="initial"
+              whileHover="hover"
               onClick={() => handleNavigate('/contact')}
             >
               Contact Us

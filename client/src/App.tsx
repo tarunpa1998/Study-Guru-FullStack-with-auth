@@ -25,6 +25,7 @@ import NewsList from "@/pages/NewsList";
 import NewsDetail from "@/pages/NewsDetail";
 import SearchResults from "@/pages/SearchResults";
 import Contact from "@/pages/Contact";
+import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 
 // Auth pages
@@ -70,6 +71,7 @@ function Router() {
       <Route path="/search" component={SearchResults} />
       
       <Route path="/contact" component={Contact} />
+      <Route path="/about" component={About} />
       
       {/* Auth routes */}
       <Route path="/login" component={Login} />
