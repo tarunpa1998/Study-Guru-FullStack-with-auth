@@ -327,8 +327,20 @@ const HomeChatBot = () => {
   };
 
   const handleInitialHi = () => {
-    setUserInput('hi');
-    handleUserInput(new Event('submit') as any);
+    // Manually add the user's "hi" message
+    addMessage('user', 'Hi');
+    
+    // Show loading animation
+    setLoading(true);
+    
+    // Animation delay before showing bot response
+    setTimeout(() => {
+      setIsExpanded(true);
+      addMessage('bot', 'Great to meet you! What\'s your full name?');
+      setShowInput(true);
+      setShowOptions(false);
+      setCurrentStep(1);
+    }, 1000);
   };
 
   return (
@@ -344,30 +356,30 @@ const HomeChatBot = () => {
         </div>
         
         <div className="max-w-4xl mx-auto">
-          <div className={`relative flex flex-col items-center transition-all duration-300 ease-in-out ${isExpanded ? 'min-h-[500px]' : 'min-h-[200px]'}`}>
+          <div className={`relative flex flex-col items-center transition-all duration-500 ease-in-out ${isExpanded ? 'min-h-[650px]' : 'min-h-[320px]'}`}>
             {/* Main chat container */}
             <motion.div 
               layout
               initial={{ height: 'auto', width: 'auto' }}
               animate={{ 
-                height: isExpanded ? '500px' : 'auto',
-                width: isExpanded ? '100%' : '100%'
+                height: isExpanded ? '650px' : 'auto',
+                width: '100%'
               }}
-              transition={{ duration: 0.3 }}
-              className={`bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden flex flex-col w-full border border-slate-200 dark:border-slate-700`}
+              transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
+              className={`bg-gray-900 dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col w-full`}
             >
               {/* Chat header */}
               <motion.div 
                 layout
-                className="bg-gradient-to-r from-primary-700 to-primary-600 p-4 text-white flex items-center justify-between"
+                className="p-5 text-white flex items-center justify-between"
               >
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                  <div className="w-14 h-14 rounded-full bg-slate-600 flex items-center justify-center mr-4">
                     <motion.div
                       animate="wave"
                       variants={waveAnimation}
                     >
-                      <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
                         <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
                         <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
@@ -376,14 +388,14 @@ const HomeChatBot = () => {
                     </motion.div>
                   </div>
                   <div>
-                    <h3 className="font-bold">StudyGuru Chat</h3>
-                    <p className="text-xs text-white/80">We're here to help!</p>
+                    <h3 className="font-bold text-xl font-handwriting">StudyGuru Chat</h3>
+                    <p className="text-sm text-gray-400">We're here to help!</p>
                   </div>
                 </div>
                 {isExpanded && (
                   <button 
                     onClick={() => setIsExpanded(false)}
-                    className="text-white/80 hover:text-white"
+                    className="text-gray-400 hover:text-white"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -391,76 +403,6 @@ const HomeChatBot = () => {
                   </button>
                 )}
               </motion.div>
-              
-              {/* Chat messages */}
-              {isExpanded && (
-                <motion.div 
-                  layout
-                  className="flex-1 p-4 overflow-y-auto"
-                  initial="hidden"
-                  animate="visible"
-                  variants={fadeIn}
-                >
-                  <AnimatePresence>
-                    {messages.map((message) => (
-                      <motion.div
-                        key={message.id}
-                        layout
-                        variants={bubbleVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className={`mb-4 flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        {message.type === 'bot' && (
-                          <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-2 flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400" viewBox="0 0 20 20" fill="currentColor">
-                              <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-                              <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-                            </svg>
-                          </div>
-                        )}
-                        
-                        <div>
-                          <div className={`rounded-2xl py-3 px-4 max-w-xs md:max-w-md inline-block ${
-                            message.type === 'user' 
-                              ? 'bg-primary-600 text-white ml-2' 
-                              : 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white'
-                          }`}>
-                            <p>{message.text}</p>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                    
-                    {/* Loading indicator */}
-                    {loading && (
-                      <motion.div
-                        variants={bubbleVariants}
-                        initial="hidden"
-                        animate="visible"
-                        className="flex justify-start mb-4"
-                      >
-                        <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-                          </svg>
-                        </div>
-                        <div className="rounded-2xl py-2 px-4 bg-slate-100 dark:bg-slate-700">
-                          <div className="flex items-center space-x-2">
-                            <div className="h-2 w-2 bg-slate-300 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                            <div className="h-2 w-2 bg-slate-300 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                            <div className="h-2 w-2 bg-slate-300 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                    
-                    <div ref={chatEndRef} />
-                  </AnimatePresence>
-                </motion.div>
-              )}
               
               {/* Chat messages area */}
               {isExpanded && (
@@ -483,8 +425,8 @@ const HomeChatBot = () => {
                         className={`mb-4 flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         {message.type === 'bot' && (
-                          <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-2 flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400" viewBox="0 0 20 20" fill="currentColor">
+                          <div className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center mr-3 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
                               <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
                               <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
                             </svg>
@@ -492,44 +434,40 @@ const HomeChatBot = () => {
                         )}
                         
                         <div>
-                          <div className={`rounded-2xl py-3 px-4 max-w-xs md:max-w-md inline-block ${
+                          <div className={`rounded-2xl py-3 px-5 max-w-xs md:max-w-md inline-block ${
                             message.type === 'user' 
-                              ? 'bg-primary-600 text-white ml-2' 
-                              : 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white'
+                              ? 'bg-amber-500 text-white ml-2' 
+                              : 'bg-slate-700 text-white'
                           }`}>
                             <p>{message.text}</p>
                           </div>
                           
                           {/* Options buttons if any */}
                           {message.options && showOptions && (
-                            <div className="mt-2 flex flex-wrap gap-2">
+                            <div className="mt-3 flex flex-wrap gap-2">
                               {message.options.map((option, idx) => (
-                                <Button
+                                <button
                                   key={idx}
-                                  size="sm"
-                                  variant="outline"
-                                  className="mt-1"
+                                  className="py-2 px-4 bg-slate-600 hover:bg-slate-500 text-white rounded-full text-sm transition-colors duration-200 border border-slate-500"
                                   onClick={() => handleOptionSelect(option)}
                                 >
                                   {option}
-                                </Button>
+                                </button>
                               ))}
                             </div>
                           )}
                           
                           {/* Country options */}
                           {message.countries && showCountries && (
-                            <div className="mt-2 grid grid-cols-2 gap-2">
+                            <div className="mt-3 grid grid-cols-2 gap-2">
                               {message.countries.map((country, idx) => (
-                                <Button
+                                <button
                                   key={idx}
-                                  size="sm"
-                                  variant="outline"
-                                  className="mt-1"
+                                  className="py-2 px-4 bg-slate-600 hover:bg-slate-500 text-white rounded-full text-sm transition-colors duration-200 border border-slate-500"
                                   onClick={() => handleCountrySelect(country)}
                                 >
                                   {country}
-                                </Button>
+                                </button>
                               ))}
                             </div>
                           )}
@@ -545,17 +483,17 @@ const HomeChatBot = () => {
                         animate="visible"
                         className="flex justify-start mb-4"
                       >
-                        <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400" viewBox="0 0 20 20" fill="currentColor">
+                        <div className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center mr-3 flex-shrink-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
                             <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
                           </svg>
                         </div>
-                        <div className="rounded-2xl py-2 px-4 bg-slate-100 dark:bg-slate-700">
+                        <div className="rounded-2xl py-3 px-5 bg-slate-700 text-white">
                           <div className="flex items-center space-x-2">
-                            <div className="h-2 w-2 bg-slate-300 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                            <div className="h-2 w-2 bg-slate-300 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                            <div className="h-2 w-2 bg-slate-300 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                            <div className="h-2.5 w-2.5 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="h-2.5 w-2.5 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="h-2.5 w-2.5 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                           </div>
                         </div>
                       </motion.div>
@@ -614,22 +552,25 @@ const HomeChatBot = () => {
               {isExpanded ? (
                 <motion.div 
                   layout
-                  className="p-4 border-t border-slate-200 dark:border-slate-700"
+                  className="p-4 border-t border-slate-700"
                 >
                   {showInput && (
                     <form onSubmit={handleUserInput} className="flex items-center gap-2">
-                      <Input
+                      <input
                         ref={inputRef}
                         type="text"
                         placeholder="Type your message..."
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
-                        className="flex-1"
+                        className="flex-1 py-3 px-4 rounded-full bg-slate-800 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                         autoFocus
                       />
-                      <Button type="submit" size="icon" className="h-10 w-10 rounded-full bg-primary-600 hover:bg-primary-700">
+                      <button 
+                        type="submit" 
+                        className="h-12 w-12 rounded-full bg-amber-500 hover:bg-amber-400 text-white flex items-center justify-center transition-colors"
+                      >
                         <SendHorizontal className="h-5 w-5" />
-                      </Button>
+                      </button>
                     </form>
                   )}
                 </motion.div>
@@ -638,17 +579,28 @@ const HomeChatBot = () => {
                   variants={bubbleVariants}
                   initial="hidden"
                   animate="visible"
-                  className="p-6 flex flex-col items-center"
+                  className="p-8 flex flex-col items-center"
                 >
-                  <Button 
+                  <button 
                     onClick={handleInitialHi}
-                    variant="outline"
-                    className="bg-transparent border-2 border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-semibold rounded-full px-8 py-6 transition-all hover:scale-105 w-full flex items-center justify-center gap-2"
+                    className="bg-transparent border border-amber-400 hover:bg-slate-800 text-white text-lg font-medium rounded-full px-10 py-4 transition-all duration-300 hover:scale-105 w-full flex items-center justify-center gap-3 relative overflow-hidden"
                   >
-                    <span className="text-xl">👋</span> 
-                    <span className="text-lg">Say Hi</span>
-                  </Button>
-                  <p className="text-xs text-center mt-3 text-gray-500 dark:text-gray-400">
+                    <motion.span
+                      animate={{
+                        rotate: [0, 20, -20, 20, 0],
+                        transition: {
+                          duration: 1.2,
+                          repeat: Infinity,
+                          repeatDelay: 1
+                        }
+                      }}
+                      className="text-2xl"
+                    >
+                      👋
+                    </motion.span> 
+                    <span className="font-handwriting text-xl">Say Hi</span>
+                  </button>
+                  <p className="text-sm text-center mt-4 text-gray-400">
                     Chat with our education consultant
                   </p>
                 </motion.div>
