@@ -242,6 +242,17 @@ const Footer = () => {
                     variants={linkHoverVariants}
                     initial="initial"
                     whileHover="hover"
+                    onClick={() => handleNavigate('/sitemap.xml')}
+                  >
+                    <span>Sitemap</span>
+                  </motion.div>
+                </li>
+                <li>
+                  <motion.div 
+                    className="text-slate-300 hover:text-white cursor-pointer flex items-center"
+                    variants={linkHoverVariants}
+                    initial="initial"
+                    whileHover="hover"
                     onClick={() => handleNavigate('#')}
                   >
                     <span>FAQ</span>
@@ -307,6 +318,15 @@ const Footer = () => {
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
           <p className="text-slate-400 text-sm">&copy; {new Date().getFullYear()} Study Guru. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-6 mt-4 md:mt-0">
+            <motion.div 
+              className="text-slate-400 hover:text-white text-sm cursor-pointer"
+              variants={linkHoverVariants}
+              initial="initial"
+              whileHover="hover"
+              onClick={() => handleNavigate('/sitemap.xml')}
+            >
+              Sitemap
+            </motion.div>
             <motion.div 
               className="text-slate-400 hover:text-white text-sm cursor-pointer"
               variants={linkHoverVariants}
