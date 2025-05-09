@@ -64,8 +64,8 @@ const typingIndicatorVariants = {
     scale: 0.8, 
     y: -10, 
     transition: { 
-      duration: 0.2,
-      ease: "easeInOut"
+      duration: 0.3,
+      ease: "easeOut"
     } 
   }
 };
