@@ -55,15 +55,17 @@ const typingIndicatorVariants = {
     transition: { 
       type: "spring", 
       damping: 15, 
-      stiffness: 200 
+      stiffness: 200,
+      duration: 0.3
     }
   },
   exit: { 
     opacity: 0, 
     scale: 0.8, 
-    y: 10, 
+    y: -10, 
     transition: { 
-      duration: 0.2 
+      duration: 0.2,
+      ease: "easeInOut"
     } 
   }
 };
@@ -437,7 +439,8 @@ const HomeChatBot = () => {
                   animate="visible"
                   variants={fadeIn}
                 >
-                  <AnimatePresence>
+                  <div className="messages-container">
+                    {/* All chat messages */}
                     {messages.map((message) => (
                       <motion.div
                         key={`message-${message.id}`}
@@ -498,43 +501,45 @@ const HomeChatBot = () => {
                         </div>
                       </motion.div>
                     ))}
+                  </div>
                     
-                    {/* Loading indicator */}
-                    <AnimatePresence mode="wait">
-                      {loading && (
-                        <motion.div
-                          key="typing-indicator"
-                          variants={typingIndicatorVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                          className="flex justify-start mb-4"
-                        >
-                          <div className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center mr-3 flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
-                              <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-                              <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
-                            </svg>
-                          </div>
-                          <div className="rounded-2xl py-3 px-5 bg-slate-700 text-white">
-                            <div className="flex items-center space-x-2">
-                              <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                              <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                              <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    
-                    {/* Final contact section */}
-                    {currentStep === 9 && (
+                  {/* Loading indicator in separate AnimatePresence */}
+                  <AnimatePresence>
+                    {loading && (
                       <motion.div
-                        variants={bubbleVariants}
+                        key="typing-indicator"
+                        variants={typingIndicatorVariants}
                         initial="hidden"
                         animate="visible"
-                        className="mt-8 bg-slate-100 dark:bg-slate-700 rounded-xl p-4 shadow-md"
+                        exit="exit"
+                        className="flex justify-start mb-4"
                       >
+                        <div className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center mr-3 flex-shrink-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+                          </svg>
+                        </div>
+                        <div className="rounded-2xl py-3 px-5 bg-slate-700 text-white">
+                          <div className="flex items-center space-x-2">
+                            <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                    
+                  {/* Final contact section */}
+                  {currentStep === 9 && (
+                    <motion.div
+                      key="contact-section"
+                      variants={bubbleVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="mt-8 bg-slate-100 dark:bg-slate-700 rounded-xl p-4 shadow-md"
+                    >
                         <h3 className="font-bold text-lg mb-2">Contact Us</h3>
                         <div className="space-y-3">
                           <div className="flex items-center">
@@ -571,7 +576,6 @@ const HomeChatBot = () => {
                     )}
                     
                     <div ref={chatEndRef} />
-                  </AnimatePresence>
                 </motion.div>
               )}
               
