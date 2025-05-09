@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SendHorizontal } from 'lucide-react';
+import { useKeyboardVisible } from '../hooks/useKeyboardVisible';
 
 // Animation variants
 const bubbleVariants = {
@@ -166,45 +167,27 @@ const HomeChatBot = () => {
     }
   }, [messages.length]);
   
-  // Handle mobile keyboard issues
+  // Use the keyboard visibility hook to handle mobile keyboard
+  const isKeyboardVisible = useKeyboardVisible();
+  
+  // Handle scrolling when keyboard appears
   useEffect(() => {
-    const handleFocus = () => {
-      // Add class to body when input is focused (keyboard appears)
-      if (inputRef.current === document.activeElement) {
-        document.body.classList.add('keyboard-open');
+    if (isKeyboardVisible && messagesContainerRef.current) {
+      // Give time for the keyboard to fully appear and layout to adjust
+      setTimeout(() => {
+        // Scroll to the bottom of the chat
+        messagesContainerRef.current?.scrollTo({
+          top: messagesContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
         
-        // Ensure the active input is visible by scrolling to it
-        if (messagesContainerRef.current) {
-          setTimeout(() => {
-            messagesContainerRef.current?.scrollTo({
-              top: messagesContainerRef.current.scrollHeight,
-              behavior: 'smooth'
-            });
-          }, 300);
+        // Also scroll to make sure the input is visible
+        if (inputRef.current) {
+          inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-      }
-    };
-    
-    const handleBlur = () => {
-      // Remove class when input loses focus (keyboard disappears)
-      document.body.classList.remove('keyboard-open');
-    };
-    
-    // Add listeners for input focus/blur
-    if (inputRef.current) {
-      inputRef.current.addEventListener('focus', handleFocus);
-      inputRef.current.addEventListener('blur', handleBlur);
+      }, 300);
     }
-    
-    return () => {
-      // Clean up event listeners
-      if (inputRef.current) {
-        inputRef.current.removeEventListener('focus', handleFocus);
-        inputRef.current.removeEventListener('blur', handleBlur);
-      }
-      document.body.classList.remove('keyboard-open');
-    };
-  }, [isExpanded, showInput]);
+  }, [isKeyboardVisible]);
 
   const startChat = () => {
     setIsExpanded(true);
@@ -470,7 +453,7 @@ const HomeChatBot = () => {
                 width: '100%'
               }}
               transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
-              className={`bg-gray-900 dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col w-full`}
+              className={`bg-gray-900 dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col w-full ${isKeyboardVisible ? 'keyboard-visible' : ''}`}
             >
               {/* Chat header */}
               <motion.div 
