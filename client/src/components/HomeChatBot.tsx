@@ -150,11 +150,13 @@ const HomeChatBot = () => {
   };
 
   const addMessage = (type: 'bot' | 'user', text: string, options?: string[], countries?: string[]) => {
-    // Add a slight delay to ensure loading indicator is removed after message is added
+    const newMessageId = Date.now() + Math.random(); // Ensure unique IDs
+    
+    // Add message to chat
     setMessages(prev => [
       ...prev, 
       { 
-        id: Date.now() + Math.random(), // Ensure unique IDs to avoid key conflicts 
+        id: newMessageId,
         type, 
         text,
         options,
@@ -162,10 +164,13 @@ const HomeChatBot = () => {
       }
     ]);
     
-    // Add a slight delay for UI to update before removing loading indicator
-    setTimeout(() => {
-      setLoading(false);
-    }, 100);
+    // Ensure loading indicator is removed after message is added
+    // Using a longer delay to ensure animation completes
+    if (loading) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 300);
+    }
   };
 
   const handleUserInput = (e: React.FormEvent) => {
@@ -183,7 +188,7 @@ const HomeChatBot = () => {
         setLoading(true);
         setTimeout(() => {
           addMessage('bot', 'Please say "Hi" to start the conversation 😊');
-          setLoading(false);
+          // Loading state is handled by addMessage function
         }, 500);
       }
       setUserInput('');
@@ -247,6 +252,7 @@ const HomeChatBot = () => {
           addMessage('bot', 'I didn\'t understand that. Please follow the prompts.');
           break;
       }
+      // Loading state is handled by addMessage function
     }, 1000);
   };
 
@@ -328,7 +334,7 @@ const HomeChatBot = () => {
         default:
           break;
       }
-      setLoading(false);
+      // Loading state is handled by the addMessage function
     }, 500);
   };
 
@@ -348,7 +354,7 @@ const HomeChatBot = () => {
       setShowCountries(false);
       setShowInput(true);
       setCurrentStep(5);
-      setLoading(false);
+      // Loading state is handled by the addMessage function
     }, 500);
   };
 
@@ -366,6 +372,7 @@ const HomeChatBot = () => {
       setShowInput(true);
       setShowOptions(false);
       setCurrentStep(1);
+      // Loading state is handled by the addMessage function
     }, 1000);
   };
 
