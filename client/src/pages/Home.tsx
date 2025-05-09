@@ -7,6 +7,7 @@ import LatestArticles from "@/components/LatestArticles";
 import EducationNews from "@/components/EducationNews";
 import Testimonials from "@/components/Testimonials";
 import CTASection from "@/components/CTASection";
+import HomeChatBot from "@/components/HomeChatBot";
 
 const StudyGuru = () => {
   return (
@@ -33,6 +34,7 @@ const StudyGuru = () => {
       <LatestArticles />
       <EducationNews />
       <Testimonials />
+      <HomeChatBot />
       <CTASection />
     </>
   );

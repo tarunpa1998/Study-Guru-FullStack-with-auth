@@ -135,7 +135,6 @@ function App() {
                 </div>
                 {!isAdminRoute && <Footer />}
                 {!isAdminRoute && <FloatingWhatsApp />}
-                {!isAdminRoute && <ChatBot />}
               </div>
             </TooltipProvider>
           </AuthProvider>
