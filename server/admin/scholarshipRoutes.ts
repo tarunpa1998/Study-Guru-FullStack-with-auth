@@ -65,6 +65,22 @@ router.post('/scholarships', adminAuth, async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Title, description, and amount are required' });
     }
     
+    // Process eligibility and applicationProcedure fields to ensure proper array format
+    // If they're strings with newlines, convert to arrays
+    if (typeof scholarshipData.eligibility === 'string' && scholarshipData.eligibility.includes('\n')) {
+      scholarshipData.eligibility = scholarshipData.eligibility
+        .split('\n')
+        .map((item: string) => item.trim())
+        .filter((item: string) => item.length > 0);
+    }
+    
+    if (typeof scholarshipData.applicationProcedure === 'string' && scholarshipData.applicationProcedure.includes('\n')) {
+      scholarshipData.applicationProcedure = scholarshipData.applicationProcedure
+        .split('\n')
+        .map((item: string) => item.trim())
+        .filter((item: string) => item.length > 0);
+    }
+    
     const newScholarship = await mongoStorage.createScholarship(scholarshipData);
     res.status(201).json(newScholarship);
   } catch (error) {
@@ -90,6 +106,22 @@ router.put('/scholarships/:id', adminAuth, async (req: Request, res: Response) =
     // Validate required fields
     if (!scholarshipData.title || !scholarshipData.description || !scholarshipData.amount) {
       return res.status(400).json({ error: 'Title, description, and amount are required' });
+    }
+    
+    // Process eligibility and applicationProcedure fields to ensure proper array format
+    // If they're strings with newlines, convert to arrays
+    if (typeof scholarshipData.eligibility === 'string' && scholarshipData.eligibility.includes('\n')) {
+      scholarshipData.eligibility = scholarshipData.eligibility
+        .split('\n')
+        .map((item: string) => item.trim())
+        .filter((item: string) => item.length > 0);
+    }
+    
+    if (typeof scholarshipData.applicationProcedure === 'string' && scholarshipData.applicationProcedure.includes('\n')) {
+      scholarshipData.applicationProcedure = scholarshipData.applicationProcedure
+        .split('\n')
+        .map((item: string) => item.trim())
+        .filter((item: string) => item.length > 0);
     }
     
     // Try to get scholarship by ID first, if that fails try slug as fallback
