@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SendHorizontal } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 // Animation variants
 const bubbleVariants = {
@@ -56,6 +58,16 @@ interface Message {
   countries?: string[];
 }
 
+interface FormData {
+  name: string;
+  location: string;
+  studyLevel: string;
+  destinationCountry: string | null;
+  subject: string;
+  languageScore: string;
+  startDate: string;
+}
+
 const HomeChatBot = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -68,11 +80,37 @@ const HomeChatBot = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [userInput, setUserInput] = useState('');
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    location: '',
+    studyLevel: '',
+    destinationCountry: null,
+    subject: '',
+    languageScore: '',
+    startDate: ''
+  });
   const [showInput, setShowInput] = useState(true);
   const [showOptions, setShowOptions] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('');
+  const [showCountries, setShowCountries] = useState(false);
   
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Study level options
+  const studyLevelOptions = ["Bachelor's", "Master's", "PhD", "Diploma or Certification", "Other"];
+  
+  // Country options
+  const countryOptions = [
+    "USA", "UK", "Canada", "Australia", "Germany", 
+    "France", "New Zealand", "Singapore", "Ireland", "Other"
+  ];
+  
+  // Time options
+  const timeOptions = ["Within 6 months", "This year", "Next year", "Not sure yet"];
+  
+  // Language score options
+  const languageScoreOptions = ["Yes", "No", "Planning to take it soon"];
 
   useEffect(() => {
     // Scroll to bottom of chat when new messages are added
@@ -89,7 +127,7 @@ const HomeChatBot = () => {
     setCurrentStep(1);
   };
 
-  const addMessage = (type: 'bot' | 'user', text: string, options?: string[]) => {
+  const addMessage = (type: 'bot' | 'user', text: string, options?: string[], countries?: string[]) => {
     setLoading(false);
     setMessages(prev => [
       ...prev, 
@@ -97,7 +135,8 @@ const HomeChatBot = () => {
         id: Date.now(), 
         type, 
         text,
-        options
+        options,
+        countries
       }
     ]);
   };
@@ -124,15 +163,167 @@ const HomeChatBot = () => {
       return;
     }
     
-    // Add user's message to chat
-    addMessage('user', userInput);
-    
-    // Show note about demo functionality
-    setTimeout(() => {
-      addMessage('bot', 'This chatbot is a demo and not fully functional. Please use the WhatsApp button or Contact form to get in touch with us directly.');
-    }, 1000);
-    
+    // Handle regular user input based on current step
+    processUserInput(userInput);
     setUserInput('');
+  };
+
+  const processUserInput = (input: string) => {
+    // Add user's message to chat
+    addMessage('user', input);
+    
+    // Show loading indicator
+    setLoading(true);
+    
+    // Process based on current step
+    setTimeout(() => {
+      switch (currentStep) {
+        case 1: // Name collection
+          setFormData(prev => ({ ...prev, name: input }));
+          addMessage('bot', `Thanks, ${input}! Where are you from?`);
+          setCurrentStep(2);
+          break;
+          
+        case 2: // Location collection
+          setFormData(prev => ({ ...prev, location: input }));
+          addMessage('bot', 'Awesome! What level of study are you planning for?', studyLevelOptions);
+          setShowOptions(true);
+          setShowInput(false);
+          setCurrentStep(3);
+          break;
+          
+        case 3: // Study level (Other option)
+          setFormData(prev => ({ ...prev, studyLevel: input }));
+          addMessage('bot', 'Got it. Do you already have a destination country in mind?', ['Yes', 'No']);
+          setShowOptions(true);
+          setShowInput(false);
+          setCurrentStep(4);
+          break;
+          
+        case 4: // Destination country (Other option)
+          setFormData(prev => ({ ...prev, destinationCountry: input }));
+          addMessage('bot', 'What subject or field are you interested in?');
+          setShowCountries(false);
+          setShowInput(true);
+          setCurrentStep(5);
+          break;
+          
+        case 5: // Subject collection
+          setFormData(prev => ({ ...prev, subject: input }));
+          addMessage('bot', 'Do you already have your IELTS/TOEFL score or plan to take it?', languageScoreOptions);
+          setShowOptions(true);
+          setShowInput(false);
+          setCurrentStep(6);
+          break;
+          
+        default:
+          addMessage('bot', 'I didn\'t understand that. Please follow the prompts.');
+          break;
+      }
+      setLoading(false);
+    }, 1000);
+  };
+
+  const handleOptionSelect = (option: string) => {
+    setSelectedOption(option);
+    
+    // If user selects "Other", show input field for custom entry
+    if (option === 'Other') {
+      setShowInput(true);
+      setShowOptions(false);
+      return;
+    }
+    
+    // Otherwise, process the selected option
+    processOption(option);
+  };
+
+  const processOption = (option: string) => {
+    addMessage('user', option);
+    
+    setLoading(true);
+    setTimeout(() => {
+      switch (currentStep) {
+        case 3: // Study level
+          setFormData(prev => ({ ...prev, studyLevel: option }));
+          addMessage('bot', 'Got it. Do you already have a destination country in mind?', ['Yes', 'No']);
+          setShowOptions(true);
+          setShowInput(false);
+          setCurrentStep(4);
+          break;
+          
+        case 4: // Destination country question
+          if (option === 'Yes') {
+            addMessage('bot', 'Which country are you aiming for?', undefined, countryOptions);
+            setShowCountries(true);
+            setShowOptions(false);
+          } else {
+            setFormData(prev => ({ ...prev, destinationCountry: null }));
+            addMessage('bot', 'No problem! Some top destinations are USA, UK, Canada, Australia, and Germany. You can explore more on our country pages.');
+            addMessage('bot', 'What subject or field are you interested in?');
+            setShowInput(true);
+            setShowOptions(false);
+            setCurrentStep(5);
+          }
+          break;
+          
+        case 6: // Language score
+          setFormData(prev => ({ ...prev, languageScore: option }));
+          addMessage('bot', 'Perfect! One last question — when are you planning to start your studies abroad?', timeOptions);
+          setCurrentStep(7);
+          break;
+          
+        case 7: // Start date
+          setFormData(prev => ({ ...prev, startDate: option }));
+          addMessage('bot', 'Thank you for sharing your details! Our education experts will review your preferences and get in touch shortly. You\'re one step closer to studying abroad!');
+          
+          // Final CTA
+          setTimeout(() => {
+            addMessage('bot', 'Would you like to book a free consultation with our expert?', ['Yes, Book Now', 'No, thanks']);
+            setCurrentStep(8);
+          }, 1000);
+          break;
+          
+        case 8: // Final CTA response
+          if (option === 'Yes, Book Now') {
+            addMessage('bot', 'Great! Please visit our contact page to schedule your free consultation. Our experts will help you plan your study abroad journey.');
+            addMessage('bot', 'You can also reach us directly:');
+            setShowInput(false);
+            setShowOptions(false);
+            setCurrentStep(9);
+          } else {
+            addMessage('bot', 'No problem! Feel free to browse our website for more information about studying abroad. We\'re here to help whenever you\'re ready.');
+            setShowInput(false);
+            setShowOptions(false);
+            setCurrentStep(9);
+          }
+          break;
+          
+        default:
+          break;
+      }
+      setLoading(false);
+    }, 500);
+  };
+
+  const handleCountrySelect = (country: string) => {
+    if (country === 'Other') {
+      setShowInput(true);
+      setShowCountries(false);
+      return;
+    }
+    
+    addMessage('user', country);
+    setFormData(prev => ({ ...prev, destinationCountry: country }));
+    
+    setLoading(true);
+    setTimeout(() => {
+      addMessage('bot', 'What subject or field are you interested in?');
+      setShowCountries(false);
+      setShowInput(true);
+      setCurrentStep(5);
+      setLoading(false);
+    }, 500);
   };
 
   const handleInitialHi = () => {
@@ -271,6 +462,154 @@ const HomeChatBot = () => {
                 </motion.div>
               )}
               
+              {/* Chat messages area */}
+              {isExpanded && (
+                <motion.div 
+                  layout
+                  className="flex-1 p-4 overflow-y-auto"
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeIn}
+                >
+                  <AnimatePresence>
+                    {messages.map((message) => (
+                      <motion.div
+                        key={message.id}
+                        layout
+                        variants={bubbleVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className={`mb-4 flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        {message.type === 'bot' && (
+                          <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-2 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                              <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+                            </svg>
+                          </div>
+                        )}
+                        
+                        <div>
+                          <div className={`rounded-2xl py-3 px-4 max-w-xs md:max-w-md inline-block ${
+                            message.type === 'user' 
+                              ? 'bg-primary-600 text-white ml-2' 
+                              : 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white'
+                          }`}>
+                            <p>{message.text}</p>
+                          </div>
+                          
+                          {/* Options buttons if any */}
+                          {message.options && showOptions && (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {message.options.map((option, idx) => (
+                                <Button
+                                  key={idx}
+                                  size="sm"
+                                  variant="outline"
+                                  className="mt-1"
+                                  onClick={() => handleOptionSelect(option)}
+                                >
+                                  {option}
+                                </Button>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {/* Country options */}
+                          {message.countries && showCountries && (
+                            <div className="mt-2 grid grid-cols-2 gap-2">
+                              {message.countries.map((country, idx) => (
+                                <Button
+                                  key={idx}
+                                  size="sm"
+                                  variant="outline"
+                                  className="mt-1"
+                                  onClick={() => handleCountrySelect(country)}
+                                >
+                                  {country}
+                                </Button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))}
+                    
+                    {/* Loading indicator */}
+                    {loading && (
+                      <motion.div
+                        variants={bubbleVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="flex justify-start mb-4"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mr-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
+                          </svg>
+                        </div>
+                        <div className="rounded-2xl py-2 px-4 bg-slate-100 dark:bg-slate-700">
+                          <div className="flex items-center space-x-2">
+                            <div className="h-2 w-2 bg-slate-300 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="h-2 w-2 bg-slate-300 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="h-2 w-2 bg-slate-300 dark:bg-slate-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                    
+                    {/* Final contact section */}
+                    {currentStep === 9 && (
+                      <motion.div
+                        variants={bubbleVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="mt-8 bg-slate-100 dark:bg-slate-700 rounded-xl p-4 shadow-md"
+                      >
+                        <h3 className="font-bold text-lg mb-2">Contact Us</h3>
+                        <div className="space-y-3">
+                          <div className="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>support@studyguruindia.com</span>
+                          </div>
+                          <div className="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <span>+91 99999-99999</span>
+                          </div>
+                          <div className="flex mt-4 gap-2">
+                            <Button 
+                              className="flex-1 bg-green-600 hover:bg-green-700"
+                              onClick={() => window.open('https://wa.me/919999999999', '_blank')}
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#ffffff" className="mr-2">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                              </svg>
+                              WhatsApp
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              className="flex-1"
+                              onClick={() => window.location.href = '/contact'}
+                            >
+                              Contact Us
+                            </Button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                    
+                    <div ref={chatEndRef} />
+                  </AnimatePresence>
+                </motion.div>
+              )}
+              
               {/* Chat input area */}
               {isExpanded ? (
                 <motion.div 
@@ -310,7 +649,7 @@ const HomeChatBot = () => {
                     <span className="text-lg">Say Hi</span>
                   </Button>
                   <p className="text-xs text-center mt-3 text-gray-500 dark:text-gray-400">
-                    Note: This chatbot is a demo and not fully functional
+                    Chat with our education consultant
                   </p>
                 </motion.div>
               )}
