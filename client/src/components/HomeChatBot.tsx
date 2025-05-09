@@ -152,25 +152,24 @@ const HomeChatBot = () => {
   const addMessage = (type: 'bot' | 'user', text: string, options?: string[], countries?: string[]) => {
     const newMessageId = Date.now() + Math.random(); // Ensure unique IDs
     
-    // Add message to chat
-    setMessages(prev => [
-      ...prev, 
-      { 
-        id: newMessageId,
-        type, 
-        text,
-        options,
-        countries
-      }
-    ]);
+    // First, set loading to false immediately
+    // This ensures the typing indicator disappears before the new message appears
+    setLoading(false);
     
-    // Ensure loading indicator is removed after message is added
-    // Using a longer delay to ensure animation completes
-    if (loading) {
-      setTimeout(() => {
-        setLoading(false);
-      }, 300);
-    }
+    // Add a small delay before adding the message to allow the typing indicator to disappear
+    setTimeout(() => {
+      // Add message to chat
+      setMessages(prev => [
+        ...prev, 
+        { 
+          id: newMessageId,
+          type, 
+          text,
+          options,
+          countries
+        }
+      ]);
+    }, 50);
   };
 
   const handleUserInput = (e: React.FormEvent) => {
@@ -511,7 +510,7 @@ const HomeChatBot = () => {
                   </div>
                     
                   {/* Loading indicator in separate AnimatePresence */}
-                  <AnimatePresence>
+                  <AnimatePresence mode="wait">
                     {loading && (
                       <motion.div
                         key="typing-indicator"
