@@ -299,15 +299,26 @@ const Footer = () => {
               <ul className="space-y-3 text-slate-300">
                 <li className="flex items-center">
                   <Mail className="h-5 w-5 mr-3 text-primary-400" />
-                  <span>contact@studyguruindia.com</span>
+                  <span>studyguru@gmail.com</span>
                 </li>
                 <li className="flex items-center">
                   <Phone className="h-5 w-5 mr-3 text-primary-400" />
-                  <span>+1 (555) 123-4567</span>
+                  <span>+91 99999-99999</span>
                 </li>
                 <li className="flex items-center">
                   <Clock className="h-5 w-5 mr-3 text-primary-400" />
-                  <span>Mon-Fri 9am-5pm EST</span>
+                  <span>Mon-Fri 9am-5pm IST</span>
+                </li>
+                <li className="mt-2">
+                  <motion.div 
+                    className="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 cursor-pointer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleNavigate('/contact')}
+                  >
+                    <span>Contact Us</span>
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </motion.div>
                 </li>
               </ul>
             </motion.div>
@@ -318,6 +329,15 @@ const Footer = () => {
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
           <p className="text-slate-400 text-sm">&copy; {new Date().getFullYear()} Study Guru. All rights reserved.</p>
           <div className="flex flex-wrap justify-center gap-6 mt-4 md:mt-0">
+            <motion.div 
+              className="text-slate-400 hover:text-white text-sm cursor-pointer"
+              variants={linkHoverVariants}
+              initial="initial"
+              whileHover="hover"
+              onClick={() => handleNavigate('/contact')}
+            >
+              Contact Us
+            </motion.div>
             <motion.div 
               className="text-slate-400 hover:text-white text-sm cursor-pointer"
               variants={linkHoverVariants}

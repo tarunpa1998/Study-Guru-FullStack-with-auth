@@ -24,6 +24,7 @@ import UniversityDetail from "@/pages/UniversityDetail";
 import NewsList from "@/pages/NewsList";
 import NewsDetail from "@/pages/NewsDetail";
 import SearchResults from "@/pages/SearchResults";
+import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
 // Auth pages
@@ -67,6 +68,8 @@ function Router() {
       <Route path="/news/:slug" component={NewsDetail} />
       
       <Route path="/search" component={SearchResults} />
+      
+      <Route path="/contact" component={Contact} />
       
       {/* Auth routes */}
       <Route path="/login" component={Login} />
