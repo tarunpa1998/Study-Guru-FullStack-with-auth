@@ -70,13 +70,7 @@ interface FormData {
 
 const HomeChatBot = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    { 
-      id: 1, 
-      type: 'bot', 
-      text: 'Hi there! 👋 Say hi for more information' 
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [userInput, setUserInput] = useState('');
@@ -117,7 +111,14 @@ const HomeChatBot = () => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+    
+    // Focus on the input field after adding messages if input is visible
+    if (showInput && inputRef.current && isExpanded) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300);
+    }
+  }, [messages, showInput, isExpanded]);
 
   const startChat = () => {
     setIsExpanded(true);
@@ -128,17 +129,22 @@ const HomeChatBot = () => {
   };
 
   const addMessage = (type: 'bot' | 'user', text: string, options?: string[], countries?: string[]) => {
-    setLoading(false);
+    // Add a slight delay to ensure loading indicator is removed after message is added
     setMessages(prev => [
       ...prev, 
       { 
-        id: Date.now(), 
+        id: Date.now() + Math.random(), // Ensure unique IDs to avoid key conflicts 
         type, 
         text,
         options,
         countries
       }
     ]);
+    
+    // Add a slight delay for UI to update before removing loading indicator
+    setTimeout(() => {
+      setLoading(false);
+    }, 100);
   };
 
   const handleUserInput = (e: React.FormEvent) => {
@@ -220,7 +226,6 @@ const HomeChatBot = () => {
           addMessage('bot', 'I didn\'t understand that. Please follow the prompts.');
           break;
       }
-      setLoading(false);
     }, 1000);
   };
 
