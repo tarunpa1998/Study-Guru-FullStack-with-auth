@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SendHorizontal } from 'lucide-react';
-import { useKeyboardVisible } from '../hooks/useKeyboardVisible';
 
 // Animation variants
 const bubbleVariants = {
@@ -166,27 +165,51 @@ const HomeChatBot = () => {
     }
   }, [messages.length]);
   
-  // Use the keyboard visibility hook to handle mobile keyboard
-  const isKeyboardVisible = useKeyboardVisible();
-  
-  // Handle scrolling when keyboard appears
+  // Instead of using the keyboard visibility hook, we'll implement a direct solution
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [pageScrollPosition, setPageScrollPosition] = useState(0);
+
+  // Handle input focus and blur directly to prevent page jumping
   useEffect(() => {
-    if (isKeyboardVisible && messagesContainerRef.current) {
-      // Give time for the keyboard to fully appear and layout to adjust
+    const handleFocus = () => {
+      // Save current scroll position when keyboard opens
+      setPageScrollPosition(window.scrollY);
+      setKeyboardOpen(true);
+      
+      // Manually scroll the chat container
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      }
+    };
+    
+    const handleBlur = () => {
+      setKeyboardOpen(false);
+      
+      // Use a short delay to let the keyboard finish closing
       setTimeout(() => {
-        // Scroll to the bottom of the chat
-        messagesContainerRef.current?.scrollTo({
-          top: messagesContainerRef.current.scrollHeight,
-          behavior: 'smooth'
-        });
-        
-        // Also scroll to make sure the input is visible
+        // Only restore scroll if we're still on the same screen (component not unmounted)
         if (inputRef.current) {
-          inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          window.scrollTo({
+            top: pageScrollPosition,
+            behavior: 'auto'  // Use auto to prevent smooth scrolling (which can cause jumps)
+          });
         }
-      }, 300);
+      }, 100);
+    };
+    
+    // Add listeners to input element directly
+    if (inputRef.current) {
+      inputRef.current.addEventListener('focus', handleFocus);
+      inputRef.current.addEventListener('blur', handleBlur);
     }
-  }, [isKeyboardVisible]);
+    
+    return () => {
+      if (inputRef.current) {
+        inputRef.current.removeEventListener('focus', handleFocus);
+        inputRef.current.removeEventListener('blur', handleBlur);
+      }
+    };
+  }, [pageScrollPosition, inputRef.current]);
 
   const startChat = () => {
     setIsExpanded(true);
@@ -452,7 +475,7 @@ const HomeChatBot = () => {
                 width: '100%'
               }}
               transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
-              className={`bg-gray-900 dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col w-full ${isKeyboardVisible ? 'keyboard-visible' : ''}`}
+              className={`bg-gray-900 dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col w-full ${keyboardOpen ? 'keyboard-visible' : ''}`}
             >
               {/* Chat header */}
               <motion.div 
