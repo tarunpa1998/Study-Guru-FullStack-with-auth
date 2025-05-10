@@ -235,7 +235,7 @@ const HomeChatBot = () => {
         setTimeout(() => {
           addMessage('bot', 'Please say "Hi" to start the conversation 😊');
           // Loading state is handled by addMessage function
-        }, 500);
+        }, 2000); // Increased to 2 seconds for better loading indicator visibility
       }
       setUserInput('');
       return;
@@ -253,7 +253,7 @@ const HomeChatBot = () => {
     // Show loading indicator
     setLoading(true);
     
-    // Process based on current step
+    // Process based on current step - use a minimum 2 second delay for loading indicator
     setTimeout(() => {
       switch (currentStep) {
         case 1: // Name collection
@@ -299,7 +299,7 @@ const HomeChatBot = () => {
           break;
       }
       // Loading state is handled by addMessage function
-    }, 1000);
+    }, 2000); // Increased to 2 seconds for better loading indicator visibility
   };
 
   const handleOptionSelect = (option: string) => {
@@ -359,7 +359,7 @@ const HomeChatBot = () => {
           setTimeout(() => {
             addMessage('bot', 'Would you like to book a free consultation with our expert?', ['Yes, Book Now', 'No, thanks']);
             setCurrentStep(8);
-          }, 1000);
+          }, 2000); // Increased to 2 seconds
           break;
           
         case 8: // Final CTA response
@@ -381,7 +381,7 @@ const HomeChatBot = () => {
           break;
       }
       // Loading state is handled by the addMessage function
-    }, 500);
+    }, 2000); // Increased to 2 seconds for better loading indicator visibility
   };
 
   const handleCountrySelect = (country: string) => {
@@ -401,7 +401,7 @@ const HomeChatBot = () => {
       setShowInput(true);
       setCurrentStep(5);
       // Loading state is handled by the addMessage function
-    }, 500);
+    }, 2000); // Increased to 2 seconds for better loading indicator visibility
   };
 
   const handleInitialHi = () => {
@@ -425,7 +425,7 @@ const HomeChatBot = () => {
         setCurrentStep(1);
         
         // Loading state is handled by addMessage function
-      }, 1000);
+      }, 2000); // Increased to 2 seconds for better loading indicator visibility
     }, 300);
   };
 

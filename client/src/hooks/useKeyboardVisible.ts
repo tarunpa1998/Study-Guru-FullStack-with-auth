@@ -35,8 +35,11 @@ export function useKeyboardVisible() {
       
       // Restore scroll position after a short delay to let layout settle
       setTimeout(() => {
-        window.scrollTo(0, scrollPosition);
-      }, 100);
+        window.scrollTo({
+          top: scrollPosition,
+          behavior: 'auto'  // Use 'auto' instead of 'smooth' for immediate repositioning
+        });
+      }, 150);
     };
     
     // Get all input fields and textareas
@@ -72,8 +75,11 @@ export function useKeyboardVisible() {
           if (isKeyboardVisible) {
             // Schedule scroll restoration
             setTimeout(() => {
-              window.scrollTo(0, scrollPosition);
-            }, 100);
+              window.scrollTo({
+                top: scrollPosition,
+                behavior: 'auto' // Use immediate repositioning
+              });
+            }, 150);
           }
           
           setIsKeyboardVisible(false);
