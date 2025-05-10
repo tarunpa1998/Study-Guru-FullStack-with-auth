@@ -173,17 +173,10 @@ section.from-primary-700.via-primary-600.to-primary-500 {
       padding-bottom: 120px; /* Add extra space at bottom when keyboard is open */
     }
     
-    /* Adjust container when keyboard is visible */
+    /* Handle keyboard visibility without taking over screen */
     .keyboard-visible {
-      position: fixed !important;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 100;
-      height: 100vh !important;
-      border-radius: 0 !important;
-      max-height: 100vh !important;
+      position: relative !important;
+      z-index: 10;
     }
   }
 }

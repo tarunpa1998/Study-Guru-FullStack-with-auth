@@ -155,15 +155,14 @@ const HomeChatBot = () => {
   
   // Handle dynamic height based on message count
   useEffect(() => {
-    // Start with a smaller chat and grow it as conversation progresses
+    // Start with a smaller chat and grow it minimally
     if (messages.length === 0) {
-      setExpandedHeight('350px');
-    } else if (messages.length <= 4) {
-      setExpandedHeight('450px');
-    } else if (messages.length <= 8) {
-      setExpandedHeight('550px');
+      setExpandedHeight('300px');  // Initial small size
+    } else if (messages.length <= 2) {
+      setExpandedHeight('380px');  // Slightly taller after first messages
     } else {
-      setExpandedHeight('650px'); // Full height once conversation is flowing
+      // After first 2 messages, fix the height and only scroll the chat content
+      setExpandedHeight('420px');  // Final fixed height
     }
   }, [messages.length]);
   
@@ -406,8 +405,8 @@ const HomeChatBot = () => {
   };
 
   const handleInitialHi = () => {
-    // First set a minimal height to start the animation
-    setExpandedHeight('300px');
+    // First set a very minimal height to start the animation
+    setExpandedHeight('280px');
     setIsExpanded(true);
     
     // Short delay to allow UI to render the initial state
@@ -496,7 +495,7 @@ const HomeChatBot = () => {
                 <motion.div 
                   layout
                   className="flex-1 p-4 overflow-y-auto messages-container-wrapper"
-                  style={{ maxHeight: "calc(100% - 140px)" }} 
+                  style={{ maxHeight: "290px" }} 
                   initial="hidden"
                   animate="visible"
                   variants={fadeIn}
