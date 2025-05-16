@@ -360,17 +360,26 @@ const ArticleDetail = () => {
 
   return (
     <>
-      {article && (
-        <Helmet>
-          <title>{article.seo?.metaTitle || `${article.title} | Study Guru`}</title>
-          <meta name="description" content={article.seo?.metaDescription || article.summary} />
-          <meta property="og:title" content={article.seo?.metaTitle || `${article.title} | Study Guru`} />
-          <meta property="og:description" content={article.seo?.metaDescription || article.summary} />
-          <meta property="og:type" content="article" />
-          {article.image && <meta property="og:image" content={article.image} />}
-          {article.seo?.keywords && <meta name="keywords" content={article.seo.keywords.join(', ')} />}
-          
-          {/* Add structured data for better SEO */}
+      {/* Enhanced SEO Metadata with fallback to article data */}
+      <Helmet>
+        <title>{article?.seo?.metaTitle || (article ? `${article.title} | Study Guru` : 'Article | Study Guru')}</title>
+        <meta name="description" content={article?.seo?.metaDescription || article?.summary || 'Detailed educational article by Study Guru'} />
+        <meta property="og:title" content={article?.seo?.metaTitle || (article ? `${article.title} | Study Guru` : 'Article | Study Guru')} />
+        <meta property="og:description" content={article?.seo?.metaDescription || article?.summary || 'Detailed educational article by Study Guru'} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : `https://studyguruindia.com/articles/${slug}`} />
+        {article?.image && <meta property="og:image" content={article.image} />}
+        {article?.seo?.keywords && <meta name="keywords" content={Array.isArray(article.seo.keywords) ? article.seo.keywords.join(', ') : article.seo.keywords} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={article?.seo?.metaTitle || (article ? article.title : 'Article | Study Guru')} />
+        <meta name="twitter:description" content={article?.seo?.metaDescription || article?.summary || 'Educational article by Study Guru'} />
+        {article?.image && <meta name="twitter:image" content={article.image} />}
+        
+        {/* Canonical URL to avoid duplicate content issues */}
+        <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : `https://studyguruindia.com/articles/${slug}`} />
+        
+        {/* Add structured data for better SEO */}
+        {article && (
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -407,17 +416,17 @@ const ArticleDetail = () => {
               },
               "datePublished": article.publishDate,
               "dateModified": article.publishDate,
-              "keywords": article.seo?.keywords?.join(", ") || article.category,
+              "keywords": Array.isArray(article.seo?.keywords) ? article.seo.keywords.join(", ") : (article.category || "study abroad"),
               "articleSection": article.category,
               "wordCount": article.content?.split(" ").length || 0,
               "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": window.location.href
+                "@id": typeof window !== 'undefined' ? window.location.href : `https://studyguruindia.com/articles/${slug}`
               }
             })}
           </script>
-        </Helmet>
-      )}
+        )}
+      </Helmet>
 
       {/* Mobile Table of Contents Overlay */}
       <AnimatePresence>

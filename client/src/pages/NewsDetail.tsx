@@ -350,17 +350,26 @@ const NewsDetail = () => {
 
   return (
     <>
-      {newsItem && (
-        <Helmet>
-          <title>{newsItem.seo?.metaTitle || `${newsItem.title} | Study Guru News`}</title>
-          <meta name="description" content={newsItem.seo?.metaDescription || newsItem.summary} />
-          <meta property="og:title" content={newsItem.seo?.metaTitle || `${newsItem.title} | Study Guru News`} />
-          <meta property="og:description" content={newsItem.seo?.metaDescription || newsItem.summary} />
-          <meta property="og:type" content="article" />
-          {newsItem.image && <meta property="og:image" content={newsItem.image} />}
-          {newsItem.seo?.keywords && <meta name="keywords" content={newsItem.seo.keywords.join(', ')} />}
-          
-          {/* Add structured data for better SEO */}
+      {/* Enhanced SEO Metadata with fallback to news data */}
+      <Helmet>
+        <title>{newsItem?.seo?.metaTitle || (newsItem ? `${newsItem.title} | Study Guru News` : 'News | Study Guru')}</title>
+        <meta name="description" content={newsItem?.seo?.metaDescription || newsItem?.summary || 'Latest educational news by Study Guru'} />
+        <meta property="og:title" content={newsItem?.seo?.metaTitle || (newsItem ? `${newsItem.title} | Study Guru News` : 'News | Study Guru')} />
+        <meta property="og:description" content={newsItem?.seo?.metaDescription || newsItem?.summary || 'Latest educational news by Study Guru'} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : `https://studyguruindia.com/news/${slug}`} />
+        {newsItem?.image && <meta property="og:image" content={newsItem.image} />}
+        {newsItem?.seo?.keywords && <meta name="keywords" content={Array.isArray(newsItem.seo.keywords) ? newsItem.seo.keywords.join(', ') : newsItem.seo.keywords} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={newsItem?.seo?.metaTitle || (newsItem ? newsItem.title : 'News | Study Guru')} />
+        <meta name="twitter:description" content={newsItem?.seo?.metaDescription || newsItem?.summary || 'Latest educational news by Study Guru'} />
+        {newsItem?.image && <meta name="twitter:image" content={newsItem.image} />}
+        
+        {/* Canonical URL to avoid duplicate content issues */}
+        <link rel="canonical" href={typeof window !== 'undefined' ? window.location.href : `https://studyguruindia.com/news/${slug}`} />
+        
+        {/* Add structured data for better SEO */}
+        {newsItem && (
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -396,17 +405,17 @@ const NewsDetail = () => {
                 "@type": "Organization",
                 "name": "Study Guru Editorial Team"
               },
-              "keywords": newsItem.category || "Study Abroad News",
+              "keywords": Array.isArray(newsItem.seo?.keywords) ? newsItem.seo.keywords.join(", ") : (newsItem.category || "Study Abroad News"),
               "articleSection": newsItem.category,
               "wordCount": newsItem.content?.split(" ").length || 0,
               "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": window.location.href
+                "@id": typeof window !== 'undefined' ? window.location.href : `https://studyguruindia.com/news/${slug}`
               }
             })}
           </script>
-        </Helmet>
-      )}
+        )}
+      </Helmet>
 
       {/* Mobile Table of Contents Overlay */}
       <AnimatePresence>
