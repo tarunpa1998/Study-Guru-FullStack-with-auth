@@ -1,30 +1,66 @@
 // Utility functions for server-side SEO rendering
 import { mongoStorage } from "../mongoStorage";
+import { Article, News } from "@shared/schema";
+
+// Extended types to handle MongoDB additional fields
+interface ArticleWithSeo extends Article {
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: string[] | string;
+  };
+  authorTitle?: string;
+}
+
+interface NewsWithSeo extends News {
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: string[] | string;
+  };
+}
+
+// Helper function to safely escape text for HTML
+const escapeHTML = (text: string): string => {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
 
 // Function to generate meta tags for article pages
 export async function generateArticleMetaTags(slug: string): Promise<string> {
   try {
     // Fetch article from MongoDB
-    const article = await mongoStorage.getArticleBySlug(slug);
+    const article = await mongoStorage.getArticleBySlug(slug) as ArticleWithSeo;
     
     if (!article) {
       return ''; // No article found
     }
     
+    // Handle the SEO data safely
+    const title = escapeHTML(article.seo?.metaTitle || `${article.title} | Study Guru`);
+    const description = escapeHTML(article.seo?.metaDescription || article.summary);
+    const keywords = article.seo?.keywords ? 
+      (Array.isArray(article.seo.keywords) ? article.seo.keywords.join(', ') : article.seo.keywords) : 
+      article.category;
+    
     // Generate meta tags
     const metaTags = `
     <!-- Server-rendered SEO meta tags -->
-    <title>${article.seo?.metaTitle || `${article.title} | Study Guru`}</title>
-    <meta name="description" content="${article.seo?.metaDescription || article.summary}" />
-    <meta property="og:title" content="${article.seo?.metaTitle || `${article.title} | Study Guru`}" />
-    <meta property="og:description" content="${article.seo?.metaDescription || article.summary}" />
+    <title>${title}</title>
+    <meta name="description" content="${description}" />
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${description}" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://studyguruindia.com/articles/${article.slug}" />
     ${article.image ? `<meta property="og:image" content="${article.image}" />` : ''}
-    ${article.seo?.keywords ? `<meta name="keywords" content="${Array.isArray(article.seo.keywords) ? article.seo.keywords.join(', ') : article.seo.keywords}" />` : ''}
+    <meta name="keywords" content="${escapeHTML(keywords)}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${article.seo?.metaTitle || article.title}" />
-    <meta name="twitter:description" content="${article.seo?.metaDescription || article.summary}" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="${description}" />
     ${article.image ? `<meta name="twitter:image" content="${article.image}" />` : ''}
     <link rel="canonical" href="https://studyguruindia.com/articles/${article.slug}" />
     
@@ -33,13 +69,13 @@ export async function generateArticleMetaTags(slug: string): Promise<string> {
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "${article.title}",
-      "description": "${article.summary}",
+      "headline": "${escapeHTML(article.title)}",
+      "description": "${escapeHTML(article.summary)}",
       "image": "${article.image || ''}",
       "author": {
         "@type": "Person",
-        "name": "${article.author}",
-        "jobTitle": "${article.authorTitle || 'Education Consultant'}"
+        "name": "${escapeHTML(article.author)}",
+        "jobTitle": "${escapeHTML(article.authorTitle || 'Education Consultant')}"
       },
       "publisher": {
         "@type": "Organization",
@@ -51,8 +87,8 @@ export async function generateArticleMetaTags(slug: string): Promise<string> {
       },
       "datePublished": "${article.publishDate}",
       "dateModified": "${article.publishDate}",
-      "keywords": "${Array.isArray(article.seo?.keywords) ? article.seo.keywords.join(', ') : (article.category || 'study abroad')}",
-      "articleSection": "${article.category}",
+      "keywords": "${escapeHTML(keywords)}",
+      "articleSection": "${escapeHTML(article.category)}",
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": "https://studyguruindia.com/articles/${article.slug}"
@@ -72,26 +108,33 @@ export async function generateArticleMetaTags(slug: string): Promise<string> {
 export async function generateNewsMetaTags(slug: string): Promise<string> {
   try {
     // Fetch news from MongoDB
-    const newsItem = await mongoStorage.getNewsBySlug(slug);
+    const newsItem = await mongoStorage.getNewsBySlug(slug) as NewsWithSeo;
     
     if (!newsItem) {
       return ''; // No news found
     }
     
+    // Handle the SEO data safely
+    const title = escapeHTML(newsItem.seo?.metaTitle || `${newsItem.title} | Study Guru News`);
+    const description = escapeHTML(newsItem.seo?.metaDescription || newsItem.summary);
+    const keywords = newsItem.seo?.keywords ? 
+      (Array.isArray(newsItem.seo.keywords) ? newsItem.seo.keywords.join(', ') : newsItem.seo.keywords) : 
+      newsItem.category;
+    
     // Generate meta tags
     const metaTags = `
     <!-- Server-rendered SEO meta tags -->
-    <title>${newsItem.seo?.metaTitle || `${newsItem.title} | Study Guru News`}</title>
-    <meta name="description" content="${newsItem.seo?.metaDescription || newsItem.summary}" />
-    <meta property="og:title" content="${newsItem.seo?.metaTitle || `${newsItem.title} | Study Guru News`}" />
-    <meta property="og:description" content="${newsItem.seo?.metaDescription || newsItem.summary}" />
+    <title>${title}</title>
+    <meta name="description" content="${description}" />
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${description}" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://studyguruindia.com/news/${newsItem.slug}" />
     ${newsItem.image ? `<meta property="og:image" content="${newsItem.image}" />` : ''}
-    ${newsItem.seo?.keywords ? `<meta name="keywords" content="${Array.isArray(newsItem.seo.keywords) ? newsItem.seo.keywords.join(', ') : newsItem.seo.keywords}" />` : ''}
+    <meta name="keywords" content="${escapeHTML(keywords)}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${newsItem.seo?.metaTitle || newsItem.title}" />
-    <meta name="twitter:description" content="${newsItem.seo?.metaDescription || newsItem.summary}" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="${description}" />
     ${newsItem.image ? `<meta name="twitter:image" content="${newsItem.image}" />` : ''}
     <link rel="canonical" href="https://studyguruindia.com/news/${newsItem.slug}" />
     
@@ -100,8 +143,8 @@ export async function generateNewsMetaTags(slug: string): Promise<string> {
     {
       "@context": "https://schema.org",
       "@type": "NewsArticle",
-      "headline": "${newsItem.title}",
-      "description": "${newsItem.summary}",
+      "headline": "${escapeHTML(newsItem.title)}",
+      "description": "${escapeHTML(newsItem.summary)}",
       "image": "${newsItem.image || ''}",
       "datePublished": "${newsItem.publishDate}",
       "dateModified": "${newsItem.publishDate}",
@@ -117,8 +160,8 @@ export async function generateNewsMetaTags(slug: string): Promise<string> {
         "@type": "Organization",
         "name": "Study Guru Editorial Team"
       },
-      "keywords": "${Array.isArray(newsItem.seo?.keywords) ? newsItem.seo.keywords.join(', ') : (newsItem.category || 'Study Abroad News')}",
-      "articleSection": "${newsItem.category}",
+      "keywords": "${escapeHTML(keywords)}",
+      "articleSection": "${escapeHTML(newsItem.category)}",
       "mainEntityOfPage": {
         "@type": "WebPage",
         "@id": "https://studyguruindia.com/news/${newsItem.slug}"

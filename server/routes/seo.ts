@@ -2,10 +2,31 @@ import { Router, Request, Response } from 'express';
 import { mongoStorage } from '../mongoStorage';
 import path from 'path';
 import fs from 'fs';
+import { Article, News } from '@shared/schema';
 
 const router = Router();
 const clientPath = path.resolve(process.cwd(), 'client');
 const indexHtmlPath = path.join(clientPath, 'index.html');
+
+// Extended types to handle MongoDB additional fields
+interface ArticleWithSeo extends Article {
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: string[] | string;
+  };
+  authorTitle?: string;
+  _id?: string;
+}
+
+interface NewsWithSeo extends News {
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: string[] | string;
+  };
+  _id?: string;
+}
 
 // Get the base HTML template
 const getBaseHtml = (): string => {
@@ -19,6 +40,7 @@ const getBaseHtml = (): string => {
 
 // Helper function to safely escape HTML/JSON string content
 const escapeHtml = (unsafe: string): string => {
+  if (!unsafe) return '';
   return unsafe
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -32,7 +54,7 @@ router.get('/articles/:slug', async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
     // Fetch article from MongoDB
-    const article = await mongoStorage.getArticleBySlug(slug);
+    const article = await mongoStorage.getArticleBySlug(slug) as ArticleWithSeo;
     
     if (!article) {
       // If article not found, serve the regular index.html
@@ -42,20 +64,27 @@ router.get('/articles/:slug', async (req: Request, res: Response) => {
     // Get the base HTML
     let html = getBaseHtml();
     
+    // Safely extract SEO data
+    const title = article.seo?.metaTitle || `${article.title} | Study Guru`;
+    const description = article.seo?.metaDescription || article.summary;
+    const keywords = article.seo?.keywords ? 
+      (Array.isArray(article.seo.keywords) ? article.seo.keywords.join(', ') : article.seo.keywords) : 
+      article.category;
+    
     // Prepare the SEO metadata
     const seoMetadata = `
     <!-- Server-side SEO metadata for article -->
-    <title>${escapeHtml(article.seo?.metaTitle || `${article.title} | Study Guru`)}</title>
-    <meta name="description" content="${escapeHtml(article.seo?.metaDescription || article.summary)}" />
-    <meta property="og:title" content="${escapeHtml(article.seo?.metaTitle || `${article.title} | Study Guru`)}" />
-    <meta property="og:description" content="${escapeHtml(article.seo?.metaDescription || article.summary)}" />
+    <title>${escapeHtml(title)}</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    <meta property="og:title" content="${escapeHtml(title)}" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="${escapeHtml(`https://studyguruindia.com/articles/${article.slug}`)}" />
     ${article.image ? `<meta property="og:image" content="${escapeHtml(article.image)}" />` : ''}
-    ${article.seo?.keywords ? `<meta name="keywords" content="${escapeHtml(Array.isArray(article.seo.keywords) ? article.seo.keywords.join(', ') : article.seo.keywords)}" />` : ''}
+    <meta name="keywords" content="${escapeHtml(keywords)}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${escapeHtml(article.seo?.metaTitle || article.title)}" />
-    <meta name="twitter:description" content="${escapeHtml(article.seo?.metaDescription || article.summary)}" />
+    <meta name="twitter:title" content="${escapeHtml(title)}" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
     ${article.image ? `<meta name="twitter:image" content="${escapeHtml(article.image)}" />` : ''}
     <link rel="canonical" href="${escapeHtml(`https://studyguruindia.com/articles/${article.slug}`)}" />
     
@@ -82,7 +111,7 @@ router.get('/articles/:slug', async (req: Request, res: Response) => {
       },
       "datePublished": "${article.publishDate}",
       "dateModified": "${article.publishDate}",
-      "keywords": "${escapeHtml(Array.isArray(article.seo?.keywords) ? article.seo.keywords.join(', ') : (article.category || 'study abroad'))}",
+      "keywords": "${escapeHtml(keywords)}",
       "articleSection": "${escapeHtml(article.category)}",
       "mainEntityOfPage": {
         "@type": "WebPage",
@@ -94,6 +123,9 @@ router.get('/articles/:slug', async (req: Request, res: Response) => {
     
     // Inject SEO metadata into the HTML head
     html = html.replace('</head>', `${seoMetadata}\n</head>`);
+    
+    // Log success for debugging
+    console.log(`[SEO] Serving article '${article.title}' with server-side SEO metadata`);
     
     // Serve the HTML with injected SEO metadata
     res.set('Content-Type', 'text/html');
@@ -110,7 +142,7 @@ router.get('/news/:slug', async (req: Request, res: Response) => {
   try {
     const { slug } = req.params;
     // Fetch news from MongoDB
-    const newsItem = await mongoStorage.getNewsBySlug(slug);
+    const newsItem = await mongoStorage.getNewsBySlug(slug) as NewsWithSeo;
     
     if (!newsItem) {
       // If news not found, serve the regular index.html
@@ -120,20 +152,27 @@ router.get('/news/:slug', async (req: Request, res: Response) => {
     // Get the base HTML
     let html = getBaseHtml();
     
+    // Safely extract SEO data
+    const title = newsItem.seo?.metaTitle || `${newsItem.title} | Study Guru News`;
+    const description = newsItem.seo?.metaDescription || newsItem.summary;
+    const keywords = newsItem.seo?.keywords ? 
+      (Array.isArray(newsItem.seo.keywords) ? newsItem.seo.keywords.join(', ') : newsItem.seo.keywords) : 
+      newsItem.category;
+    
     // Prepare the SEO metadata
     const seoMetadata = `
     <!-- Server-side SEO metadata for news -->
-    <title>${escapeHtml(newsItem.seo?.metaTitle || `${newsItem.title} | Study Guru News`)}</title>
-    <meta name="description" content="${escapeHtml(newsItem.seo?.metaDescription || newsItem.summary)}" />
-    <meta property="og:title" content="${escapeHtml(newsItem.seo?.metaTitle || `${newsItem.title} | Study Guru News`)}" />
-    <meta property="og:description" content="${escapeHtml(newsItem.seo?.metaDescription || newsItem.summary)}" />
+    <title>${escapeHtml(title)}</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    <meta property="og:title" content="${escapeHtml(title)}" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="${escapeHtml(`https://studyguruindia.com/news/${newsItem.slug}`)}" />
     ${newsItem.image ? `<meta property="og:image" content="${escapeHtml(newsItem.image)}" />` : ''}
-    ${newsItem.seo?.keywords ? `<meta name="keywords" content="${escapeHtml(Array.isArray(newsItem.seo.keywords) ? newsItem.seo.keywords.join(', ') : newsItem.seo.keywords)}" />` : ''}
+    <meta name="keywords" content="${escapeHtml(keywords)}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${escapeHtml(newsItem.seo?.metaTitle || newsItem.title)}" />
-    <meta name="twitter:description" content="${escapeHtml(newsItem.seo?.metaDescription || newsItem.summary)}" />
+    <meta name="twitter:title" content="${escapeHtml(title)}" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
     ${newsItem.image ? `<meta name="twitter:image" content="${escapeHtml(newsItem.image)}" />` : ''}
     <link rel="canonical" href="${escapeHtml(`https://studyguruindia.com/news/${newsItem.slug}`)}" />
     
@@ -159,7 +198,7 @@ router.get('/news/:slug', async (req: Request, res: Response) => {
         "@type": "Organization",
         "name": "Study Guru Editorial Team"
       },
-      "keywords": "${escapeHtml(Array.isArray(newsItem.seo?.keywords) ? newsItem.seo.keywords.join(', ') : (newsItem.category || 'Study Abroad News'))}",
+      "keywords": "${escapeHtml(keywords)}",
       "articleSection": "${escapeHtml(newsItem.category)}",
       "mainEntityOfPage": {
         "@type": "WebPage",
@@ -171,6 +210,9 @@ router.get('/news/:slug', async (req: Request, res: Response) => {
     
     // Inject SEO metadata into the HTML head
     html = html.replace('</head>', `${seoMetadata}\n</head>`);
+    
+    // Log success for debugging
+    console.log(`[SEO] Serving news '${newsItem.title}' with server-side SEO metadata`);
     
     // Serve the HTML with injected SEO metadata
     res.set('Content-Type', 'text/html');
