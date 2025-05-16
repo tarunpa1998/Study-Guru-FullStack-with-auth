@@ -111,9 +111,9 @@ const ChatBot = ({
   onOptionSelect,
   className = "",
   showContactInfo = false,
-  contactEmail = "support@studyguruindia.com",
-  contactPhone = "+91 99999-99999",
-  whatsappNumber = "919999999999",
+  contactEmail = "Help@studyguruindia.com",
+  contactPhone = "+4306787801657",
+  whatsappNumber = "4306787801657",
   contactPageUrl = "/contact",
   useStudyAbroadFlow = false
 }: ChatBotProps) => {

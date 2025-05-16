@@ -207,7 +207,7 @@ const FloatingWhatsApp = () => {
     
     // Open WhatsApp with a predefined message
     window.open(
-      `https://wa.me/+919999999999?text=${encodeURIComponent('Hello, I have a question about study abroad opportunities.')}`, 
+      `https://wa.me/+4306787801657?text=${encodeURIComponent('Hello, I have a question about study abroad opportunities.')}`, 
       '_blank'
     );
   };

@@ -299,15 +299,29 @@ const Footer = () => {
               <ul className="space-y-3 text-slate-300">
                 <li className="flex items-center">
                   <Mail className="h-5 w-5 mr-3 text-primary-400" />
-                  <span>studyguru@gmail.com</span>
+                  <span>Help@studyguruindia.com</span>
                 </li>
                 <li className="flex items-center">
                   <Phone className="h-5 w-5 mr-3 text-primary-400" />
-                  <span>+91 99999-99999</span>
+                  <span>+4306787801657</span>
                 </li>
                 <li className="flex items-center">
                   <Clock className="h-5 w-5 mr-3 text-primary-400" />
                   <span>Mon-Fri 9am-5pm IST</span>
+                </li>
+                <li className="flex items-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 mt-1 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>Study Guru GmbH, Lichtenfelsgasse 2, 1010 Vienna, Austria</span>
+                </li>
+                <li className="flex items-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 mt-1 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>Zone 1, Maharana Pratap Nagar, Bhopal, Madhya Pradesh, 462011</span>
                 </li>
                 <li className="mt-2">
                   <motion.div 
