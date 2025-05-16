@@ -44,6 +44,7 @@ interface News {
   image?: string;
   category: string;
   isFeatured: boolean;
+  isDraft?: boolean; // Flag to indicate if it's a draft
   slug: string;
   relatedArticles: string[];
   seo: {

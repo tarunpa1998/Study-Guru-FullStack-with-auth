@@ -64,7 +64,7 @@ interface Article {
   image?: string;
   category: string;
   isFeatured: boolean;
-  isPublished?: boolean; // Flag to indicate if it's published or draft
+  isDraft?: boolean; // Flag to indicate if it's a draft
   relatedArticles: string[];
   seo: {
     metaTitle: string;
@@ -172,10 +172,10 @@ const ArticlesAdmin = () => {
       }
       const publishedArticles = await articlesResponse.json();
       
-      // Add isPublished flag to published articles
+      // Published articles are not drafts
       const publishedWithFlag = publishedArticles.map((article: Article) => ({
         ...article,
-        isPublished: true
+        isDraft: false
       }));
 
       // Fetch draft articles
@@ -191,10 +191,10 @@ const ArticlesAdmin = () => {
       
       const draftArticles = await draftsResponse.json();
       
-      // Add isPublished flag to draft articles (set to false)
+      // Mark these as draft articles
       const draftsWithFlag = draftArticles.map((article: any) => ({
         ...article,
-        isPublished: false
+        isDraft: true
       }));
       
       // Combine both published and draft articles
@@ -224,7 +224,7 @@ const ArticlesAdmin = () => {
     setIsEditing(true);
     
     // If article is a draft, get the latest version from the drafts API
-    if (article.isPublished === false) {
+    if (article.isDraft) {
       try {
         const token = localStorage.getItem('adminToken');
         if (!token) {
@@ -248,7 +248,7 @@ const ArticlesAdmin = () => {
           ...draftData,
           id: draftId,
           _id: draftId,
-          isPublished: false
+          isDraft: true
         };
         
         setEditForm(fullDraftData);
@@ -352,7 +352,7 @@ const ArticlesAdmin = () => {
         if (publishedData.article) {
           return [...filtered, {
             ...publishedData.article,
-            isPublished: true
+            isDraft: false
           }];
         }
         
@@ -611,7 +611,7 @@ const ArticlesAdmin = () => {
                             {new Date(article.publishDate).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
-                            {article.isPublished !== false ? (
+                            {!article.isDraft ? (
                               <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                 Published
                               </span>
@@ -634,7 +634,7 @@ const ArticlesAdmin = () => {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              {article.isPublished === false && (
+                              {article.isDraft && (
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -662,7 +662,7 @@ const ArticlesAdmin = () => {
                                 variant="ghost"
                                 size="icon"
                                 className="text-red-500 hover:text-red-700"
-                                onClick={() => handleDelete(article.id || article._id || "", article.isPublished === false)}
+                                onClick={() => handleDelete(article.id || article._id || "", article.isDraft)}
                                 title="Delete"
                               >
                                 <Trash2 className="h-4 w-4" />
