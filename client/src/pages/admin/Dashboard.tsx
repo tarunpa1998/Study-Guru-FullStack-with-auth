@@ -127,6 +127,8 @@ const Dashboard = () => {
         return <ArticlesAdmin />;
       case "news":
         return <NewsAdmin />;
+      case "drafts":
+        return <DraftsView />;
       case "scholarships":
         return <ScholarshipsAdmin />;
       case "countries":
