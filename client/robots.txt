@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+
+# Allow dynamic page indexing
+Allow: /articles/
+Allow: /news/
+Allow: /scholarships/
+Allow: /countries/
+Allow: /universities/
+
+# Sitemap location
+Sitemap: https://studyguruindia.com/sitemap.xml
