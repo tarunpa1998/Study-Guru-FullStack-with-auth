@@ -693,6 +693,59 @@ const NewsDetail = () => {
                   </div>
                 </div>
               )}
+              
+              {/* Explore More Resources - Internal Linking */}
+              <section className="mt-12 mb-8 p-6 bg-muted rounded-xl">
+                <h2 className="text-xl font-semibold mb-4 text-foreground">Explore More Resources</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="text-lg font-medium mb-2 text-foreground">Popular Categories</h3>
+                    <ul className="space-y-2">
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/scholarships" className="text-primary hover:underline">
+                          Scholarship Opportunities
+                        </a>
+                      </li>
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/countries" className="text-primary hover:underline">
+                          Study Destinations
+                        </a>
+                      </li>
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/articles" className="text-primary hover:underline">
+                          Education Guides
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2 text-foreground">Further Reading</h3>
+                    <ul className="space-y-2">
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/universities" className="text-primary hover:underline">
+                          Top Universities
+                        </a>
+                      </li>
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/news" className="text-primary hover:underline">
+                          All Education News
+                        </a>
+                      </li>
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/contact" className="text-primary hover:underline">
+                          Get Personalized Advice
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
             </div>
 
             {/* Sidebar */}
