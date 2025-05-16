@@ -15,11 +15,15 @@ router.get('/sitemap.xml', async (req: Request, res: Response) => {
     // Set Content-Type header
     res.header('Content-Type', 'application/xml');
     
-    // Start XML content
+    // Start XML content - ensure proper XML formatting with image namespace
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n';
+    xml += '        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n';
     
-    // Add static pages
+    // Logo URL - use the correct filename that exists in the public directory
+    const logoUrl = `${baseUrl}/logo.png`;
+    
+    // Add static pages with logo
     const staticPages = [
       { path: '', priority: '1.0', changefreq: 'daily' },
       { path: 'scholarships', priority: '0.9', changefreq: 'daily' },
@@ -36,6 +40,10 @@ router.get('/sitemap.xml', async (req: Request, res: Response) => {
       xml += `    <loc>${baseUrl}/${page.path}</loc>\n`;
       xml += `    <priority>${page.priority}</priority>\n`;
       xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+      xml += '    <image:image>\n';
+      xml += `      <image:loc>${logoUrl}</image:loc>\n`;
+      xml += '      <image:title>Study Guru Logo</image:title>\n';
+      xml += '    </image:image>\n';
       xml += '  </url>\n';
     });
     
@@ -54,58 +62,73 @@ router.get('/sitemap.xml', async (req: Request, res: Response) => {
       mongoStorage.getAllNews()
     ]);
     
-    // Add scholarships
+    // Add scholarships with logo
     scholarships.forEach(scholarship => {
-      // Remove any quotes from the slug for proper URL formatting
       const cleanSlug = scholarship.slug.replace(/["']/g, '');
       xml += '  <url>\n';
       xml += `    <loc>${baseUrl}/scholarships/${cleanSlug}</loc>\n`;
       xml += '    <priority>0.8</priority>\n';
       xml += '    <changefreq>weekly</changefreq>\n';
+      xml += '    <image:image>\n';
+      xml += `      <image:loc>${logoUrl}</image:loc>\n`;
+      xml += '      <image:title>Study Guru Logo</image:title>\n';
+      xml += '    </image:image>\n';
       xml += '  </url>\n';
     });
     
-    // Add articles
+    // Add articles with logo
     articles.forEach(article => {
-      // Remove any quotes from the slug for proper URL formatting
       const cleanSlug = article.slug.replace(/["']/g, '');
       xml += '  <url>\n';
       xml += `    <loc>${baseUrl}/articles/${cleanSlug}</loc>\n`;
       xml += '    <priority>0.8</priority>\n';
       xml += '    <changefreq>monthly</changefreq>\n';
+      xml += '    <image:image>\n';
+      xml += `      <image:loc>${logoUrl}</image:loc>\n`;
+      xml += '      <image:title>Study Guru Logo</image:title>\n';
+      xml += '    </image:image>\n';
       xml += '  </url>\n';
     });
     
-    // Add countries
+    // Add countries with logo
     countries.forEach(country => {
-      // Remove any quotes from the slug for proper URL formatting
       const cleanSlug = country.slug.replace(/["']/g, '');
       xml += '  <url>\n';
       xml += `    <loc>${baseUrl}/countries/${cleanSlug}</loc>\n`;
       xml += '    <priority>0.7</priority>\n';
       xml += '    <changefreq>monthly</changefreq>\n';
+      xml += '    <image:image>\n';
+      xml += `      <image:loc>${logoUrl}</image:loc>\n`;
+      xml += '      <image:title>Study Guru Logo</image:title>\n';
+      xml += '    </image:image>\n';
       xml += '  </url>\n';
     });
     
-    // Add universities
+    // Add universities with logo
     universities.forEach(university => {
-      // Remove any quotes from the slug for proper URL formatting
       const cleanSlug = university.slug.replace(/["']/g, '');
       xml += '  <url>\n';
       xml += `    <loc>${baseUrl}/universities/${cleanSlug}</loc>\n`;
       xml += '    <priority>0.7</priority>\n';
       xml += '    <changefreq>monthly</changefreq>\n';
+      xml += '    <image:image>\n';
+      xml += `      <image:loc>${logoUrl}</image:loc>\n`;
+      xml += '      <image:title>Study Guru Logo</image:title>\n';
+      xml += '    </image:image>\n';
       xml += '  </url>\n';
     });
     
-    // Add news
+    // Add news with logo
     news.forEach(newsItem => {
-      // Remove any quotes from the slug for proper URL formatting
       const cleanSlug = newsItem.slug.replace(/["']/g, '');
       xml += '  <url>\n';
       xml += `    <loc>${baseUrl}/news/${cleanSlug}</loc>\n`;
       xml += '    <priority>0.8</priority>\n';
       xml += '    <changefreq>weekly</changefreq>\n';
+      xml += '    <image:image>\n';
+      xml += `      <image:loc>${logoUrl}</image:loc>\n`;
+      xml += '      <image:title>Study Guru Logo</image:title>\n';
+      xml += '    </image:image>\n';
       xml += '  </url>\n';
     });
     
@@ -121,3 +144,13 @@ router.get('/sitemap.xml', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+
+
+
+
+
+
+
+
+
