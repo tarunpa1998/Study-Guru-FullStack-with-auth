@@ -50,7 +50,7 @@ const FeaturedScholarships = () => {
     // Start auto-scrolling when in view
     intervalRef.current = window.setInterval(() => {
       api.scrollNext();
-    }, 1500);
+    }, 2000);
     
     // Cleanup interval on unmount or when dependencies change
     return () => {

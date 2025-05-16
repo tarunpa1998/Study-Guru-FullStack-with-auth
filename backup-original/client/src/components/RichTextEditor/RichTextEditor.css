@@ -1,0 +1,337 @@
+.rich-text-editor {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.dark .rich-text-editor {
+  background-color: #1f1f1f;
+  border-color: #444;
+  color: #e2e2e2;
+}
+
+.rich-text-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 8px;
+  gap: 4px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ccc;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.dark .rich-text-toolbar {
+  background-color: #2d2d2d;
+  border-color: #444;
+}
+
+.rich-text-toolbar button,
+.rich-text-toolbar select {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #333;
+  cursor: pointer;
+  font-size: 0.875rem;
+  height: 32px;
+  padding: 0 8px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.dark .rich-text-toolbar button,
+.dark .rich-text-toolbar select {
+  background: #3a3a3a;
+  border-color: #555;
+  color: #e2e2e2;
+}
+
+.rich-text-toolbar button:hover,
+.rich-text-toolbar select:hover {
+  background-color: #f0f0f0;
+  border-color: #bbb;
+}
+
+.dark .rich-text-toolbar button:hover,
+.dark .rich-text-toolbar select:hover {
+  background-color: #4a4a4a;
+  border-color: #666;
+}
+
+.rich-text-toolbar button.is-active {
+  background-color: #e6f2ff;
+  border-color: #99caff;
+  color: #0066cc;
+}
+
+.dark .rich-text-toolbar button.is-active {
+  background-color: #1a365d;
+  border-color: #4299e1;
+  color: #90cdf4;
+}
+
+.rich-text-toolbar select {
+  min-width: 120px;
+}
+
+.rich-text-separator {
+  width: 1px;
+  background-color: #ddd;
+  margin: 0 4px;
+  align-self: stretch;
+}
+
+.dark .rich-text-separator {
+  background-color: #555;
+}
+
+.rich-text-editor-content {
+  flex: 1;
+  padding: 16px;
+  height: 400px;
+  overflow-y: auto;
+  outline: none;
+  scroll-padding-top: 48px; /* Extra space for the sticky toolbar */
+}
+
+.rich-text-editor-content p {
+  margin: 0 0 0.75em;
+}
+
+.rich-text-editor-content:empty:before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+.dark .rich-text-editor-content:empty:before {
+  color: #666;
+}
+
+/* Markdown mode */
+.markdown-mode {
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+}
+
+.markdown-textarea {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  resize: none;
+  outline: none;
+  font-family: monospace;
+  background-color: #f8f8f8;
+  height: 350px;
+  overflow-y: auto;
+}
+
+.dark .markdown-textarea {
+  background-color: #2a2a2a;
+  color: #e2e2e2;
+}
+
+.markdown-submit {
+  margin: 8px;
+  padding: 8px 16px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: flex-end;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.dark .markdown-submit {
+  background-color: #4299e1;
+}
+
+.markdown-submit:hover {
+  background-color: #0052a3;
+}
+
+.dark .markdown-submit:hover {
+  background-color: #3182ce;
+}
+
+/* Editor content styling */
+.rich-text-editor-content h1,
+.rich-text-editor-content h2,
+.rich-text-editor-content h3,
+.rich-text-editor-content h4,
+.rich-text-editor-content h5,
+.rich-text-editor-content h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.rich-text-editor-content h1 {
+  font-size: 2em;
+}
+
+.rich-text-editor-content h2 {
+  font-size: 1.5em;
+}
+
+.rich-text-editor-content h3 {
+  font-size: 1.25em;
+}
+
+.rich-text-editor-content a {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+.dark .rich-text-editor-content a {
+  color: #4299e1;
+}
+
+.rich-text-editor-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.rich-text-editor-content blockquote {
+  border-left: 3px solid #ddd;
+  padding-left: 16px;
+  margin-left: 0;
+  color: #666;
+}
+
+.dark .rich-text-editor-content blockquote {
+  border-left-color: #555;
+  color: #aaa;
+}
+
+.rich-text-editor-content pre {
+  background-color: #f5f5f5;
+  padding: 16px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: monospace;
+}
+
+.dark .rich-text-editor-content pre {
+  background-color: #2d2d2d;
+}
+
+.rich-text-editor-content code {
+  background-color: #f0f0f0;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.dark .rich-text-editor-content code {
+  background-color: #333;
+}
+
+.rich-text-editor-content ul,
+.rich-text-editor-content ol {
+  padding-left: 24px;
+  margin: 16px 0;
+}
+
+.rich-text-editor-content ul {
+  list-style-type: disc;
+}
+
+.rich-text-editor-content ol {
+  list-style-type: decimal;
+}
+
+.rich-text-editor-content li p {
+  margin: 0;
+}
+
+.rich-text-editor-content li {
+  margin-bottom: 4px;
+}
+
+.rich-text-editor-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.rich-text-editor-content th,
+.rich-text-editor-content td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.dark .rich-text-editor-content th,
+.dark .rich-text-editor-content td {
+  border-color: #444;
+}
+
+.rich-text-editor-content th {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.dark .rich-text-editor-content th {
+  background-color: #333;
+}
+
+/* Table of contents */
+.table-of-contents {
+  background-color: #f8f8f8;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.dark .table-of-contents {
+  background-color: #252525;
+  border-color: #333;
+}
+
+.table-of-contents h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.table-of-contents ul {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.toc-level-1 {
+  margin-left: 0;
+}
+
+.toc-level-2 {
+  margin-left: 16px;
+}
+
+.toc-level-3 {
+  margin-left: 32px;
+}
+
+.toc-level-4,
+.toc-level-5,
+.toc-level-6 {
+  margin-left: 48px;
+}

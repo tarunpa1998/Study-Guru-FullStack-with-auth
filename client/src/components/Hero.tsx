@@ -18,31 +18,9 @@ const Hero = () => {
           <div className="absolute top-1/4 right-10 w-80 h-80 border-4 border-white rounded-full"></div>
         </motion.div>
         
-        <motion.div 
-          className="absolute top-10 right-10 w-72 h-72 bg-primary-400 rounded-full opacity-20 filter blur-3xl"
-          animate={{ 
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.3, 0.2]
-          }}
-          transition={{ 
-            duration: 8,
-            repeat: Infinity,
-            repeatType: "reverse" 
-          }}
-        />
+        <div className="absolute top-10 right-10 w-72 h-72 bg-primary-400 rounded-full opacity-20 filter blur-3xl"></div>
         
-        <motion.div 
-          className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary-400 rounded-full opacity-20 filter blur-3xl"
-          animate={{ 
-            scale: [1, 1.2, 1],
-            opacity: [0.2, 0.25, 0.2]
-          }}
-          transition={{ 
-            duration: 10,
-            repeat: Infinity,
-            repeatType: "reverse" 
-          }}
-        />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-primary-400 rounded-full opacity-20 filter blur-3xl"></div>
       </div>
 
       <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
@@ -59,7 +37,7 @@ const Hero = () => {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="mb-3 inline-flex items-center rounded-full border border-white/30 bg-white/10 px-3 py-1 backdrop-blur-sm"
             >
-              <span className="text-xs font-semibold uppercase tracking-wider">Education Abroad Magazine</span>
+              <span className="text-xs font-semibold uppercase tracking-wider">Explore Study Guru</span>
             </motion.div>
             
             <motion.h1 

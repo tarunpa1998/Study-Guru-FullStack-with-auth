@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Helmet } from "react-helmet";
-import { Filter, Search } from "lucide-react";
+import { Filter, Search, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { 
@@ -16,6 +16,17 @@ import { Label } from "@/components/ui/label";
 import NewsCard from "@/components/NewsCard";
 import FeaturedNewsItem from "@/components/FeaturedNewsItem";
 import { useTheme } from "@/contexts/ThemeContext";
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi
+} from "@/components/ui/carousel";
 
 // Define NewsItem interface
 interface NewsItem {
@@ -34,6 +45,14 @@ const NewsList = () => {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
+  const [api, setApi] = useState<CarouselApi>();
+  const sectionRef = useRef(null);
+  const carouselRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
+  const intervalRef = useRef<number | null>(null);
+  
+  // Check if screen is mobile
+  const isMobile = useMediaQuery("(max-width: 1023px)");
   
   const { data: newsItems = [], isLoading } = useQuery<NewsItem[]>({
     queryKey: ['/api/news']
@@ -57,6 +76,31 @@ const NewsList = () => {
     }
   }, [location, newsItems]);
 
+  // Setup auto-scrolling when carousel is in view (only for mobile)
+  useEffect(() => {
+    if (!isMobile || !api || featuredNews.length <= 1) {
+      // Clear interval if conditions aren't met
+      if (intervalRef.current !== null) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+    
+    // Start auto-scrolling when in view on mobile
+    intervalRef.current = window.setInterval(() => {
+      api.scrollNext();
+    }, 3000);
+    
+    // Cleanup interval
+    return () => {
+      if (intervalRef.current !== null) {
+        window.clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [api, isMobile]);
+
   // Apply filters
   const filteredNews = newsItems.filter((news) => {
     const matchesSearch = news.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -70,8 +114,20 @@ const NewsList = () => {
   // Extract unique categories for filters
   const uniqueCategories = Array.from(new Set(newsItems.map((n) => n.category)));
 
-  // Find featured news item
-  const featuredNews = newsItems.find((news) => news.isFeatured);
+  // Find featured news items - filter by category if one is selected
+  const featuredNews = newsItems
+    .filter((news) => news.isFeatured)
+    .filter((news) => {
+      // Apply category filter to featured news if a category is selected
+      return filterCategory === "all" ? true : news.category === filterCategory;
+    })
+    .filter((news) => {
+      // Apply search filter to featured news if search is active
+      return searchQuery === "" ? true : 
+        news.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        news.summary.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+    
   const regularNews = filteredNews.filter((news) => !news.isFeatured);
 
   return (
@@ -93,7 +149,7 @@ const NewsList = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8" ref={sectionRef}>
         <div className="bg-card shadow-sm rounded-lg p-6 mb-8 border">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Filter News</h2>
@@ -153,17 +209,94 @@ const NewsList = () => {
           </>
         ) : (
           <>
-            {featuredNews && filterCategory === "all" && !searchQuery && (
+            {featuredNews.length > 0 && (
               <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4">Featured News</h2>
-                <FeaturedNewsItem 
-                  title={featuredNews.title}
-                  summary={featuredNews.summary}
-                  slug={featuredNews.slug}
-                  publishDate={featuredNews.publishDate}
-                  image={featuredNews.image}
-                  category={featuredNews.category}
-                />
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Featured News</h2>
+                </div>
+                
+                {/* Mobile View - Carousel */}
+                <div className="lg:hidden" ref={carouselRef}>
+                  <motion.div 
+                    className="w-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
+                  >
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: true,
+                        skipSnaps: false,
+                      }}
+                      setApi={setApi}
+                      className="w-full"
+                    >
+                      <CarouselContent>
+                        {featuredNews.map((news) => (
+                          <CarouselItem key={news.id} className="basis-full">
+                            <FeaturedNewsItem
+                              title={news.title}
+                              summary={news.summary}
+                              slug={news.slug}
+                              publishDate={news.publishDate}
+                              image={news.image}
+                              category={news.category}
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      
+                      {featuredNews.length > 1 && (
+                        <div className="flex justify-center gap-2 mt-6">
+                          <CarouselPrevious className="static transform-none h-9 w-9 mr-2" />
+                          <CarouselNext className="static transform-none h-9 w-9" />
+                        </div>
+                      )}
+                    </Carousel>
+                  </motion.div>
+                </div>
+                
+                {/* Desktop View - Grid Layout */}
+                <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+                  <motion.div 
+                    className="lg:col-span-3"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Carousel
+                      opts={{
+                        align: "start",
+                        loop: true,
+                        skipSnaps: false,
+                      }}
+                      className="w-full"
+                    >
+                      <CarouselContent>
+                        {featuredNews.map((news) => (
+                          <CarouselItem key={news.id} className="basis-1/2 pl-4">
+                            <FeaturedNewsItem
+                              title={news.title}
+                              summary={news.summary}
+                              slug={news.slug}
+                              publishDate={news.publishDate}
+                              image={news.image}
+                              category={news.category}
+                            />
+                          </CarouselItem>
+                        ))}
+                      </CarouselContent>
+                      
+                      {featuredNews.length > 1 && (
+                        <div className="flex justify-center gap-2 mt-6">
+                          <CarouselPrevious className="static transform-none h-9 w-9 mr-2" />
+                          <CarouselNext className="static transform-none h-9 w-9" />
+                        </div>
+                      )}
+                    </Carousel>
+                  </motion.div>
+                </div>
               </div>
             )}
 
@@ -200,7 +333,6 @@ const NewsList = () => {
 };
 
 export default NewsList;
-
 
 
 

@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
 import RichTextContent from "@/components/RichTextContent";
+import ChatBot from "@/components/ChatBot";
 
 // Define the Article type
 interface Article {
@@ -102,7 +103,12 @@ const RelatedArticleCard = ({ article }: { article: Article }) => {
         <div className="h-40 overflow-hidden">
           <img 
             src={article.image} 
-            alt={article.title} 
+            alt={article.title}
+            width="800"
+            height="160"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="w-full h-full object-cover" 
           />
         </div>
@@ -363,6 +369,35 @@ const ArticleDetail = () => {
           <meta property="og:type" content="article" />
           {article.image && <meta property="og:image" content={article.image} />}
           {article.seo?.keywords && <meta name="keywords" content={article.seo.keywords.join(', ')} />}
+          
+          {/* Add structured data for better SEO */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Article",
+              "headline": article.title,
+              "description": article.summary,
+              "image": article.image || "",
+              "author": {
+                "@type": "Person",
+                "name": article.author
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Study Guru",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://studyguru.com/logo.png"
+                }
+              },
+              "datePublished": article.publishDate,
+              "dateModified": article.publishDate,
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": window.location.href
+              }
+            })}
+          </script>
         </Helmet>
       )}
 
@@ -452,7 +487,12 @@ const ArticleDetail = () => {
                   <div className="mb-6">
                     <img 
                       src={article.image} 
-                      alt={article.title} 
+                      alt={article.title}
+                      width="1200"
+                      height="400"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
                       className="w-full h-auto rounded-xl shadow-md object-cover max-h-[400px]" 
                     />
                   </div>
@@ -478,7 +518,11 @@ const ArticleDetail = () => {
                       {article.authorImage ? (
                         <img 
                           src={article.authorImage} 
-                          alt={article.author} 
+                          alt={article.author}
+                          width="40"
+                          height="40"
+                          loading="lazy"
+                          decoding="async"
                           className="h-10 w-10 rounded-full mr-2 border-2 border-border shadow-sm" 
                         />
                       ) : (
@@ -641,6 +685,23 @@ const ArticleDetail = () => {
                 </div>
               )}
 
+<Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-foreground">Need Help?</CardTitle>
+                    <CardDescription>Chat with our education advisor</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0 pb-0">
+                    <ChatBot 
+                      title="Study Guru Chat"
+                      subtitle="Ask about this article"
+                      initialMessage="Hi there! Have questions about this news article?"
+                      showContactInfo={true}
+                      className="mb-4"
+                      useStudyAbroadFlow={false}
+                    />
+                  </CardContent>
+                </Card>
+
               {/* Related Articles */}
               {relatedArticlesData.length > 0 && (
                 <div className="my-10">
@@ -730,30 +791,7 @@ const ArticleDetail = () => {
                   </CardContent>
                 </Card>
 
-                {/* Keywords Card */}
-                {article.seo?.keywords && article.seo.keywords.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <Search className="h-5 w-5 mr-2 text-primary-600 dark:text-primary-400" />
-                        Keywords
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-2">
-                        {article.seo.keywords.map((keyword, index) => (
-                          <div 
-                            key={index}
-                            className="bg-muted text-foreground px-3 py-1 rounded-full text-xs hover:bg-primary-100 hover:text-primary-700 dark:hover:bg-primary-900 dark:hover:text-primary-300 transition-colors duration-200 cursor-pointer"
-                            onClick={() => window.location.href = `/search?q=${encodeURIComponent(keyword)}`}
-                          >
-                            {keyword}
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                
 
                 {/* Search articles card */}
                 <Card>
@@ -808,6 +846,7 @@ const ArticleDetail = () => {
 };
 
 export default ArticleDetail;
+
 
 
 

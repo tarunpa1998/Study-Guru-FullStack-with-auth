@@ -34,8 +34,9 @@ const EducationNews = () => {
   });
   
   const [api, setApi] = useState<CarouselApi>();
+  const sectionRef = useRef(null);
   const carouselRef = useRef(null);
-  const isInView = useInView(carouselRef, { once: false, amount: 0.3 });
+  const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
   const intervalRef = useRef<number | null>(null);
   
   // Check if screen is mobile
@@ -46,7 +47,7 @@ const EducationNews = () => {
 
   // Setup auto-scrolling when carousel is in view (only for mobile)
   useEffect(() => {
-    if (!isMobile || !api || !isInView || featuredNews.length <= 1) {
+    if (!isMobile || !api || featuredNews.length <= 1) {
       // Clear interval if conditions aren't met
       if (intervalRef.current !== null) {
         window.clearInterval(intervalRef.current);
@@ -67,11 +68,16 @@ const EducationNews = () => {
         intervalRef.current = null;
       }
     };
-  }, [api, isInView, featuredNews.length, isMobile]);
+  }, [api, featuredNews.length, isMobile]);
 
   return (
-    <section className="py-12 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-12 bg-background" ref={sectionRef}>
+      <motion.div 
+        className="container mx-auto px-4 sm:px-6 lg:px-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground">Education News</h2>
@@ -90,6 +96,7 @@ const EducationNews = () => {
 
         {isLoading ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Loading skeletons */}
             <div className="lg:col-span-2">
               <div className="bg-card rounded-xl shadow-sm overflow-hidden border border-border">
                 <Skeleton className="h-64 md:h-80 w-full" />
@@ -128,9 +135,10 @@ const EducationNews = () => {
             <div className="lg:hidden" ref={carouselRef}>
               {featuredNews.length > 0 && (
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
-                  transition={{ duration: 0.5 }}
+                  className="w-full"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
                 >
                   <Carousel
                     opts={{
@@ -165,7 +173,12 @@ const EducationNews = () => {
                   </Carousel>
                 </motion.div>
               )}
-              <div className="space-y-6 mt-6">
+              <motion.div 
+                className="space-y-6 mt-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
                 {regularNews.map((news) => (
                   <NewsCard
                     key={news.id}
@@ -178,13 +191,18 @@ const EducationNews = () => {
                     layout="horizontal"
                   />
                 ))}
-              </div>
+              </motion.div>
             </div>
             
             {/* Desktop View - Grid Layout */}
             <div className="hidden lg:grid lg:grid-cols-3 gap-6">
               {featuredNews.length > 0 && (
-                <div className="lg:col-span-2">
+                <motion.div 
+                  className="lg:col-span-2"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   <FeaturedNewsItem
                     title={featuredNews[0].title}
                     summary={featuredNews[0].summary}
@@ -193,9 +211,14 @@ const EducationNews = () => {
                     image={featuredNews[0].image}
                     category={featuredNews[0].category}
                   />
-                </div>
+                </motion.div>
               )}
-              <div className="space-y-6">
+              <motion.div 
+                className="space-y-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
                 {regularNews.map((news) => (
                   <NewsCard
                     key={news.id}
@@ -208,14 +231,16 @@ const EducationNews = () => {
                     layout="horizontal"
                   />
                 ))}
-              </div>
+              </motion.div>
             </div>
           </>
         )}
-      </div>
+      </motion.div>
     </section>
   );
 };
 
 export default EducationNews;
+
+
 

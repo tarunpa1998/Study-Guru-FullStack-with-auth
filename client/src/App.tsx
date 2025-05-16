@@ -12,6 +12,7 @@ import { AdminProtectedRoute } from "./lib/AdminProtectedRoute";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import ScrollProgressCircle from "@/components/ScrollProgressCircle";
 import Home from "@/pages/Home";
 import ScholarshipsList from "@/pages/ScholarshipsList";
 import ScholarshipDetail from "@/pages/ScholarshipDetail";
@@ -134,6 +135,7 @@ function App() {
                 </div>
                 {!isAdminRoute && <Footer />}
                 {!isAdminRoute && <FloatingWhatsApp />}
+                {!isAdminRoute && <ScrollProgressCircle />}
               </div>
             </TooltipProvider>
           </AuthProvider>

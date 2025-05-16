@@ -156,12 +156,14 @@ const HomeChatBot = () => {
   useEffect(() => {
     // Start with a smaller chat and grow it minimally
     if (messages.length === 0) {
-      setExpandedHeight('300px');  // Initial small size
+      setExpandedHeight('320px');  // Initial small size
     } else if (messages.length <= 2) {
-      setExpandedHeight('380px');  // Slightly taller after first messages
+      setExpandedHeight('420px');  // Taller after first messages
+    } else if (messages.length <= 4) {
+      setExpandedHeight('480px');  // Even taller after more messages
     } else {
-      // After first 2 messages, fix the height and only scroll the chat content
-      setExpandedHeight('420px');  // Final fixed height
+      // After first 4 messages, fix the height and only scroll the chat content
+      setExpandedHeight('520px');  // Final fixed height
     }
   }, [messages.length]);
   
@@ -171,30 +173,51 @@ const HomeChatBot = () => {
 
   // Handle input focus and blur directly to prevent page jumping
   useEffect(() => {
+    // Only apply this on mobile devices
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (!isMobile) return;
+    
+    // Store the original viewport meta tag content
+    const originalViewportMeta = document.querySelector('meta[name="viewport"]')?.getAttribute('content');
+    
     const handleFocus = () => {
-      // Save current scroll position when keyboard opens
-      setPageScrollPosition(window.scrollY);
+      // Prevent page zoom/scroll by fixing the viewport
+      const viewportMeta = document.querySelector('meta[name="viewport"]');
+      if (viewportMeta) {
+        viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+      }
+      
       setKeyboardOpen(true);
       
-      // Manually scroll the chat container
-      if (messagesContainerRef.current) {
-        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-      }
+      // Prevent scrolling of the body
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+      document.body.dataset.scrollY = window.scrollY.toString();
+      
+      // Ensure chat container is scrolled to bottom
+      setTimeout(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+      }, 100);
     };
     
     const handleBlur = () => {
+      // Restore original viewport settings
+      const viewportMeta = document.querySelector('meta[name="viewport"]');
+      if (viewportMeta && originalViewportMeta) {
+        viewportMeta.setAttribute('content', originalViewportMeta);
+      }
+      
       setKeyboardOpen(false);
       
-      // Use a short delay to let the keyboard finish closing
-      setTimeout(() => {
-        // Only restore scroll if we're still on the same screen (component not unmounted)
-        if (inputRef.current) {
-          window.scrollTo({
-            top: pageScrollPosition,
-            behavior: 'auto'  // Use auto to prevent smooth scrolling (which can cause jumps)
-          });
-        }
-      }, 100);
+      // Restore body scroll position
+      const scrollY = document.body.dataset.scrollY || '0';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      window.scrollTo(0, parseInt(scrollY));
     };
     
     // Add listeners to input element directly
@@ -208,8 +231,19 @@ const HomeChatBot = () => {
         inputRef.current.removeEventListener('focus', handleFocus);
         inputRef.current.removeEventListener('blur', handleBlur);
       }
+      
+      // Restore original body state on unmount
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      
+      // Restore original viewport
+      const viewportMeta = document.querySelector('meta[name="viewport"]');
+      if (viewportMeta && originalViewportMeta) {
+        viewportMeta.setAttribute('content', originalViewportMeta);
+      }
     };
-  }, [pageScrollPosition, inputRef.current]);
+  }, []);
 
   const startChat = () => {
     setIsExpanded(true);
@@ -453,13 +487,13 @@ const HomeChatBot = () => {
   };
 
   return (
-    <section className="py-16 bg-slate-50 dark:bg-slate-900">
+    <section className="py-16 bg-background border-y border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-primary-700 dark:text-primary-400">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
             Start Your Study Abroad Journey
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
             Chat with our education advisor to get personalized guidance for your international education plans.
           </p>
         </div>
@@ -475,20 +509,20 @@ const HomeChatBot = () => {
                 width: '100%'
               }}
               transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
-              className={`bg-gray-900 dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col w-full ${keyboardOpen ? 'keyboard-visible' : ''}`}
+              className={`bg-card border border-border rounded-3xl shadow-xl overflow-hidden flex flex-col w-full ${keyboardOpen ? 'keyboard-visible' : ''}`}
             >
               {/* Chat header */}
               <motion.div 
                 layout
-                className="p-5 text-white flex items-center justify-between"
+                className="p-5 bg-primary text-primary-foreground flex items-center justify-between"
               >
                 <div className="flex items-center">
-                  <div className="w-14 h-14 rounded-full bg-slate-600 flex items-center justify-center mr-4">
+                  <div className="w-14 h-14 rounded-full bg-primary-foreground/20 flex items-center justify-center mr-4">
                     <motion.div
                       animate="wave"
                       variants={waveAnimation}
                     >
-                      <svg className="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg className="h-8 w-8 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
                         <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"></path>
                         <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
@@ -498,13 +532,13 @@ const HomeChatBot = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-xl font-handwriting">StudyGuru Chat</h3>
-                    <p className="text-sm text-gray-400">We're here to help!</p>
+                    <p className="text-sm text-primary-foreground/80">We're here to help!</p>
                   </div>
                 </div>
                 {isExpanded && (
                   <button 
                     onClick={() => setIsExpanded(false)}
-                    className="text-gray-400 hover:text-white"
+                    className="text-primary-foreground/80 hover:text-primary-foreground"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -517,8 +551,8 @@ const HomeChatBot = () => {
               {isExpanded && (
                 <motion.div 
                   layout
-                  className="flex-1 p-4 overflow-y-auto messages-container-wrapper"
-                  style={{ maxHeight: "290px" }} 
+                  className="flex-1 p-4 overflow-y-auto messages-container-wrapper bg-card"
+                  style={{ maxHeight: "350px" }} 
                   initial="hidden"
                   animate="visible"
                   variants={fadeIn}
@@ -536,8 +570,8 @@ const HomeChatBot = () => {
                         className={`mb-4 flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         {message.type === 'bot' && (
-                          <div className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center mr-3 flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-3 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" viewBox="0 0 20 20" fill="currentColor">
                               <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
                               <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
                             </svg>
@@ -547,8 +581,8 @@ const HomeChatBot = () => {
                         <div>
                           <div className={`rounded-2xl py-3 px-5 max-w-xs md:max-w-md inline-block ${
                             message.type === 'user' 
-                              ? 'bg-amber-500 text-white ml-2' 
-                              : 'bg-slate-700 text-white'
+                              ? 'bg-primary text-primary-foreground ml-2' 
+                              : 'bg-secondary text-secondary-foreground'
                           }`}>
                             <p>{message.text}</p>
                           </div>
@@ -559,7 +593,7 @@ const HomeChatBot = () => {
                               {message.options.map((option, idx) => (
                                 <button
                                   key={idx}
-                                  className="py-2 px-4 bg-slate-600 hover:bg-slate-500 text-white rounded-full text-sm transition-colors duration-200 border border-slate-500"
+                                  className="py-2 px-4 bg-accent hover:bg-accent/80 text-accent-foreground rounded-full text-sm transition-colors duration-200 border border-border"
                                   onClick={() => handleOptionSelect(option)}
                                 >
                                   {option}
@@ -574,7 +608,7 @@ const HomeChatBot = () => {
                               {message.countries.map((country, idx) => (
                                 <button
                                   key={idx}
-                                  className="py-2 px-4 bg-slate-600 hover:bg-slate-500 text-white rounded-full text-sm transition-colors duration-200 border border-slate-500"
+                                  className="py-2 px-4 bg-accent hover:bg-accent/80 text-accent-foreground rounded-full text-sm transition-colors duration-200 border border-border"
                                   onClick={() => handleCountrySelect(country)}
                                 >
                                   {country}
@@ -598,17 +632,17 @@ const HomeChatBot = () => {
                         exit="exit"
                         className="flex justify-start mb-4"
                       >
-                        <div className="w-10 h-10 rounded-full bg-slate-600 flex items-center justify-center mr-3 flex-shrink-0">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-3 flex-shrink-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
                             <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
                           </svg>
                         </div>
-                        <div className="rounded-2xl py-3 px-5 bg-slate-700 text-white">
+                        <div className="rounded-2xl py-3 px-5 bg-secondary text-secondary-foreground">
                           <div className="flex items-center space-x-2">
-                            <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                            <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                            <div className="h-2.5 w-2.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                            <div className="h-2.5 w-2.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="h-2.5 w-2.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="h-2.5 w-2.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                           </div>
                         </div>
                       </motion.div>
@@ -622,21 +656,21 @@ const HomeChatBot = () => {
                       variants={bubbleVariants}
                       initial="hidden"
                       animate="visible"
-                      className="mt-8 bg-slate-100 dark:bg-slate-700 rounded-xl p-4 shadow-md"
+                      className="mt-8 bg-muted rounded-xl p-4 shadow-md"
                     >
-                        <h3 className="font-bold text-lg mb-2">Contact Us</h3>
+                        <h3 className="font-bold text-lg mb-2 text-foreground">Contact Us</h3>
                         <div className="space-y-3">
                           <div className="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
-                            <span>support@studyguruindia.com</span>
+                            <span className="text-foreground">support@studyguruindia.com</span>
                           </div>
                           <div className="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-600 dark:text-primary-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                             </svg>
-                            <span>+91 99999-99999</span>
+                            <span className="text-foreground">+91 99999-99999</span>
                           </div>
                           <div className="flex mt-4 gap-2">
                             <button 
@@ -649,7 +683,7 @@ const HomeChatBot = () => {
                               WhatsApp
                             </button>
                             <button 
-                              className="flex-1 border border-slate-500 hover:bg-slate-700 text-white py-2 px-4 rounded-lg"
+                              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground py-2 px-4 rounded-lg"
                               onClick={() => window.location.href = '/contact'}
                             >
                               Contact Us
@@ -667,7 +701,7 @@ const HomeChatBot = () => {
               {isExpanded ? (
                 <motion.div 
                   layout
-                  className="p-4 border-t border-slate-700"
+                  className="p-4 border-t border-border"
                 >
                   {showInput && (
                     <form onSubmit={handleUserInput} className="flex items-center gap-2">
@@ -677,12 +711,12 @@ const HomeChatBot = () => {
                         placeholder="Type your message..."
                         value={userInput}
                         onChange={(e) => setUserInput(e.target.value)}
-                        className="flex-1 py-3 px-4 rounded-full bg-slate-800 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                        className="flex-1 py-3 px-4 rounded-full bg-muted text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         autoFocus
                       />
                       <button 
                         type="submit" 
-                        className="h-12 w-12 rounded-full bg-amber-500 hover:bg-amber-400 text-white flex items-center justify-center transition-colors"
+                        className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center transition-colors"
                       >
                         <SendHorizontal className="h-5 w-5" />
                       </button>
@@ -698,7 +732,7 @@ const HomeChatBot = () => {
                 >
                   <button 
                     onClick={handleInitialHi}
-                    className="bg-transparent border border-amber-400 hover:bg-slate-800 text-white text-lg font-medium rounded-full px-10 py-4 transition-all duration-300 hover:scale-105 w-full flex items-center justify-center gap-3 relative overflow-hidden"
+                    className="bg-transparent border border-primary hover:bg-accent text-foreground text-lg font-medium rounded-full px-10 py-4 transition-all duration-300 hover:scale-105 w-full flex items-center justify-center gap-3 relative overflow-hidden"
                   >
                     <motion.span
                       animate={{
@@ -715,7 +749,7 @@ const HomeChatBot = () => {
                     </motion.span> 
                     <span className="font-handwriting text-xl">Say Hi</span>
                   </button>
-                  <p className="text-sm text-center mt-4 text-gray-400">
+                  <p className="text-sm text-center mt-4 text-muted-foreground">
                     Chat with our education consultant
                   </p>
                 </motion.div>
@@ -729,3 +763,12 @@ const HomeChatBot = () => {
 };
 
 export default HomeChatBot;
+
+
+
+
+
+
+
+
+

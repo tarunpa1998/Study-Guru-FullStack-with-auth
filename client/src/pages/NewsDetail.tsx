@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
 import RichTextContent from "@/components/RichTextContent";
+import ChatBot from "@/components/ChatBot";
 
 // Define the News type
 interface NewsItem {
@@ -358,6 +359,31 @@ const NewsDetail = () => {
           <meta property="og:type" content="article" />
           {newsItem.image && <meta property="og:image" content={newsItem.image} />}
           {newsItem.seo?.keywords && <meta name="keywords" content={newsItem.seo.keywords.join(', ')} />}
+          
+          {/* Add structured data for better SEO */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "NewsArticle",
+              "headline": newsItem.title,
+              "description": newsItem.summary,
+              "image": newsItem.image || "",
+              "datePublished": newsItem.publishDate,
+              "dateModified": newsItem.publishDate,
+              "publisher": {
+                "@type": "Organization",
+                "name": "Study Guru",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://studyguru.com/logo.png"
+                }
+              },
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": window.location.href
+              }
+            })}
+          </script>
         </Helmet>
       )}
 
@@ -453,7 +479,12 @@ const NewsDetail = () => {
                   <div className="mb-6">
                     <img 
                       src={newsItem.image} 
-                      alt={newsItem.title} 
+                      alt={newsItem.title}
+                      width="1200"
+                      height="500"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
                       className="w-full h-auto rounded-xl shadow-md object-cover max-h-[500px]" 
                     />
                   </div>
@@ -676,7 +707,22 @@ const NewsDetail = () => {
                   </Card>
                 )}
 
-                {/* Keywords are hidden from users as per requirements - only used for SEO */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-foreground">Need Help?</CardTitle>
+                    <CardDescription>Chat with our education advisor</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0 pb-0">
+                    <ChatBot 
+                      title="Study Guru Chat"
+                      subtitle="Ask about this article"
+                      initialMessage="Hi there! Have questions about this news article?"
+                      showContactInfo={true}
+                      className="mb-4"
+                      useStudyAbroadFlow={false}
+                    />
+                  </CardContent>
+                </Card>
 
                 {/* Search news card */}
                 <Card>
@@ -760,6 +806,9 @@ const NewsDetail = () => {
 };
 
 export default NewsDetail;
+
+
+
 
 
 

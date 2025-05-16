@@ -21,16 +21,18 @@ const FeaturedNewsItem = ({
 }: FeaturedNewsItemProps) => {
   return (
     <Link href={`/news/${slug}`}>
-      <div className="group cursor-pointer">
+      <div className="group cursor-pointer w-full">
         <motion.div 
-          className="bg-card rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border border-border"
+          className="bg-card rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border border-border w-full"
           whileHover={{ y: -5 }}
           transition={{ type: "spring", stiffness: 300 }}
         >
           <div className="h-64 md:h-80 overflow-hidden">
             <img 
               src={image} 
-              alt={title} 
+              alt={title}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
             />
           </div>
@@ -53,4 +55,6 @@ const FeaturedNewsItem = ({
 };
 
 export default FeaturedNewsItem;
+
+
 

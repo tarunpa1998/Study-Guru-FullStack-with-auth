@@ -17,6 +17,7 @@ import {
   Sun
 } from "lucide-react";
 import { FaInstagram, FaFacebook, FaWhatsapp, FaTelegram } from "react-icons/fa";
+import Logo from "./Logo.tsx";
 import { cn } from "@/lib/utils";
 import SearchBar from "./SearchBar";
 import { useAuth } from "../contexts/AuthContext";
@@ -493,14 +494,7 @@ const Navbar = () => {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <div className="flex items-center">
-              <Link href="/" className="flex items-center">
-                <img 
-                  src="/logo.svg" 
-                  alt="Study Guru Logo" 
-                  className="h-8 w-8 mr-2"
-                />
-                <span className="text-xl font-bold text-foreground">STUDY GURU</span>
-              </Link>
+              <Logo width={60} height={60} withText={true} className="flex items-center" />
             </div>
 
             {/* Desktop Navigation */}
@@ -720,6 +714,9 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+
 
 
 
