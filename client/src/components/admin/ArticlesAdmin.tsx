@@ -64,6 +64,7 @@ interface Article {
   image?: string;
   category: string;
   isFeatured: boolean;
+  isPublished?: boolean; // Flag to indicate if it's published or draft
   relatedArticles: string[];
   seo: {
     metaTitle: string;
@@ -164,13 +165,41 @@ const ArticlesAdmin = () => {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch('/api/articles');
-      if (!response.ok) {
+      // Fetch published articles
+      const articlesResponse = await fetch('/api/articles');
+      if (!articlesResponse.ok) {
         throw new Error('Failed to fetch articles');
       }
+      const publishedArticles = await articlesResponse.json();
+      
+      // Add isPublished flag to published articles
+      const publishedWithFlag = publishedArticles.map((article: Article) => ({
+        ...article,
+        isPublished: true
+      }));
 
-      const data = await response.json();
-      setArticles(data);
+      // Fetch draft articles
+      const draftsResponse = await fetch('/api/admin/drafts/articles', {
+        headers: {
+          'x-auth-token': token
+        }
+      });
+      
+      if (!draftsResponse.ok) {
+        throw new Error('Failed to fetch draft articles');
+      }
+      
+      const draftArticles = await draftsResponse.json();
+      
+      // Add isPublished flag to draft articles (set to false)
+      const draftsWithFlag = draftArticles.map((article: any) => ({
+        ...article,
+        isPublished: false
+      }));
+      
+      // Combine both published and draft articles
+      const allArticles = [...publishedWithFlag, ...draftsWithFlag];
+      setArticles(allArticles);
     } catch (error) {
       console.error('Error fetching articles:', error);
       toast({
@@ -455,7 +484,8 @@ const ArticlesAdmin = () => {
                       <TableHead>Title</TableHead>
                       <TableHead>Author</TableHead>
                       <TableHead>Category</TableHead>
-                      <TableHead>Published</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead>Featured</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
