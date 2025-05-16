@@ -4,6 +4,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { migrateDataToMongoDB } from "./migrate";
 import dotenv from 'dotenv';
 import connectToDatabase from "./lib/mongodb";
+import path from "path";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -22,6 +23,11 @@ app.use((req, res, next) => {
   // Set explicit headers to allow indexing
   res.setHeader('X-Robots-Tag', 'index, follow');
   next();
+});
+
+// Serve robots.txt from public directory
+app.get('/robots.txt', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'public', 'robots.txt'));
 });
 
 // Set up logging middleware
