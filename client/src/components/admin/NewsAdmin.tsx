@@ -196,7 +196,7 @@ const NewsAdmin = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (asDraft = false) => {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('adminToken');
@@ -209,20 +209,34 @@ const NewsAdmin = () => {
         throw new Error('Title, content, and summary are required');
       }
 
-      const url = isEditing
-        ? `/api/admin/news/${currentNews?.id || currentNews?._id}`
-        : '/api/admin/news';
+      // Determine if we're saving as a draft or publishing
+      let url;
+      let method;
       
-      const method = isEditing ? 'PUT' : 'POST';
+      if (asDraft) {
+        // Save as draft
+        url = isEditing && (currentNews?.id || currentNews?._id)
+          ? `/api/admin/drafts/news/${currentNews?.id || currentNews?._id}`
+          : '/api/admin/drafts/news';
+        method = isEditing ? 'PUT' : 'POST';
+      } else {
+        // Publish normally
+        url = isEditing && (currentNews?.id || currentNews?._id)
+          ? `/api/admin/news/${currentNews?.id || currentNews?._id}`
+          : '/api/admin/news';
+        method = isEditing ? 'PUT' : 'POST';
+      }
       
       // Convert keywords from string to array if it's a string
       const submissionData = {
         ...editForm,
         seo: {
           ...editForm.seo,
-          keywords: typeof editForm.seo.keywords === 'string' 
-            ? editForm.seo.keywords.split(',').map(k => k.trim()).filter(Boolean) 
-            : editForm.seo.keywords
+          keywords: Array.isArray(editForm.seo.keywords) 
+            ? editForm.seo.keywords 
+            : (typeof editForm.seo.keywords === 'string' 
+              ? (editForm.seo.keywords as string).split(',').map((k: string) => k.trim()).filter(Boolean) 
+              : [])
         }
       };
       
@@ -242,34 +256,41 @@ const NewsAdmin = () => {
 
       const savedNews = await response.json();
       
-      if (isEditing) {
-        // Update existing news in the list
-        setNews(news.map(item => {
-          // Handle both ID formats by comparing with both
-          const matchesId = 
-            (item._id === savedNews._id) || 
-            (item.id === savedNews.id) ||
-            (item._id === savedNews.id) ||
-            (item.id === savedNews._id);
-          return matchesId ? savedNews : item;
-        }));
-      } else {
-        // Add new news to the list
-        setNews([...news, savedNews]);
+      // Only update the news list if not saving as draft
+      if (!asDraft) {
+        if (isEditing) {
+          // Update existing news in the list
+          setNews(news.map(item => {
+            // Handle both ID formats by comparing with both
+            const matchesId = 
+              (item._id === savedNews._id) || 
+              (item.id === savedNews.id) ||
+              (item._id === savedNews.id) ||
+              (item.id === savedNews._id);
+            return matchesId ? savedNews : item;
+          }));
+        } else {
+          // Add new news to the list
+          setNews([...news, savedNews]);
+        }
       }
       
       setDialogOpen(false);
       toast({
-        title: isEditing ? 'News item updated' : 'News item created',
-        description: isEditing 
-          ? 'The news item has been updated successfully' 
-          : 'A new news item has been created successfully',
+        title: asDraft 
+          ? 'Draft saved' 
+          : (isEditing ? 'News item updated' : 'News item created'),
+        description: asDraft 
+          ? 'The news item has been saved as a draft'
+          : (isEditing 
+            ? 'The news item has been updated successfully' 
+            : 'A new news item has been created successfully'),
         variant: 'default',
       });
     } catch (error) {
       console.error('Error saving news:', error);
       toast({
-        title: 'Error saving news item',
+        title: asDraft ? 'Error saving draft' : 'Error saving news item',
         description: error instanceof Error ? error.message : 'Unknown error occurred',
         variant: 'destructive',
       });
@@ -683,7 +704,7 @@ const NewsAdmin = () => {
             </TabsContent>
           </Tabs>
 
-          <DialogFooter>
+          <DialogFooter className="flex gap-2">
             <Button 
               variant="outline" 
               onClick={() => setDialogOpen(false)}
@@ -692,7 +713,23 @@ const NewsAdmin = () => {
               Cancel
             </Button>
             <Button 
-              onClick={handleSubmit}
+              variant="outline"
+              onClick={() => handleSubmit(true)}
+              type="button"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving Draft...
+                </>
+              ) : (
+                "Save as Draft"
+              )}
+            </Button>
+            <Button 
+              onClick={() => handleSubmit(false)}
+              type="button"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
