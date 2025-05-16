@@ -219,7 +219,7 @@ const ArticlesAdmin = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (asDraft = false) => {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('adminToken');
@@ -237,19 +237,34 @@ const ArticlesAdmin = () => {
         ...editForm,
         seo: {
           ...editForm.seo,
-          keywords: typeof editForm.seo.keywords === 'string' 
-            ? editForm.seo.keywords.split(',').map(k => k.trim()).filter(Boolean) 
-            : editForm.seo.keywords
+          keywords: Array.isArray(editForm.seo.keywords) 
+            ? editForm.seo.keywords 
+            : (typeof editForm.seo.keywords === 'string' 
+              ? (editForm.seo.keywords as string).split(',').map((k: string) => k.trim()).filter(Boolean) 
+              : [])
         }
       };
 
       // Use the appropriate ID field (supporting both formats)
       const articleId = currentArticle?.id || currentArticle?._id;
-      const url = isEditing
-        ? `/api/admin/articles/${articleId}`
-        : '/api/admin/articles';
       
-      const method = isEditing ? 'PUT' : 'POST';
+      // Determine if we're saving as a draft or publishing
+      let url;
+      let method;
+      
+      if (asDraft) {
+        // Save as draft
+        url = isEditing && articleId
+          ? `/api/admin/drafts/articles/${articleId}`
+          : '/api/admin/drafts/articles';
+        method = isEditing ? 'PUT' : 'POST';
+      } else {
+        // Publish normally
+        url = isEditing && articleId
+          ? `/api/admin/articles/${articleId}`
+          : '/api/admin/articles';
+        method = isEditing ? 'PUT' : 'POST';
+      }
       
       const response = await fetch(url, {
         method,
@@ -267,30 +282,37 @@ const ArticlesAdmin = () => {
 
       const savedArticle = await response.json();
       
-      if (isEditing) {
-        // Update existing article in the list
-        setArticles(articles.map(article => {
-          // Handle both ID formats by comparing with both
-          const matchesId = article.id === savedArticle.id || article._id === savedArticle._id;
-          return matchesId ? savedArticle : article;
-        }));
-      } else {
-        // Add new article to the list
-        setArticles([...articles, savedArticle]);
+      // Only update the articles list if not saving as draft
+      if (!asDraft) {
+        if (isEditing) {
+          // Update existing article in the list
+          setArticles(articles.map(article => {
+            // Handle both ID formats by comparing with both
+            const matchesId = article.id === savedArticle.id || article._id === savedArticle._id;
+            return matchesId ? savedArticle : article;
+          }));
+        } else {
+          // Add new article to the list
+          setArticles([...articles, savedArticle]);
+        }
       }
       
       setDialogOpen(false);
       toast({
-        title: isEditing ? 'Article updated' : 'Article created',
-        description: isEditing 
-          ? 'The article has been updated successfully' 
-          : 'A new article has been created successfully',
+        title: asDraft 
+          ? 'Draft saved' 
+          : (isEditing ? 'Article updated' : 'Article created'),
+        description: asDraft 
+          ? 'The article has been saved as a draft'
+          : (isEditing 
+            ? 'The article has been updated successfully' 
+            : 'A new article has been created successfully'),
         variant: 'default',
       });
     } catch (error) {
       console.error('Error saving article:', error);
       toast({
-        title: 'Error saving article',
+        title: asDraft ? 'Error saving draft' : 'Error saving article',
         description: error instanceof Error ? error.message : 'Unknown error occurred',
         variant: 'destructive',
       });
@@ -1054,7 +1076,7 @@ const ArticlesAdmin = () => {
             </TabsContent>
           </Tabs>
 
-          <DialogFooter>
+          <DialogFooter className="flex gap-2">
             <Button 
               variant="outline" 
               onClick={() => setDialogOpen(false)}
@@ -1063,7 +1085,22 @@ const ArticlesAdmin = () => {
               Cancel
             </Button>
             <Button 
-              onClick={handleSubmit}
+              variant="outline"
+              onClick={() => handleSubmit(true)}
+              type="button"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving Draft...
+                </>
+              ) : (
+                "Save as Draft"
+              )}
+            </Button>
+            <Button 
+              onClick={() => handleSubmit(false)}
               disabled={isSubmitting}
             >
               {isSubmitting ? (
