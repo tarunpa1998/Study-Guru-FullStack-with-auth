@@ -108,10 +108,12 @@ const Footer = () => {
                   <Twitter className="h-5 w-5" />
                 </motion.a>
                 <motion.a 
-                  href="#" 
+                  href="https://www.instagram.com/studyguruindiaa?igsh=MWk3anVxamk0aWQyYw==" 
                   className="bg-white/10 p-2.5 rounded-full text-white hover:bg-primary-600 transition-colors duration-200"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   <span className="sr-only">Instagram</span>
                   <Instagram className="h-5 w-5" />

@@ -231,7 +231,9 @@ const ContactPage = () => {
                 </p>
                 
                 <p className="flex items-center mb-3 text-muted-foreground">
-                  <Phone className="h-5 w-5 mr-3 text-muted-foreground" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
                   <span><strong className="text-foreground">Phone / WhatsApp:</strong> +4306787801657</span>
                 </p>
                 
@@ -265,7 +267,7 @@ const ContactPage = () => {
                 <h3 className="text-xl font-semibold mb-4 text-foreground">Connect With Us</h3>
                 <div className="flex space-x-4">
                   <motion.a 
-                    href="https://instagram.com/studyguru" 
+                    href="https://www.instagram.com/studyguruindiaa?igsh=MWk3anVxamk0aWQyYw==" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex flex-col items-center"
@@ -535,20 +537,6 @@ const ContactPage = () => {
                 ></iframe>
               </div>
             </div>
-          </div>
-          
-          {/* Combined Map */}
-          <div className="rounded-xl overflow-hidden shadow-lg border border-border">
-            <iframe
-              title="All Office Locations"
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d18862857.118615346!2d46.939454450000005!3d35.7224195!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1684488665447!5m2!1sen!2sin"
-              width="100%"
-              height="450"
-              style={{ border: 0 }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
           </div>
           
           <div className="mt-8 text-center text-muted-foreground">
