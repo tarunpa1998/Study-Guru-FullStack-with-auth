@@ -15,7 +15,8 @@ import {
   Menu, 
   X, 
   Home,
-  LayoutDashboard
+  LayoutDashboard,
+  FileEdit
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import ArticlesAdmin from '@/components/admin/ArticlesAdmin';
@@ -24,6 +25,7 @@ import ScholarshipsAdmin from '@/components/admin/ScholarshipsAdmin';
 import CountriesAdmin from '@/components/admin/CountriesAdmin';
 import UniversitiesAdmin from '@/components/admin/UniversitiesAdmin';
 import AdminHome from '@/components/admin/AdminHome';
+import DraftsView from '@/components/admin/DraftsView';
 
 type NavItem = {
   title: string;
@@ -46,6 +48,11 @@ const navItems: NavItem[] = [
     title: "News",
     icon: <Newspaper className="h-5 w-5" />,
     section: "news",
+  },
+  {
+    title: "Drafts",
+    icon: <FileEdit className="h-5 w-5" />,
+    section: "drafts",
   },
   {
     title: "Scholarships",
