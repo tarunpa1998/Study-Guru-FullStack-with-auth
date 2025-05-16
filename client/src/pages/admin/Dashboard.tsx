@@ -25,7 +25,7 @@ import ScholarshipsAdmin from '@/components/admin/ScholarshipsAdmin';
 import CountriesAdmin from '@/components/admin/CountriesAdmin';
 import UniversitiesAdmin from '@/components/admin/UniversitiesAdmin';
 import AdminHome from '@/components/admin/AdminHome';
-import DraftsView from '@/components/admin/DraftsView';
+//DraftsView no longer needed as drafts are integrated into Articles and News views
 
 type NavItem = {
   title: string;
@@ -49,11 +49,7 @@ const navItems: NavItem[] = [
     icon: <Newspaper className="h-5 w-5" />,
     section: "news",
   },
-  {
-    title: "Drafts",
-    icon: <FileEdit className="h-5 w-5" />,
-    section: "drafts",
-  },
+  // Drafts are now integrated into Articles and News views
   {
     title: "Scholarships",
     icon: <BookOpen className="h-5 w-5" />,
@@ -127,8 +123,6 @@ const Dashboard = () => {
         return <ArticlesAdmin />;
       case "news":
         return <NewsAdmin />;
-      case "drafts":
-        return <DraftsView />;
       case "scholarships":
         return <ScholarshipsAdmin />;
       case "countries":
