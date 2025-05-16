@@ -5,6 +5,7 @@ import newsRoutes from './newsRoutes';
 import scholarshipRoutes from './scholarshipRoutes';
 import countryRoutes from './countryRoutes';
 import universityRoutes from './universityRoutes';
+import draftRoutes from './draftRoutes';
 
 /**
  * Register all admin routes
@@ -20,6 +21,7 @@ export function registerAdminRoutes(app: Express) {
   app.use('/api/admin', scholarshipRoutes);
   app.use('/api/admin', countryRoutes);
   app.use('/api/admin', universityRoutes);
+  app.use('/api/admin', draftRoutes);
 
   console.log('[admin] Admin routes registered');
 }
