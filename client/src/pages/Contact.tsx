@@ -182,9 +182,9 @@ const ContactPage = () => {
                     showContactInfo={true}
                     className="mb-8"
                     useStudyAbroadFlow={true}
-                    contactEmail="support@studyguruindia.com"
-                    contactPhone="+91 99999-99999"
-                    whatsappNumber="919999999999"
+                    contactEmail="Help@studyguruindia.com"
+                    contactPhone="+4306787801657"
+                    whatsappNumber="4306787801657"
                     contactPageUrl="/contact"
                   />
                 </div>
@@ -206,7 +206,7 @@ const ContactPage = () => {
                     <h3 className="text-lg font-semibold mb-1">Prefer WhatsApp?</h3>
                     <p className="text-white/90 mb-3">Get instant responses to your queries</p>
                     <a 
-                      href="https://wa.me/919999999999" 
+                      href="https://wa.me/4306787801657" 
                       target="_blank"
                       rel="noopener noreferrer" 
                       className="inline-flex items-center bg-white text-emerald-600 hover:bg-emerald-50 font-medium py-2 px-4 rounded-lg transition-colors duration-200"
@@ -227,12 +227,12 @@ const ContactPage = () => {
                 
                 <p className="flex items-center mb-2 text-muted-foreground">
                   <Mail className="h-5 w-5 mr-3 text-muted-foreground" />
-                  <span><strong className="text-foreground">Email:</strong> studyguru@gmail.com</span>
+                  <span><strong className="text-foreground">Email:</strong> Help@studyguruindia.com</span>
                 </p>
                 
                 <p className="flex items-center mb-4 text-muted-foreground">
                   <Phone className="h-5 w-5 mr-3 text-muted-foreground" />
-                  <span><strong className="text-foreground">Phone / WhatsApp:</strong> +91 99999-99999</span>
+                  <span><strong className="text-foreground">Phone / WhatsApp:</strong> +4306787801657</span>
                 </p>
                 
                 <p className="flex items-center text-muted-foreground">
@@ -289,7 +289,7 @@ const ContactPage = () => {
                   </motion.a>
                   
                   <motion.a 
-                    href="https://wa.me/1234567890" 
+                    href="https://wa.me/4306787801657" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex flex-col items-center"
