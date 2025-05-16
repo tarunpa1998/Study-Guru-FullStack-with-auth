@@ -132,6 +132,28 @@ const ArticlesAdmin = () => {
 
   useEffect(() => {
     fetchArticles();
+    
+    // Check if we're editing a draft
+    const editingDraftData = sessionStorage.getItem('editingDraft');
+    if (editingDraftData) {
+      try {
+        const draftInfo = JSON.parse(editingDraftData);
+        if (draftInfo.type === 'article') {
+          // We're editing an article draft
+          setIsEditing(true);
+          setEditForm(draftInfo.data);
+          setCurrentArticle(draftInfo.data);
+          setDialogOpen(true);
+          setActiveTab("basic");
+          
+          // Clear the session storage so we don't repeatedly open the edit dialog
+          sessionStorage.removeItem('editingDraft');
+        }
+      } catch (e) {
+        console.error('Error parsing draft data', e);
+        sessionStorage.removeItem('editingDraft');
+      }
+    }
   }, []);
 
   const fetchArticles = async () => {

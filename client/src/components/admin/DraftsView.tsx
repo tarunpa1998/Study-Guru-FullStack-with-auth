@@ -136,12 +136,80 @@ const DraftsView = () => {
     }
   };
 
-  const handleEditDraftArticle = (draftId: string) => {
-    navigate(`/admin/drafts/articles/edit/${draftId}`);
+  const handleEditDraftArticle = async (draftId: string) => {
+    try {
+      // Fetch the draft article to get its data first
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+      
+      const response = await fetch(`/api/admin/drafts/articles/${draftId}`, {
+        headers: {
+          'x-auth-token': token
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch draft article');
+      }
+      
+      // Store the draft data in sessionStorage so it can be accessed by the article editor
+      const draftData = await response.json();
+      sessionStorage.setItem('editingDraft', JSON.stringify({
+        type: 'article',
+        id: draftId,
+        data: draftData
+      }));
+      
+      // Navigate to the regular articles section which will handle the edit
+      navigate('/admin/articles');
+    } catch (error) {
+      console.error('Error preparing draft for edit:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to edit draft',
+        variant: 'destructive',
+      });
+    }
   };
 
-  const handleEditDraftNews = (draftId: string) => {
-    navigate(`/admin/drafts/news/edit/${draftId}`);
+  const handleEditDraftNews = async (draftId: string) => {
+    try {
+      // Fetch the draft news to get its data first
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+      
+      const response = await fetch(`/api/admin/drafts/news/${draftId}`, {
+        headers: {
+          'x-auth-token': token
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch draft news');
+      }
+      
+      // Store the draft data in sessionStorage so it can be accessed by the news editor
+      const draftData = await response.json();
+      sessionStorage.setItem('editingDraft', JSON.stringify({
+        type: 'news',
+        id: draftId,
+        data: draftData
+      }));
+      
+      // Navigate to the regular news section which will handle the edit
+      navigate('/admin/news');
+    } catch (error) {
+      console.error('Error preparing draft for edit:', error);
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to edit draft',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleDeleteDraftArticle = async (draftId: string) => {
