@@ -220,16 +220,62 @@ const ArticlesAdmin = () => {
     setActiveTab("basic");
   };
 
-  const handleEdit = (article: Article) => {
+  const handleEdit = async (article: Article) => {
     setIsEditing(true);
-    setEditForm(article);
-    setCurrentArticle(article);
+    
+    // If article is a draft, get the latest version from the drafts API
+    if (article.isPublished === false) {
+      try {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+          throw new Error('Authentication required');
+        }
+        
+        const draftId = article.id || article._id;
+        const response = await fetch(`/api/admin/drafts/articles/${draftId}`, {
+          headers: {
+            'x-auth-token': token
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch draft article');
+        }
+        
+        const draftData = await response.json();
+        // Mark it as a draft for the edit form
+        const fullDraftData = {
+          ...draftData,
+          id: draftId,
+          _id: draftId,
+          isPublished: false
+        };
+        
+        setEditForm(fullDraftData);
+        setCurrentArticle(fullDraftData);
+      } catch (error) {
+        console.error('Error fetching draft article for edit:', error);
+        toast({
+          title: 'Error',
+          description: error instanceof Error ? error.message : 'Failed to edit draft',
+          variant: 'destructive',
+        });
+        // Still open the dialog with the existing data
+        setEditForm(article);
+        setCurrentArticle(article);
+      }
+    } else {
+      // Regular published article
+      setEditForm(article);
+      setCurrentArticle(article);
+    }
+    
     setDialogOpen(true);
     setActiveTab("basic");
   };
 
-  const handleDelete = async (articleId: string) => {
-    if (!confirm('Are you sure you want to delete this article?')) {
+  const handleDelete = async (articleId: string, isDraft = false) => {
+    if (!confirm(`Are you sure you want to delete this ${isDraft ? 'draft' : 'article'}?`)) {
       return;
     }
 
@@ -239,7 +285,12 @@ const ArticlesAdmin = () => {
         throw new Error('Authentication required');
       }
 
-      const response = await fetch(`/api/admin/articles/${articleId}`, {
+      // Use appropriate endpoint based on whether it's a draft or published article
+      const endpoint = isDraft 
+        ? `/api/admin/drafts/articles/${articleId}` 
+        : `/api/admin/articles/${articleId}`;
+        
+      const response = await fetch(endpoint, {
         method: 'DELETE',
         headers: {
           'x-auth-token': token
@@ -247,7 +298,7 @@ const ArticlesAdmin = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete article');
+        throw new Error(`Failed to delete ${isDraft ? 'draft' : 'article'}`);
       }
 
       // Update the UI by removing the deleted article
@@ -256,14 +307,67 @@ const ArticlesAdmin = () => {
       ));
       
       toast({
-        title: 'Article deleted',
-        description: 'The article has been deleted successfully',
+        title: isDraft ? 'Draft deleted' : 'Article deleted',
+        description: `The ${isDraft ? 'draft' : 'article'} has been deleted successfully`,
         variant: 'default',
       });
     } catch (error) {
-      console.error('Error deleting article:', error);
+      console.error(`Error deleting ${isDraft ? 'draft' : 'article'}:`, error);
       toast({
-        title: 'Error deleting article',
+        title: `Error deleting ${isDraft ? 'draft' : 'article'}`,
+        description: error instanceof Error ? error.message : 'Unknown error occurred',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handlePublishDraft = async (draftId: string) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      const response = await fetch(`/api/admin/drafts/articles/${draftId}/publish`, {
+        method: 'POST',
+        headers: {
+          'x-auth-token': token
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to publish draft article');
+      }
+
+      const publishedData = await response.json();
+      
+      // Update UI - remove the draft and add the published article
+      setArticles(prev => {
+        // Remove the draft
+        const filtered = prev.filter(article => 
+          (article.id !== draftId && article._id !== draftId)
+        );
+        
+        // Add the published article
+        if (publishedData.article) {
+          return [...filtered, {
+            ...publishedData.article,
+            isPublished: true
+          }];
+        }
+        
+        return filtered;
+      });
+
+      toast({
+        title: 'Draft published',
+        description: 'The draft article has been published successfully',
+        variant: 'default',
+      });
+    } catch (error) {
+      console.error('Error publishing draft article:', error);
+      toast({
+        title: 'Error publishing draft',
         description: error instanceof Error ? error.message : 'Unknown error occurred',
         variant: 'destructive',
       });
@@ -507,6 +611,17 @@ const ArticlesAdmin = () => {
                             {new Date(article.publishDate).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
+                            {article.isPublished !== false ? (
+                              <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                Published
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800">
+                                Draft
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell>
                             {article.isFeatured ? (
                               <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                 Yes
@@ -519,10 +634,27 @@ const ArticlesAdmin = () => {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
+                              {article.isPublished === false && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-green-500 hover:text-green-700"
+                                  onClick={() => handlePublishDraft(article.id || article._id || "")}
+                                  title="Publish Draft"
+                                >
+                                  <span className="sr-only">Publish</span>
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                                    <polyline points="16 6 12 2 8 6"></polyline>
+                                    <line x1="12" y1="2" x2="12" y2="15"></line>
+                                  </svg>
+                                </Button>
+                              )}
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleEdit(article)}
+                                title="Edit"
                               >
                                 <Pencil className="h-4 w-4" />
                               </Button>
@@ -530,7 +662,8 @@ const ArticlesAdmin = () => {
                                 variant="ghost"
                                 size="icon"
                                 className="text-red-500 hover:text-red-700"
-                                onClick={() => handleDelete(article.id || article._id || "")}
+                                onClick={() => handleDelete(article.id || article._id || "", article.isPublished === false)}
+                                title="Delete"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
