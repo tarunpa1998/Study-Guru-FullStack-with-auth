@@ -111,6 +111,7 @@ function Router() {
       <AdminProtectedRoute path="/admin/scholarships" component={AdminDashboard} />
       <AdminProtectedRoute path="/admin/countries" component={AdminDashboard} />
       <AdminProtectedRoute path="/admin/universities" component={AdminDashboard} />
+      <AdminProtectedRoute path="/admin/drafts" component={AdminDashboard} />
       
       <Route component={NotFound} />
     </Switch>
