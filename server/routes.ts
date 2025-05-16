@@ -17,6 +17,7 @@ import {
 import apiRoutes from './routes/api';
 import swaggerRoutes from './routes/swagger';
 import sitemapRoutes from './routes/sitemap';
+import seoRoutes from './routes/seo';
 import { registerAdminRoutes } from './admin/index';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -46,6 +47,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Sitemap route
   app.use('/', sitemapRoutes);
+  
+  // Register SEO routes for crawler/no-JavaScript access
+  app.use('/', seoRoutes);
 
   // Menu routes (with MongoDB or fallback to memory storage)
   app.get("/api/menu", errorHandler(async (req, res) => {
