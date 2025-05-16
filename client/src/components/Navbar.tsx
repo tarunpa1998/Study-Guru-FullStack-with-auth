@@ -94,13 +94,13 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             Logout
           </button>
         </div>
-        
+
         {/* Social Media Icons */}
         <div className="pt-4 mt-4 border-t border-border">
           <p className="text-sm text-muted-foreground mb-2">Follow us on social media:</p>
           <div className="flex justify-between">
             <a 
-              href="https://instagram.com/studyguru" 
+              href="https://www.instagram.com/studyguruindiaa?igsh=MWk3anVxamk0aWQyYw==" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex flex-col items-center"
@@ -118,7 +118,7 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
               </div>
               <span className="text-xs mt-1 text-muted-foreground">Instagram</span>
             </a>
-            
+
             <a 
               href="https://facebook.com/studyguru" 
               target="_blank" 
@@ -138,9 +138,9 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
               </div>
               <span className="text-xs mt-1 text-muted-foreground">Facebook</span>
             </a>
-            
+
             <a 
-              href="https://wa.me/1234567890" 
+              href="https://wa.me/4306787801657" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex flex-col items-center"
@@ -158,7 +158,7 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
               </div>
               <span className="text-xs mt-1 text-muted-foreground">WhatsApp</span>
             </a>
-            
+
             <a 
               href="https://t.me/studyguru" 
               target="_blank" 
@@ -198,13 +198,13 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
           </button>
         </Link>
       </div>
-      
+
       {/* Social Media Icons */}
       <div className="pt-2 border-t border-border">
         <p className="text-sm text-muted-foreground mb-2">Follow us on social media:</p>
         <div className="flex justify-between">
           <a 
-            href="https://instagram.com/studyguru" 
+            href="https://www.instagram.com/studyguruindiaa?igsh=MWk3anVxamk0aWQyYw==" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex flex-col items-center"
@@ -222,7 +222,7 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             </div>
             <span className="text-xs mt-1 text-muted-foreground">Instagram</span>
           </a>
-          
+
           <a 
             href="https://facebook.com/studyguru" 
             target="_blank" 
@@ -242,9 +242,9 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             </div>
             <span className="text-xs mt-1 text-muted-foreground">Facebook</span>
           </a>
-          
+
           <a 
-            href="https://wa.me/1234567890" 
+            href="https://wa.me/4306787801657" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex flex-col items-center"
@@ -262,7 +262,7 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
             </div>
             <span className="text-xs mt-1 text-muted-foreground">WhatsApp</span>
           </a>
-          
+
           <a 
             href="https://t.me/studyguru" 
             target="_blank" 
@@ -292,7 +292,7 @@ const MobileAuthArea: React.FC<MobileAuthAreaProps> = ({ closeMobileMenu }) => {
 const AuthButtons = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
-  
+
   // Helper function to handle subcategory navigation
   const handleSubcategoryClick = (url: string) => {
     // Check if this is a subcategory URL pattern
@@ -314,7 +314,7 @@ const AuthButtons = () => {
         setShowDropdown(false);
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -325,7 +325,7 @@ const AuthButtons = () => {
       if (!user.fullName) return 'U';
       return user.fullName.split(' ').map(n => n[0]).join('') || 'U';
     };
-    
+
     // Logged in user
     return (
       <div className="relative" ref={dropdownRef}>
@@ -399,7 +399,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
-  
+
   // Helper function to handle subcategory navigation
   const handleSubcategoryClick = (url: string) => {
     // Check if this is a subcategory URL pattern
@@ -413,12 +413,12 @@ const Navbar = () => {
     }
     return false;
   };
-  
+
   // Function to close mobile menu
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
-  
+
   // Fetch menu data from MongoDB
   const { data: menuItems = [] as MenuItem[], isLoading } = useQuery<MenuItem[]>({
     queryKey: ['/api/menu'],
@@ -435,11 +435,11 @@ const Navbar = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
   // Handle click outside mobile menu to close it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -447,14 +447,14 @@ const Navbar = () => {
         setIsMobileMenuOpen(false);
       }
     };
-    
+
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden'; // Prevent scrolling when menu is open
       document.addEventListener('mousedown', handleClickOutside);
     } else {
       document.body.style.overflow = ''; // Re-enable scrolling
     }
-    
+
     return () => {
       document.body.style.overflow = '';
       document.removeEventListener('mousedown', handleClickOutside);
@@ -559,7 +559,7 @@ const Navbar = () => {
               {/* Authentication buttons */}
               <div className="flex items-center">
                 <AuthButtons />
-                
+
                 {/* Theme Toggle - Desktop */}
                 <div className="ml-2">
                   <ThemeToggle />
@@ -580,7 +580,7 @@ const Navbar = () => {
             <div className="flex md:hidden items-center space-x-2">
               {/* Theme Toggle - Mobile */}
               <ThemeToggle />
-              
+
               {/* Search button */}
               <button 
                 className="p-2 rounded-md text-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
@@ -588,7 +588,7 @@ const Navbar = () => {
               >
                 <Search className="h-5 w-5" />
               </button>
-              
+
               {/* Hamburger/Close button */}
               <button 
                 onClick={toggleMobileMenu}
@@ -612,7 +612,7 @@ const Navbar = () => {
                 className="md:hidden fixed inset-0 top-16 bg-black/30 backdrop-blur-sm z-30"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
-              
+
               {/* Menu Content */}
               <div 
                 ref={menuRef}
@@ -642,7 +642,7 @@ const Navbar = () => {
                                 <ChevronDown className="h-4 w-4" />
                               </div>
                             </button>
-                            
+
                             {mobileDropdownOpen[item.id] && (
                               <div className="bg-background border-t border-border">
                                 {item.children.map((child) => (
@@ -714,17 +714,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
