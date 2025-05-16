@@ -495,14 +495,53 @@ const ContactPage = () => {
               Find Us
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Visit our office to discuss your study abroad plans in person.
+              Visit one of our offices to discuss your study abroad plans in person.
             </p>
           </div>
           
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* European Office */}
+            <div className="bg-card rounded-xl p-6 shadow-md border border-border">
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Vienna Office</h3>
+              <p className="text-muted-foreground mb-4">Study Guru GmbH, Lichtenfelsgasse 2, 1010 Vienna, Austria</p>
+              <div className="rounded-xl overflow-hidden shadow-md h-[250px]">
+                <iframe
+                  title="Vienna Office Location"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2659.1091458944828!2d16.3679877!3d48.2103893!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x476d079dff8e681b%3A0xfc71c7b8b22ff0ee!2sLichtenfelsgasse%202%2C%201010%20Wien%2C%20Austria!5e0!3m2!1sen!2sin!4v1684488665447!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={false}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+            </div>
+            
+            {/* Indian Office */}
+            <div className="bg-card rounded-xl p-6 shadow-md border border-border">
+              <h3 className="text-xl font-semibold mb-4 text-foreground">Bhopal Office</h3>
+              <p className="text-muted-foreground mb-4">Zone 1, Maharana Pratap Nagar, Bhopal, Madhya Pradesh, 462011</p>
+              <div className="rounded-xl overflow-hidden shadow-md h-[250px]">
+                <iframe
+                  title="Bhopal Office Location"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14665.771371867545!2d77.42895485!3d23.2332896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x397c428f8fd68fbd%3A0x2155716d572d4f2!2sZone-I%2C%20Maharana%20Pratap%20Nagar%2C%20Bhopal%2C%20Madhya%20Pradesh%20462011!5e0!3m2!1sen!2sin!4v1684488665447!5m2!1sen!2sin"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={false}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+            </div>
+          </div>
+          
+          {/* Combined Map */}
           <div className="rounded-xl overflow-hidden shadow-lg border border-border">
             <iframe
-              title="Office Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.990092382823!2d77.59600857479637!3d12.971598987383897!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670c9b44e6d%3A0xf8dfc3e8517e4fe0!2sBrigade%20Road%2C%20Bengaluru%2C%20Karnataka%2C%20India!5e0!3m2!1sen!2sin!4v1684488665447!5m2!1sen!2sin"
+              title="All Office Locations"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d18862857.118615346!2d46.939454450000005!3d35.7224195!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1684488665447!5m2!1sen!2sin"
               width="100%"
               height="450"
               style={{ border: 0 }}
@@ -513,8 +552,8 @@ const ContactPage = () => {
           </div>
           
           <div className="mt-8 text-center text-muted-foreground">
-            <p className="font-medium">Study Guru Education Consultants</p>
-            <p>123 Education Street, Brigade Road, Bangalore 560001, India</p>
+            <p className="font-medium">Study Guru - Global Education Consultants</p>
+            <p>Helping students achieve their international education dreams from our global offices</p>
           </div>
         </div>
       </section>
