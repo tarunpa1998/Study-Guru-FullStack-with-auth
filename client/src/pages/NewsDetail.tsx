@@ -375,9 +375,30 @@ const NewsDetail = () => {
                 "name": "Study Guru",
                 "logo": {
                   "@type": "ImageObject",
-                  "url": "https://studyguru.com/logo.png"
+                  "url": "https://studyguruindia.com/logo.png"
+                },
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": "Vienna",
+                  "addressRegion": "Vienna",
+                  "postalCode": "1010",
+                  "streetAddress": "Lichtenfelsgasse 2",
+                  "addressCountry": "Austria"
+                },
+                "contactPoint": {
+                  "@type": "ContactPoint",
+                  "telephone": "+4306787801657",
+                  "email": "Help@studyguruindia.com",
+                  "contactType": "customer service"
                 }
               },
+              "author": {
+                "@type": "Organization",
+                "name": "Study Guru Editorial Team"
+              },
+              "keywords": newsItem.category || "Study Abroad News",
+              "articleSection": newsItem.category,
+              "wordCount": newsItem.content?.split(" ").length || 0,
               "mainEntityOfPage": {
                 "@type": "WebPage",
                 "@id": window.location.href

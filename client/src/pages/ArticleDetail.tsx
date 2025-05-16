@@ -380,18 +380,36 @@ const ArticleDetail = () => {
               "image": article.image || "",
               "author": {
                 "@type": "Person",
-                "name": article.author
+                "name": article.author,
+                "jobTitle": article.authorTitle || "Education Consultant"
               },
               "publisher": {
                 "@type": "Organization",
                 "name": "Study Guru",
                 "logo": {
                   "@type": "ImageObject",
-                  "url": "https://studyguru.com/logo.png"
+                  "url": "https://studyguruindia.com/logo.png"
+                },
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": "Vienna",
+                  "addressRegion": "Vienna",
+                  "postalCode": "1010",
+                  "streetAddress": "Lichtenfelsgasse 2",
+                  "addressCountry": "Austria"
+                },
+                "contactPoint": {
+                  "@type": "ContactPoint",
+                  "telephone": "+4306787801657",
+                  "email": "Help@studyguruindia.com",
+                  "contactType": "customer service"
                 }
               },
               "datePublished": article.publishDate,
               "dateModified": article.publishDate,
+              "keywords": article.seo?.keywords?.join(", ") || article.category,
+              "articleSection": article.category,
+              "wordCount": article.content?.split(" ").length || 0,
               "mainEntityOfPage": {
                 "@type": "WebPage",
                 "@id": window.location.href
@@ -727,6 +745,59 @@ const ArticleDetail = () => {
                   </div>
                 </div>
               )}
+              
+              {/* Explore More Resources - Internal Linking */}
+              <section className="mt-12 mb-8 p-6 bg-muted rounded-xl">
+                <h2 className="text-xl font-semibold mb-4 text-foreground">Explore More Resources</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="text-lg font-medium mb-2 text-foreground">Related Topics</h3>
+                    <ul className="space-y-2">
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/scholarships" className="text-primary hover:underline">
+                          Find Scholarships
+                        </a>
+                      </li>
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/countries" className="text-primary hover:underline">
+                          Study Destinations
+                        </a>
+                      </li>
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/universities" className="text-primary hover:underline">
+                          Top Universities
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium mb-2 text-foreground">Stay Updated</h3>
+                    <ul className="space-y-2">
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/news" className="text-primary hover:underline">
+                          Latest Education News
+                        </a>
+                      </li>
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/articles" className="text-primary hover:underline">
+                          All Articles & Guides
+                        </a>
+                      </li>
+                      <li className="flex items-center">
+                        <ChevronRight className="h-4 w-4 text-primary mr-1" />
+                        <a href="/contact" className="text-primary hover:underline">
+                          Get Personalized Advice
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
             </div>
 
             {/* Sidebar */}
