@@ -407,18 +407,26 @@ const ArticlesAdmin = () => {
       let url;
       let method;
       
-      if (asDraft) {
-        // Save as draft
-        url = isEditing && articleId
-          ? `/api/admin/drafts/articles/${articleId}`
-          : '/api/admin/drafts/articles';
-        method = isEditing ? 'PUT' : 'POST';
+      if (isEditing) {
+        // If editing an existing item
+        if (currentArticle?.isDraft) {
+          // If editing a draft, always use the draft endpoint
+          url = `/api/admin/drafts/articles/${articleId}`;
+        } else {
+          // If editing a published item
+          url = `/api/admin/articles/${articleId}`;
+        }
+        method = 'PUT';
       } else {
-        // Publish normally
-        url = isEditing && articleId
-          ? `/api/admin/articles/${articleId}`
-          : '/api/admin/articles';
-        method = isEditing ? 'PUT' : 'POST';
+        // Creating a new item
+        if (asDraft) {
+          // Save as draft
+          url = '/api/admin/drafts/articles';
+        } else {
+          // Publish directly
+          url = '/api/admin/articles';
+        }
+        method = 'POST';
       }
       
       const response = await fetch(url, {

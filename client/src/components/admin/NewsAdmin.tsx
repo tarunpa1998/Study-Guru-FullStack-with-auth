@@ -372,18 +372,29 @@ const NewsAdmin = () => {
       let url;
       let method;
       
-      if (asDraft) {
-        // Save as draft
-        url = isEditing && (currentNews?.id || currentNews?._id)
-          ? `/api/admin/drafts/news/${currentNews?.id || currentNews?._id}`
-          : '/api/admin/drafts/news';
-        method = isEditing ? 'PUT' : 'POST';
+      // Get the item ID
+      const newsId = currentNews?.id || currentNews?._id;
+      
+      if (isEditing) {
+        // If editing an existing item
+        if (currentNews?.isDraft) {
+          // If editing a draft, always use the draft endpoint
+          url = `/api/admin/drafts/news/${newsId}`;
+        } else {
+          // If editing a published item
+          url = `/api/admin/news/${newsId}`;
+        }
+        method = 'PUT';
       } else {
-        // Publish normally
-        url = isEditing && (currentNews?.id || currentNews?._id)
-          ? `/api/admin/news/${currentNews?.id || currentNews?._id}`
-          : '/api/admin/news';
-        method = isEditing ? 'PUT' : 'POST';
+        // Creating a new item
+        if (asDraft) {
+          // Save as draft
+          url = '/api/admin/drafts/news';
+        } else {
+          // Publish directly
+          url = '/api/admin/news';
+        }
+        method = 'POST';
       }
       
       // Convert keywords from string to array if it's a string
