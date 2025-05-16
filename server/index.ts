@@ -14,6 +14,16 @@ app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// SEO middleware to ensure search engines can index all pages
+app.use((req, res, next) => {
+  // Remove any X-Robots-Tag headers that might be set with noindex
+  res.removeHeader('X-Robots-Tag');
+  
+  // Set explicit headers to allow indexing
+  res.setHeader('X-Robots-Tag', 'index, follow');
+  next();
+});
+
 // Set up logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
