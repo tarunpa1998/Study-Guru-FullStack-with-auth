@@ -397,3 +397,4 @@ const ScholarshipDetail = () => {
 
 export default ScholarshipDetail;
 
+

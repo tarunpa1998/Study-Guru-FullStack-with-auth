@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/accordion";
 import { motion } from "framer-motion";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useEffect } from "react";
 
 // Interface for University
 interface University {
@@ -109,6 +110,22 @@ const UniversityDetail = () => {
     .slice(0, 3);
 
   const isLoading = universityLoading || scholarshipsLoading;
+
+  useEffect(() => {
+    if (university) {
+      // Push detailed page information to dataLayer
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'universityView',
+        universityData: {
+          name: university.name,
+          country: university.country,
+          slug: university.slug,
+          ranking: university.ranking
+        }
+      });
+    }
+  }, [university]);
 
   return (
     <>
@@ -705,5 +722,6 @@ const UniversityDetail = () => {
 };
 
 export default UniversityDetail;
+
 
 

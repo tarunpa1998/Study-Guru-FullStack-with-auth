@@ -3,6 +3,7 @@ import { Article } from '../../models';
 import { asyncHandler, apiLimiter } from './utils';
 import connectToDatabase from '../../lib/mongodb';
 import { storage } from '../../storage';
+import { notifyGoogleIndexing } from '../../utils/googleIndexing';
 
 const router = Router();
 
@@ -246,6 +247,15 @@ router.post('/', asyncHandler(async (req: Request, res: Response) => {
     if (conn) {
       const article = new Article(req.body);
       const savedArticle = await article.save();
+      
+      // Notify Google about the new article
+      try {
+        const articleUrl = `https://studyguruindia.com/articles/${savedArticle.slug}`;
+        await notifyGoogleIndexing(articleUrl);
+      } catch (indexingError) {
+        console.error('Failed to notify Google Indexing API:', indexingError);
+        // Continue execution even if indexing notification fails
+      }
       
       return res.status(201).json(savedArticle);
     }

@@ -348,6 +348,22 @@ const NewsDetail = () => {
 
   const isLoading = newsLoading || allNewsLoading;
 
+  useEffect(() => {
+    if (newsItem) {
+      // Push detailed page information to dataLayer
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'newsView',
+        newsData: {
+          title: newsItem.title,
+          category: newsItem.category,
+          slug: newsItem.slug,
+          publishDate: newsItem.publishDate
+        }
+      });
+    }
+  }, [newsItem]);
+
   return (
     <>
       {/* Enhanced SEO Metadata with fallback to news data */}
@@ -889,6 +905,7 @@ const NewsDetail = () => {
 };
 
 export default NewsDetail;
+
 
 
 

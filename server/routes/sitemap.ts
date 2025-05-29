@@ -9,8 +9,8 @@ const router = Router();
  */
 router.get('/sitemap.xml', async (req: Request, res: Response) => {
   try {
-    // Get the base URL from request or environment variable, ensuring HTTPS
-    const baseUrl = process.env.BASE_URL || `https://${req.get('host')}`;
+    // Always use the production domain for sitemap URLs
+    const baseUrl = 'https://studyguruindia.com';
     
     // Set Content-Type header
     res.header('Content-Type', 'application/xml');
@@ -144,6 +144,7 @@ router.get('/sitemap.xml', async (req: Request, res: Response) => {
 });
 
 export default router;
+
 
 
 

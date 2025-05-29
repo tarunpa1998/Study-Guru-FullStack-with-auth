@@ -966,4 +966,61 @@ router.post('/news/:slug/helpful', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /indexing/notify:
+ *   post:
+ *     summary: Notify Google to index a URL
+ *     tags: [Development]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - url
+ *             properties:
+ *               url:
+ *                 type: string
+ *                 description: The URL to be indexed by Google
+ *     responses:
+ *       200:
+ *         description: URL successfully submitted for indexing
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 urlNotificationMetadata:
+ *                   type: object
+ *                   properties:
+ *                     url:
+ *                       type: string
+ *                     type:
+ *                       type: string
+ *       400:
+ *         description: Invalid URL provided
+ *       500:
+ *         description: Error submitting URL to Google Indexing API
+ */
+router.post('/indexing/notify', async (req: Request, res: Response) => {
+  try {
+    const { url } = req.body;
+    
+    if (!url || typeof url !== 'string') {
+      return res.status(400).json({ error: 'Valid URL is required' });
+    }
+    
+    const { notifyGoogleIndexing } = await import('../utils/googleIndexing');
+    const result = await notifyGoogleIndexing(url);
+    
+    res.json(result);
+  } catch (error) {
+    log(`Error notifying Google Indexing API: ${error}`, 'api');
+    res.status(500).json({ error: 'Error submitting URL to Google Indexing API' });
+  }
+});
+
 export default router;
+

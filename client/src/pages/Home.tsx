@@ -8,8 +8,42 @@ import EducationNews from "@/components/EducationNews";
 import Testimonials from "@/components/Testimonials";
 import CTASection from "@/components/CTASection";
 import HomeChatBot from "@/components/HomeChatBot";
+import { useEffect } from 'react';
 
 const StudyGuru = () => {
+  useEffect(() => {
+    // Push homepage view to dataLayer
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'homepageView',
+      pageData: {
+        title: 'Home',
+        section: 'homepage'
+      }
+    });
+  }, []);
+
+  // Track hero section interactions
+  const trackHeroAction = (actionType: string) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'heroInteraction',
+      heroAction: actionType
+    });
+  };
+
+  // Track featured section interactions
+  const trackFeaturedClick = (itemType: string, itemTitle: string) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'featuredItemClick',
+      featuredData: {
+        type: itemType,
+        title: itemTitle
+      }
+    });
+  };
+
   return (
     <>
       <Helmet>
@@ -41,5 +75,7 @@ const StudyGuru = () => {
 };
 
 export default StudyGuru;
+
+
 
 

@@ -377,7 +377,7 @@ const Footer = () => {
               variants={linkHoverVariants}
               initial="initial"
               whileHover="hover"
-              onClick={() => handleNavigate('#')}
+              onClick={() => handleNavigate('/privacy-policy')}
             >
               Privacy Policy
             </motion.div>
@@ -386,7 +386,7 @@ const Footer = () => {
               variants={linkHoverVariants}
               initial="initial"
               whileHover="hover"
-              onClick={() => handleNavigate('#')}
+              onClick={() => handleNavigate('/terms-of-service')}
             >
               Terms of Service
             </motion.div>
@@ -395,7 +395,7 @@ const Footer = () => {
               variants={linkHoverVariants}
               initial="initial"
               whileHover="hover"
-              onClick={() => handleNavigate('#')}
+              onClick={() => handleNavigate('/cookie-policy')}
             >
               Cookie Policy
             </motion.div>
@@ -407,3 +407,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

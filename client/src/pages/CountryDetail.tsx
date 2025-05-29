@@ -140,6 +140,22 @@ const CountryDetail = () => {
     return tagColorMap[tag] || "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100";
   };
 
+  useEffect(() => {
+    if (country) {
+      // Push detailed page information to dataLayer
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'countryView',
+        countryData: {
+          name: country.name,
+          slug: country.slug,
+          universities: country.universities,
+          language: country.language
+        }
+      });
+    }
+  }, [country]);
+
   return (
     <>
       {country && (
@@ -579,6 +595,7 @@ const CountryDetail = () => {
 };
 
 export default CountryDetail;
+
 
 
 

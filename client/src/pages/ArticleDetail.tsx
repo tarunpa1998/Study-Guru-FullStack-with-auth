@@ -346,6 +346,22 @@ const ArticleDetail = () => {
     }
   };
 
+  useEffect(() => {
+    if (article) {
+      // Push detailed page information to dataLayer
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: 'articleView',
+        articleData: {
+          title: article.title,
+          category: article.category,
+          slug: article.slug,
+          publishDate: article.publishDate
+        }
+      });
+    }
+  }, [article]);
+
   if (error) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
@@ -926,6 +942,7 @@ const ArticleDetail = () => {
 };
 
 export default ArticleDetail;
+
 
 
 

@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { mongoStorage } from '../mongoStorage';
 import { adminAuth } from '../middleware/auth';
 import slugify from 'slugify';
+import { notifyGoogleIndexing } from '../utils/googleIndexing';
 
 const router = Router();
 
@@ -82,6 +83,16 @@ router.post('/news', adminAuth, async (req: Request, res: Response) => {
     }
     
     const newNews = await mongoStorage.createNews(newsData);
+    
+    // Notify Google about the new news item
+    try {
+      const newsUrl = `https://studyguruindia.com/news/${newNews.slug}`;
+      await notifyGoogleIndexing(newsUrl);
+    } catch (indexingError) {
+      console.error('Failed to notify Google Indexing API:', indexingError);
+      // Continue execution even if indexing notification fails
+    }
+    
     res.status(201).json(newNews);
   } catch (error) {
     console.error('Error creating news item:', error);

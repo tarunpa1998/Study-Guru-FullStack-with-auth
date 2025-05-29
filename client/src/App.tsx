@@ -8,6 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ProtectedRoute } from "./lib/ProtectedRoute";
 import { AdminProtectedRoute } from "./lib/AdminProtectedRoute";
+import GTMPageTracker from './components/GTMPageTracker';
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -37,6 +38,11 @@ import Profile from "@/pages/Profile";
 // Admin pages
 import AdminLogin from "@/pages/admin/Login";
 import AdminDashboard from "@/pages/admin/Dashboard";
+
+// Import the new pages
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
 
 import { useEffect } from "react";
 
@@ -113,6 +119,11 @@ function Router() {
       <AdminProtectedRoute path="/admin/universities" component={AdminDashboard} />
       <AdminProtectedRoute path="/admin/drafts" component={AdminDashboard} />
       
+      {/* Legal pages */}
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/cookie-policy" component={CookiePolicy} />
+      
       <Route component={NotFound} />
     </Switch>
   );
@@ -129,6 +140,7 @@ function App() {
           <AuthProvider>
             <TooltipProvider>
               <Toaster />
+              <GTMPageTracker />
               <div className="flex flex-col min-h-screen bg-background text-foreground">
                 {!isAdminRoute && <Navbar />}
                 <div className="flex-grow">
@@ -147,4 +159,9 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
 
