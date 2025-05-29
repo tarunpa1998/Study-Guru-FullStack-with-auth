@@ -1,19 +1,65 @@
 import { google } from 'googleapis';
 import path from 'path';
 import fs from 'fs';
+import dotenv from 'dotenv';
+import { JWT } from 'google-auth-library';
 
-// Path to your service account key file
-const keyFilePath = path.resolve(process.cwd(), 'study-guru-458720-adb5efdd1791.json');
-const key = JSON.parse(fs.readFileSync(keyFilePath, 'utf8'));
+// Load environment variables
+dotenv.config();
 
-// Create a JWT client using the service account credentials
-const jwtClient = new google.auth.JWT(
-  key.client_email,
-  undefined,  // Use undefined instead of null to satisfy TypeScript
-  key.private_key,
-  ['https://www.googleapis.com/auth/indexing'],
-  null  // Changed back to null as in the example
-);
+// Define possible paths to the key file
+const possiblePaths = [
+  // Path in VPS
+  '/root/Study-Guru-FullStack-with-auth/study-guru-458720-adb5efdd1791.json',
+  // Relative path from current working directory
+  path.resolve(process.cwd(), 'study-guru-458720-adb5efdd1791.json'),
+  // Path relative to the module directory
+  path.resolve(import.meta.dirname, '../../study-guru-458720-adb5efdd1791.json')
+];
+
+// Define key file interface
+interface ServiceAccountKey {
+  client_email: string;
+  private_key: string;
+  [key: string]: any;
+}
+
+// Try to find the key file
+let keyFilePath: string | null = null;
+let key: ServiceAccountKey | null = null;
+
+for (const filePath of possiblePaths) {
+  console.log(`Checking for Google API key file at: ${filePath}`);
+  if (fs.existsSync(filePath)) {
+    console.log(`Found Google API key file at: ${filePath}`);
+    keyFilePath = filePath;
+    try {
+      key = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      break;
+    } catch (error) {
+      console.error(`Error reading key file at ${filePath}:`, error);
+    }
+  }
+}
+
+// Create JWT client if key was found
+let jwtClient: JWT | null = null;
+if (key) {
+  try {
+    jwtClient = new google.auth.JWT(
+      key.client_email,
+      undefined,
+      key.private_key,
+      ['https://www.googleapis.com/auth/indexing'],
+      undefined
+    );
+    console.log('Successfully initialized Google JWT client');
+  } catch (error) {
+    console.error('Error creating JWT client:', error);
+  }
+} else {
+  console.error('Could not find or parse Google API key file in any location');
+}
 
 /**
  * @swagger
@@ -60,9 +106,14 @@ export async function notifyGoogleIndexing(url: string): Promise<any> {
   try {
     console.log(`Attempting to notify Google Indexing API for URL: ${url}`);
     
-    // Get tokens through authorization
-    const tokens = await new Promise((resolve, reject) => {
-      jwtClient.authorize((err, tokens) => {
+    // Check if JWT client was properly initialized
+    if (!jwtClient) {
+      throw new Error('Google API client not initialized. Check if key file exists and is valid.');
+    }
+    
+    // Authorize the client
+    const tokens = await new Promise<any>((resolve, reject) => {
+      jwtClient!.authorize((err: Error | null, tokens: any) => {
         if (err) {
           console.error('JWT authorization error:', err);
           reject(err);
@@ -73,32 +124,22 @@ export async function notifyGoogleIndexing(url: string): Promise<any> {
       });
     });
     
-    // Create the indexing client
-    const indexing = google.indexing({
-      version: 'v3',
-      auth: jwtClient
-    });
-    
-    // Submit the URL for indexing
-    console.log(`Submitting URL: ${url} to Google Indexing API`);
-    const response = await indexing.urlNotifications.publish({
+    // Use the indexing API
+    const indexing = google.indexing({ version: 'v3', auth: jwtClient });
+    const result = await indexing.urlNotifications.publish({
       requestBody: {
         url: url,
-        type: "URL_UPDATED"
+        type: 'URL_UPDATED'
       }
     });
     
-    console.log(`Successfully submitted ${url} to Google Indexing API`);
-    return response.data;
+    console.log('Successfully submitted URL to Google Indexing API:', url);
+    return result.data;
   } catch (error) {
     console.error('Error submitting URL to Google Indexing API:', error);
     throw error;
   }
 }
-
-
-
-
 
 
 
