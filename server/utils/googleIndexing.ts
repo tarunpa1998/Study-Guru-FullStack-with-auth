@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Path to your service account key file
-const keyFilePath = path.resolve(process.cwd(), 'study-guru-458720-49962f48e6ea.json');
+const keyFilePath = path.resolve(process.cwd(), 'study-guru-458720-adb5efdd1791.json');
 const key = JSON.parse(fs.readFileSync(keyFilePath, 'utf8'));
 
 // Create a JWT client using the service account credentials
