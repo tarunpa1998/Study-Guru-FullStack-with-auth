@@ -53,7 +53,7 @@ const NewsCard = ({
             <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-primary transition-colors duration-300">
               {title}
             </h3>
-            <p className="text-muted-foreground text-sm">{summary}</p>
+            <p className="text-muted-foreground text-sm line-clamp-2 overflow-hidden">{summary}</p>
           </div>
         </div>
       </motion.div>
@@ -85,11 +85,14 @@ const NewsCard = ({
         <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
           {title}
         </h3>
-        <p className="text-muted-foreground text-sm">{summary}</p>
+        <p className="text-muted-foreground text-sm line-clamp-3 h-[4.5rem] overflow-hidden">{summary}</p>
       </div>
     </motion.div>
   );
 };
 
 export default NewsCard;
+
+
+
 

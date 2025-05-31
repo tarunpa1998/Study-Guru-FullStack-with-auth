@@ -28,16 +28,23 @@ interface NewsItem {
   isFeatured: boolean;
 }
 
-const EducationNews = () => {
+interface EducationNewsProps {
+  onNewsClick?: (newsId: string, newsTitle: string) => void;
+}
+
+const EducationNews = ({ onNewsClick }: EducationNewsProps = {}) => {
   const { data: newsItems = [], isLoading } = useQuery<NewsItem[]>({
     queryKey: ['/api/news'],
   });
   
-  const [api, setApi] = useState<CarouselApi>();
+  const [mobileApi, setMobileApi] = useState<CarouselApi>();
+  const [desktopApi, setDesktopApi] = useState<CarouselApi>();
   const sectionRef = useRef(null);
-  const carouselRef = useRef(null);
+  const mobileCarouselRef = useRef(null);
+  const desktopCarouselRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.1 });
-  const intervalRef = useRef<number | null>(null);
+  const mobileIntervalRef = useRef<number | null>(null);
+  const desktopIntervalRef = useRef<number | null>(null);
   
   // Check if screen is mobile
   const isMobile = useMediaQuery("(max-width: 1023px)");
@@ -45,33 +52,64 @@ const EducationNews = () => {
   const featuredNews = newsItems.filter((news) => news.isFeatured);
   const regularNews = newsItems.filter((news) => !news.isFeatured).slice(0, 2);
 
-  // Setup auto-scrolling when carousel is in view (only for mobile)
+  // Setup auto-scrolling for mobile carousel
   useEffect(() => {
-    if (!isMobile || !api || featuredNews.length <= 1) {
+    if (!mobileApi || featuredNews.length <= 1 || !isInView || !isMobile) {
       // Clear interval if conditions aren't met
-      if (intervalRef.current !== null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
+      if (mobileIntervalRef.current !== null) {
+        window.clearInterval(mobileIntervalRef.current);
+        mobileIntervalRef.current = null;
       }
       return;
     }
     
-    // Start auto-scrolling when in view on mobile
-    intervalRef.current = window.setInterval(() => {
-      api.scrollNext();
+    // Start auto-scrolling when in view
+    mobileIntervalRef.current = window.setInterval(() => {
+      mobileApi.scrollNext();
     }, 3000);
     
     // Cleanup interval
     return () => {
-      if (intervalRef.current !== null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
+      if (mobileIntervalRef.current !== null) {
+        window.clearInterval(mobileIntervalRef.current);
+        mobileIntervalRef.current = null;
       }
     };
-  }, [api, featuredNews.length, isMobile]);
+  }, [mobileApi, featuredNews.length, isInView, isMobile]);
+
+  // Setup auto-scrolling for desktop carousel
+  useEffect(() => {
+    if (!desktopApi || featuredNews.length <= 1 || !isInView || isMobile) {
+      // Clear interval if conditions aren't met
+      if (desktopIntervalRef.current !== null) {
+        window.clearInterval(desktopIntervalRef.current);
+        desktopIntervalRef.current = null;
+      }
+      return;
+    }
+    
+    // Start auto-scrolling when in view
+    desktopIntervalRef.current = window.setInterval(() => {
+      desktopApi.scrollNext();
+    }, 3000);
+    
+    // Cleanup interval
+    return () => {
+      if (desktopIntervalRef.current !== null) {
+        window.clearInterval(desktopIntervalRef.current);
+        desktopIntervalRef.current = null;
+      }
+    };
+  }, [desktopApi, featuredNews.length, isInView, isMobile]);
+
+  const handleNewsClick = (news: NewsItem) => {
+    if (onNewsClick) {
+      onNewsClick(news.id.toString(), news.title);
+    }
+  };
 
   return (
-    <section className="py-12 bg-background" ref={sectionRef}>
+    <section className="py-6 mt-6 bg-background" ref={sectionRef}>
       <motion.div 
         className="container mx-auto px-4 sm:px-6 lg:px-8"
         initial={{ opacity: 0, y: 20 }}
@@ -132,7 +170,7 @@ const EducationNews = () => {
         ) : (
           <>
             {/* Mobile View - Carousel */}
-            <div className="lg:hidden" ref={carouselRef}>
+            <div className="lg:hidden" ref={mobileCarouselRef}>
               {featuredNews.length > 0 && (
                 <motion.div 
                   className="w-full"
@@ -146,20 +184,22 @@ const EducationNews = () => {
                       loop: true,
                       skipSnaps: false,
                     }}
-                    setApi={setApi}
+                    setApi={setMobileApi}
                     className="w-full"
                   >
                     <CarouselContent>
                       {featuredNews.map((news) => (
                         <CarouselItem key={news.id} className="basis-full">
-                          <FeaturedNewsItem
-                            title={news.title}
-                            summary={news.summary}
-                            slug={news.slug}
-                            publishDate={news.publishDate}
-                            image={news.image}
-                            category={news.category}
-                          />
+                          <div onClick={() => handleNewsClick(news)}>
+                            <FeaturedNewsItem
+                              title={news.title}
+                              summary={news.summary}
+                              slug={news.slug}
+                              publishDate={news.publishDate}
+                              image={news.image}
+                              category={news.category}
+                            />
+                          </div>
                         </CarouselItem>
                       ))}
                     </CarouselContent>
@@ -195,30 +235,51 @@ const EducationNews = () => {
             </div>
             
             {/* Desktop View - Grid Layout */}
-            <div className="hidden lg:grid lg:grid-cols-3 gap-6">
+            <div className="hidden lg:block" ref={desktopCarouselRef}>
               {featuredNews.length > 0 && (
                 <motion.div 
-                  className="lg:col-span-2"
+                  className="w-full mb-8"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <FeaturedNewsItem
-                    title={featuredNews[0].title}
-                    summary={featuredNews[0].summary}
-                    slug={featuredNews[0].slug}
-                    publishDate={featuredNews[0].publishDate}
-                    image={featuredNews[0].image}
-                    category={featuredNews[0].category}
-                  />
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: true,
+                      skipSnaps: false,
+                    }}
+                    setApi={setDesktopApi}
+                    className="w-full"
+                  >
+                    <CarouselContent>
+                      {featuredNews.map((news) => (
+                        <CarouselItem key={news.id} className="basis-1/2 pl-4">
+                          <div onClick={() => handleNewsClick(news)}>
+                            <FeaturedNewsItem
+                              title={news.title}
+                              summary={news.summary}
+                              slug={news.slug}
+                              publishDate={news.publishDate}
+                              image={news.image}
+                              category={news.category}
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    
+                    {featuredNews.length > 1 && (
+                      <div className="flex justify-center gap-2 mt-6">
+                        <CarouselPrevious className="static transform-none h-9 w-9 mr-2" />
+                        <CarouselNext className="static transform-none h-9 w-9" />
+                      </div>
+                    )}
+                  </Carousel>
                 </motion.div>
               )}
-              <motion.div 
-                className="space-y-6"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-              >
+              
+              <div className="grid grid-cols-2 gap-6">
                 {regularNews.map((news) => (
                   <NewsCard
                     key={news.id}
@@ -231,7 +292,7 @@ const EducationNews = () => {
                     layout="horizontal"
                   />
                 ))}
-              </motion.div>
+              </div>
             </div>
           </>
         )}
@@ -241,6 +302,16 @@ const EducationNews = () => {
 };
 
 export default EducationNews;
+
+
+
+
+
+
+
+
+
+
 
 
 

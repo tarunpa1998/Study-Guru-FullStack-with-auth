@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/carousel";
 import { useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 interface Scholarship {
   id: number;
@@ -88,7 +89,8 @@ const FeaturedScholarships = () => {
   };
 
   return (
-    <section className="py-16 sm:py-20 bg-gradient-to-b from-background to-secondary/50">
+    <section className="py-6 sm:py-12 bg-gradient-to-b from-background to-secondary/50">
+       <Separator className="mb-8" />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-8">
           <motion.div 

@@ -61,6 +61,10 @@ const options = {
         description: 'Search operations across all content'
       },
       {
+        name: 'Newsletter',
+        description: 'Newsletter subscription operations'
+      },
+      {
         name: 'Administration',
         description: 'Admin operations'
       },
@@ -79,3 +83,4 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 
 export default swaggerSpec;
+

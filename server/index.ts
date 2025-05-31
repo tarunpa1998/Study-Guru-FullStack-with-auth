@@ -5,6 +5,8 @@ import { migrateDataToMongoDB } from "./migrate";
 import dotenv from 'dotenv';
 import connectToDatabase from "./lib/mongodb";
 import path from "path";
+import newsletterRoutes from './routes/newsletter';
+import { verifyEmailConnection } from './utils/emailService';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -14,6 +16,10 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Add this near the beginning of your Express setup, after app initialization
+// but before route registration
+app.use('/public', express.static(path.join(import.meta.dirname, '../public')));
 
 // SEO middleware to ensure search engines can index all pages
 app.use((req, res, next) => {
@@ -64,6 +70,9 @@ app.use((req, res, next) => {
 (async () => {
   // CRITICAL: Set up API routes before Vite middleware to ensure they work correctly
   const server = await registerRoutes(app);
+
+  // Add the newsletter routes
+  app.use('/api/newsletter', newsletterRoutes);
 
   // General error handling middleware for API routes
   app.use('/api', (err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -418,5 +427,28 @@ app.use((req, res, next) => {
     } else {
       log('Failed to connect to MongoDB, falling back to in-memory storage', 'mongodb');
     }
+    
+    // Verify email service connection
+    try {
+      const emailConnected = await verifyEmailConnection();
+      if (emailConnected) {
+        log('Email service connected successfully', 'email');
+      } else {
+        log('Email service connection failed, emails will not be sent', 'email');
+      }
+    } catch (error) {
+      log(`Error verifying email connection: ${error}`, 'email');
+    }
   });
 })();
+
+// Ensure this is in your server setup
+app.use(express.static(path.join(import.meta.dirname, '../public')));
+
+
+
+
+
+
+
+

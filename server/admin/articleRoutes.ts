@@ -3,6 +3,7 @@ import { mongoStorage } from '../mongoStorage';
 import { adminAuth } from '../middleware/auth';
 import slugify from 'slugify';
 import { notifyGoogleIndexing } from '../utils/googleIndexing';
+import { notifySubscribersAboutNewArticle } from '../utils/emailService';
 
 const router = Router();
 
@@ -161,7 +162,26 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
       await notifyGoogleIndexing(articleUrl);
     } catch (indexingError) {
       console.error('Failed to notify Google Indexing API:', indexingError);
-      // Continue execution even if indexing notification fails
+    }
+    
+    // Notify newsletter subscribers about the new article
+    try {
+      const articleNotificationData = {
+        title: newArticle.title,
+        slug: newArticle.slug,
+        summary: newArticle.summary
+      };
+      
+      // Send notification in background to avoid delaying response
+      notifySubscribersAboutNewArticle(articleNotificationData)
+        .then(result => {
+          console.log('Newsletter notification result:', result);
+        })
+        .catch(err => {
+          console.error('Error in newsletter notification:', err);
+        });
+    } catch (notificationError) {
+      console.error('Failed to notify subscribers:', notificationError);
     }
     
     res.status(201).json(newArticle);
@@ -327,3 +347,5 @@ router.delete('/articles/:id', adminAuth, async (req: Request, res: Response) =>
 });
 
 export default router;
+
+

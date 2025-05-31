@@ -300,4 +300,40 @@
  *         _id: "60d21b4667d0d8992e610c8b"
  *         username: "admin"
  *         password: "[hashed password]"
+ *
+ *     Newsletter:
+ *       type: object
+ *       required:
+ *         - email
+ *         - subscribed
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: The auto-generated id of the newsletter subscription
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: The email address of the subscriber
+ *         subscribed:
+ *           type: boolean
+ *           description: Whether the email is currently subscribed
+ *         subscribedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date when the user subscribed
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date the subscription was created
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date the subscription was last updated
+ *       example:
+ *         _id: 60d21b4667d0d8992e610c85
+ *         email: user@example.com
+ *         subscribed: true
+ *         subscribedAt: 2023-01-01T00:00:00.000Z
+ *         createdAt: 2023-01-01T00:00:00.000Z
+ *         updatedAt: 2023-01-01T00:00:00.000Z
  */

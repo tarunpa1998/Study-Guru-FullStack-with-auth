@@ -8,8 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ProtectedRoute } from "./lib/ProtectedRoute";
 import { AdminProtectedRoute } from "./lib/AdminProtectedRoute";
-import GTMPageTracker from './components/GTMPageTracker';
-
+import GTMPageTracker from './components/GTMPageTracker';   
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
@@ -43,8 +42,10 @@ import AdminDashboard from "@/pages/admin/Dashboard";
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
+import Unsubscribe from './pages/Unsubscribe';
 
 import { useEffect } from "react";
+import NewsletterPopup from './components/NewsletterPopup';
 
 function Router() {
   const [location] = useLocation();
@@ -123,6 +124,7 @@ function Router() {
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-of-service" component={TermsOfService} />
       <Route path="/cookie-policy" component={CookiePolicy} />
+      <Route path="/unsubscribe" component={Unsubscribe} />
       
       <Route component={NotFound} />
     </Switch>
@@ -149,6 +151,7 @@ function App() {
                 {!isAdminRoute && <Footer />}
                 {!isAdminRoute && <FloatingWhatsApp />}
                 {!isAdminRoute && <ScrollProgressCircle />}
+                {!isAdminRoute && <NewsletterPopup />}
               </div>
             </TooltipProvider>
           </AuthProvider>
@@ -159,9 +162,5 @@ function App() {
 }
 
 export default App;
-
-
-
-
 
 

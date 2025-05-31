@@ -46,7 +46,7 @@ const FeaturedNewsItem = ({
             <h3 className="text-xl md:text-2xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
               {title}
             </h3>
-            <p className="text-muted-foreground">{summary}</p>
+            <p className="text-muted-foreground line-clamp-3 h-[4.5rem] overflow-hidden">{summary}</p>
           </div>
         </motion.div>
       </div>
@@ -55,6 +55,7 @@ const FeaturedNewsItem = ({
 };
 
 export default FeaturedNewsItem;
+
 
 
 

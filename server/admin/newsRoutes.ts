@@ -3,6 +3,7 @@ import { mongoStorage } from '../mongoStorage';
 import { adminAuth } from '../middleware/auth';
 import slugify from 'slugify';
 import { notifyGoogleIndexing } from '../utils/googleIndexing';
+import { notifySubscribersAboutNewNews } from '../utils/emailService';
 
 const router = Router();
 
@@ -93,6 +94,27 @@ router.post('/news', adminAuth, async (req: Request, res: Response) => {
       // Continue execution even if indexing notification fails
     }
     
+    // Notify newsletter subscribers about the new news item
+    try {
+      const newsNotificationData = {
+        title: newNews.title,
+        slug: newNews.slug,
+        summary: newNews.summary
+      };
+      
+      // Send notification in background to avoid delaying response
+      notifySubscribersAboutNewNews(newsNotificationData)
+        .then(result => {
+          console.log('Newsletter notification result:', result);
+        })
+        .catch(err => {
+          console.error('Error in newsletter notification:', err);
+        });
+    } catch (notificationError) {
+      console.error('Failed to notify subscribers:', notificationError);
+      // Continue execution even if notification fails
+    }
+    
     res.status(201).json(newNews);
   } catch (error) {
     console.error('Error creating news item:', error);
@@ -169,3 +191,4 @@ router.delete('/news/:id', adminAuth, async (req: Request, res: Response) => {
 });
 
 export default router;
+

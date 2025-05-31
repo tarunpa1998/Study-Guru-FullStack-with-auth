@@ -11,6 +11,7 @@ import authRoutes from '../../routes/auth';
 import userProfileRoutes from '../../routes/user';
 import likesRoutes from '../../routes/likes';
 import commentsRoutes from '../../routes/comments';
+import newsletterRoutes from '../../routes/newsletter';
 import { log } from '../../vite';
 
 const router = Router();
@@ -68,6 +69,7 @@ router.use('/auth', authRoutes);
 router.use('/user', userProfileRoutes);
 router.use('/likes', likesRoutes);
 router.use('/comments', commentsRoutes);
+router.use('/newsletter', newsletterRoutes);
 
 // Catch errors and ensure JSON responses
 router.use((err: any, req: Request, res: Response, next: NextFunction) => {

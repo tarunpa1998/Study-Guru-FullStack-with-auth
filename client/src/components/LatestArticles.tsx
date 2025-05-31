@@ -4,7 +4,6 @@ import ArticleCard from "./ArticleCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator";
 import { useEffect, useState, useRef } from "react";
 import { 
   Carousel,
@@ -38,24 +37,39 @@ const LatestArticles = () => {
   const articles: Article[] = data || [];
   const [api, setApi] = useState<CarouselApi>();
   const carouselRef = useRef(null);
-  const isInView = useInView(carouselRef, { once: false, amount: 0.3 });
+  const isInView = useInView(carouselRef, { 
+    once: false, 
+    amount: 0.1  // More sensitive - only needs 10% to be visible
+  });
   const intervalRef = useRef<number | null>(null);
   
   // Setup auto-scrolling when carousel is in view
   useEffect(() => {
-    if (!api || !isInView) {
-      // Clear interval if carousel is not in view
-      if (intervalRef.current !== null) {
-        window.clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
+    // Clear any existing interval first
+    if (intervalRef.current !== null) {
+      window.clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    // Check conditions for auto-scrolling - only check for API and articles length
+    if (!api || articles.length <= 1) {
+      console.log('Auto-scroll disabled:', { 
+        hasApi: !!api, 
+        articlesCount: articles.length 
+      });
       return;
     }
     
-    // Start auto-scrolling when in view
+    // Start auto-scrolling immediately when component mounts
+    console.log('Starting auto-scroll carousel');
     intervalRef.current = window.setInterval(() => {
-      api.scrollNext();
-    }, 2000);
+      try {
+        api.scrollNext();
+        console.log('Carousel scrolled');
+      } catch (err) {
+        console.error('Error scrolling carousel:', err);
+      }
+    }, 4000);
     
     // Cleanup interval on unmount or when dependencies change
     return () => {
@@ -64,7 +78,28 @@ const LatestArticles = () => {
         intervalRef.current = null;
       }
     };
-  }, [api, isInView]);
+  }, [api, articles.length]);
+
+  // Force carousel to refresh when window is resized
+  useEffect(() => {
+    const handleResize = () => {
+      if (api) {
+        api.reInit();
+        console.log('Carousel reinitialized after resize');
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [api]);
+
+  // Reset carousel when articles change
+  useEffect(() => {
+    if (api && articles.length > 0) {
+      // Reset to first slide when articles data changes
+      api.scrollTo(0);
+    }
+  }, [api, articles]);
 
   const handleViewAll = () => {
     window.location.href = '/articles';
@@ -74,7 +109,6 @@ const LatestArticles = () => {
     <section className="py-12 bg-gradient-to-b from-background to-secondary/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <Separator className="mb-8" />
           <div className="flex justify-between items-center">
             <h2 className="text-2xl md:text-3xl font-bold text-foreground">Latest Articles</h2>
             <motion.div 
@@ -114,12 +148,11 @@ const LatestArticles = () => {
               </div>
             ))}
           </div>
-        ) : (
+        ) : articles.length > 0 ? (
           <div className="relative" ref={carouselRef}>
             <motion.div
               initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
               <Carousel
@@ -150,12 +183,18 @@ const LatestArticles = () => {
                   ))}
                 </CarouselContent>
                 
-                <div className="flex justify-center gap-2 mt-8">
-                  <CarouselPrevious className="static transform-none h-9 w-9 mr-2" />
-                  <CarouselNext className="static transform-none h-9 w-9" />
-                </div>
+                {articles.length > 1 && (
+                  <div className="flex justify-center gap-2 mt-8">
+                    <CarouselPrevious className="static transform-none h-9 w-9 mr-2" />
+                    <CarouselNext className="static transform-none h-9 w-9" />
+                  </div>
+                )}
               </Carousel>
             </motion.div>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No articles available at the moment.</p>
           </div>
         )}
       </div>

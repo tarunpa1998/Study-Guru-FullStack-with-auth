@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "wouter";
 import { Helmet } from "react-helmet";
+import { useEffect } from "react";
 import { 
   ArrowLeft, 
   Building2, 
@@ -595,6 +596,7 @@ const CountryDetail = () => {
 };
 
 export default CountryDetail;
+
 
 
 

@@ -23,23 +23,14 @@ const StudyGuru = () => {
     });
   }, []);
 
-  // Track hero section interactions
-  const trackHeroAction = (actionType: string) => {
+  // Track education news interactions
+  const trackNewsInteraction = (newsId: string, newsTitle: string) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
-      event: 'heroInteraction',
-      heroAction: actionType
-    });
-  };
-
-  // Track featured section interactions
-  const trackFeaturedClick = (itemType: string, itemTitle: string) => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: 'featuredItemClick',
-      featuredData: {
-        type: itemType,
-        title: itemTitle
+      event: 'newsInteraction',
+      newsData: {
+        id: newsId,
+        title: newsTitle
       }
     });
   };
@@ -63,10 +54,10 @@ const StudyGuru = () => {
       
       <Hero />
       <CategorySection />
+      <LatestArticles />
+      <EducationNews onNewsClick={trackNewsInteraction} />
       <FeaturedScholarships />
       <PopularDestinations />
-      <LatestArticles />
-      <EducationNews />
       <Testimonials />
       <HomeChatBot />
       <CTASection />
@@ -75,6 +66,7 @@ const StudyGuru = () => {
 };
 
 export default StudyGuru;
+
 
 
 

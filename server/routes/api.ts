@@ -1022,5 +1022,123 @@ router.post('/indexing/notify', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * @swagger
+ * /newsletter/subscribe:
+ *   post:
+ *     summary: Subscribe to newsletter
+ *     tags: [Newsletter]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *     responses:
+ *       200:
+ *         description: Successfully subscribed or already subscribed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       201:
+ *         description: Successfully subscribed (new subscription)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid request (missing email)
+ *       429:
+ *         description: Too many subscription attempts
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /newsletter/check-subscription:
+ *   post:
+ *     summary: Check if email is subscribed to newsletter
+ *     tags: [Newsletter]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *     responses:
+ *       200:
+ *         description: Subscription status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 isSubscribed:
+ *                   type: boolean
+ *       400:
+ *         description: Invalid request (missing email)
+ *       500:
+ *         description: Server error
+ */
+
+/**
+ * @swagger
+ * /newsletter/unsubscribe:
+ *   post:
+ *     summary: Unsubscribe from newsletter
+ *     tags: [Newsletter]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User's email address
+ *     responses:
+ *       200:
+ *         description: Successfully unsubscribed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid request (missing email)
+ *       404:
+ *         description: Subscription not found
+ *       500:
+ *         description: Server error
+ */
+
 export default router;
 

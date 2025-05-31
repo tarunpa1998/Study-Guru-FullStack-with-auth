@@ -17,6 +17,7 @@ import {
 import apiRoutes from './routes/api';
 import swaggerRoutes from './routes/swagger';
 import sitemapRoutes from './routes/sitemap';
+import newsletterRoutes from './routes/newsletter';
 import { registerAdminRoutes } from './admin/index';
 
 export async function registerRoutes(app: Express): Promise<Server> {

@@ -16,6 +16,7 @@ import {
   publishDraftNews
 } from '../draftHelpers';
 import { log } from '../vite';
+import { notifySubscribersAboutNewArticle, notifySubscribersAboutNewNews } from '../utils/emailService';
 
 const router = Router();
 
@@ -165,6 +166,26 @@ router.post('/drafts/articles/:id/publish', adminAuth, async (req: Request, res:
     
     if (!publishedArticle) {
       return res.status(404).json({ error: 'Draft article not found' });
+    }
+    
+    // Notify newsletter subscribers about the newly published article
+    try {
+      const articleNotificationData = {
+        title: publishedArticle.title,
+        slug: publishedArticle.slug,
+        summary: publishedArticle.summary
+      };
+      
+      // Send notification in background
+      notifySubscribersAboutNewArticle(articleNotificationData)
+        .then(result => {
+          log(`Newsletter notification result: ${JSON.stringify(result)}`, 'admin');
+        })
+        .catch(err => {
+          log(`Error in newsletter notification: ${err}`, 'admin');
+        });
+    } catch (notificationError) {
+      log(`Failed to notify subscribers: ${notificationError}`, 'admin');
     }
     
     res.json({
@@ -323,6 +344,26 @@ router.post('/drafts/news/:id/publish', adminAuth, async (req: Request, res: Res
       return res.status(404).json({ error: 'Draft news not found' });
     }
     
+    // Notify newsletter subscribers about the newly published news
+    try {
+      const newsNotificationData = {
+        title: publishedNews.title,
+        slug: publishedNews.slug,
+        summary: publishedNews.summary
+      };
+      
+      // Send notification in background
+      notifySubscribersAboutNewNews(newsNotificationData)
+        .then(result => {
+          log(`Newsletter notification result: ${JSON.stringify(result)}`, 'admin');
+        })
+        .catch(err => {
+          log(`Error in newsletter notification: ${err}`, 'admin');
+        });
+    } catch (notificationError) {
+      log(`Failed to notify subscribers: ${notificationError}`, 'admin');
+    }
+    
     res.json({
       success: true,
       message: 'Draft news published successfully',
@@ -335,3 +376,4 @@ router.post('/drafts/news/:id/publish', adminAuth, async (req: Request, res: Res
 });
 
 export default router;
+
