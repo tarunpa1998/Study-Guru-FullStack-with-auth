@@ -14,8 +14,12 @@ import {
   BookOpen,
   FileText
 } from "lucide-react";
+import { useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+  const { toast } = useToast();
   const linkHoverVariants = {
     initial: { x: 0 },
     hover: { x: 5 }
@@ -277,13 +281,47 @@ const Footer = () => {
                 Stay updated with the latest scholarships, educational resources, and expert tips.
               </p>
               
-              <form className="mb-6">
+              <form className="mb-6" onSubmit={(e) => {
+                e.preventDefault();
+                if (email) {
+                  fetch('/api/newsletter/subscribe', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                  })
+                    .then(response => response.json())
+                    .then(data => {
+                      // Store the email for future reference
+                      localStorage.setItem('user_email', email);
+                      localStorage.setItem('newsletter_subscribed', 'true');
+                      // Show success message
+                      toast({
+                        title: "Subscription Successful",
+                        description: "You've been added to our newsletter!",
+                        variant: "default",
+                      });
+                      setEmail('');
+                    })
+                    .catch(error => {
+                      toast({
+                        title: "Subscription Failed",
+                        description: "Something went wrong. Please try again.",
+                        variant: "destructive",
+                      });
+                    });
+                }
+              }}>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <div className="relative flex-grow">
                     <input 
                       type="email" 
                       placeholder="Enter your email" 
                       className="w-full px-4 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
                     />
                   </div>
                   <motion.button 
