@@ -14,6 +14,7 @@ import {
   type CarouselApi
 } from "@/components/ui/carousel";
 import { useInView } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Define the Article type
 interface Article {
@@ -42,6 +43,8 @@ const LatestArticles = () => {
     amount: 0.1  // More sensitive - only needs 10% to be visible
   });
   const intervalRef = useRef<number | null>(null);
+  const isMobile = useIsMobile();
+  const [isPaused, setIsPaused] = useState(false);
   
   // Setup auto-scrolling when carousel is in view
   useEffect(() => {
@@ -51,34 +54,54 @@ const LatestArticles = () => {
       intervalRef.current = null;
     }
     
-    // Check conditions for auto-scrolling - only check for API and articles length
-    if (!api || articles.length <= 1) {
-      console.log('Auto-scroll disabled:', { 
-        hasApi: !!api, 
-        articlesCount: articles.length 
-      });
+    // Check conditions for auto-scrolling
+    if (!api || articles.length <= 1 || isPaused) {
       return;
     }
     
-    // Start auto-scrolling immediately when component mounts
-    console.log('Starting auto-scroll carousel');
+    // Start auto-scrolling
     intervalRef.current = window.setInterval(() => {
       try {
         api.scrollNext();
-        console.log('Carousel scrolled');
       } catch (err) {
         console.error('Error scrolling carousel:', err);
       }
-    }, 4000);
+    }, 2000);
     
-    // Cleanup interval on unmount or when dependencies change
+    // Cleanup interval
     return () => {
       if (intervalRef.current !== null) {
         window.clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
-  }, [api, articles.length]);
+  }, [api, articles.length, isPaused]);
+
+  // Handle touch events for mobile
+  const handleTouchStart = () => {
+    if (isMobile) {
+      setIsPaused(true);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (isMobile) {
+      setIsPaused(false);
+    }
+  };
+
+  // Handle mouse events for desktop
+  const handleMouseEnter = () => {
+    if (!isMobile) {
+      setIsPaused(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      setIsPaused(false);
+    }
+  };
 
   // Force carousel to refresh when window is resized
   useEffect(() => {
@@ -154,6 +177,10 @@ const LatestArticles = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <Carousel
                 opts={{
@@ -203,6 +230,7 @@ const LatestArticles = () => {
 };
 
 export default LatestArticles;
+
 
 
 

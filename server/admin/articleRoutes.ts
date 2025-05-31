@@ -175,10 +175,14 @@ router.post('/articles', adminAuth, async (req: Request, res: Response) => {
       // Send notification in background to avoid delaying response
       notifySubscribersAboutNewArticle(articleNotificationData)
         .then(result => {
-          console.log('Newsletter notification result:', result);
+          console.log('Newsletter notification result:', JSON.stringify(result));
         })
         .catch(err => {
           console.error('Error in newsletter notification:', err);
+          if (err instanceof Error) {
+            console.error('Error details:', err.message);
+            console.error('Error stack:', err.stack);
+          }
         });
     } catch (notificationError) {
       console.error('Failed to notify subscribers:', notificationError);
@@ -347,5 +351,6 @@ router.delete('/articles/:id', adminAuth, async (req: Request, res: Response) =>
 });
 
 export default router;
+
 
 

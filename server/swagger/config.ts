@@ -65,6 +65,10 @@ const options = {
         description: 'Newsletter subscription operations'
       },
       {
+        name: 'Email',
+        description: 'Email testing operations'
+      },
+      {
         name: 'Administration',
         description: 'Admin operations'
       },
@@ -83,4 +87,5 @@ const options = {
 const swaggerSpec = swaggerJSDoc(options);
 
 export default swaggerSpec;
+
 

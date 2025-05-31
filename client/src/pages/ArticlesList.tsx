@@ -149,9 +149,6 @@ const ArticlesList = () => {
           </div>
         ) : (
           <>
-            <div className="mb-6">
-              <p className="text-muted-foreground">{filteredArticles.length} articles found</p>
-            </div>
             {filteredArticles.length === 0 ? (
               <div className="text-center py-12">
                 <h3 className="text-xl font-medium mb-2">No articles found</h3>

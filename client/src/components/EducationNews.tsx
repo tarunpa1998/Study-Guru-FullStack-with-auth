@@ -49,12 +49,16 @@ const EducationNews = ({ onNewsClick }: EducationNewsProps = {}) => {
   // Check if screen is mobile
   const isMobile = useMediaQuery("(max-width: 1023px)");
   
+  // Add pause states for both carousels
+  const [mobilePaused, setMobilePaused] = useState(false);
+  const [desktopPaused, setDesktopPaused] = useState(false);
+  
   const featuredNews = newsItems.filter((news) => news.isFeatured);
   const regularNews = newsItems.filter((news) => !news.isFeatured).slice(0, 2);
 
   // Setup auto-scrolling for mobile carousel
   useEffect(() => {
-    if (!mobileApi || featuredNews.length <= 1 || !isInView || !isMobile) {
+    if (!mobileApi || featuredNews.length <= 1 || !isInView || !isMobile || mobilePaused) {
       // Clear interval if conditions aren't met
       if (mobileIntervalRef.current !== null) {
         window.clearInterval(mobileIntervalRef.current);
@@ -75,11 +79,11 @@ const EducationNews = ({ onNewsClick }: EducationNewsProps = {}) => {
         mobileIntervalRef.current = null;
       }
     };
-  }, [mobileApi, featuredNews.length, isInView, isMobile]);
+  }, [mobileApi, featuredNews.length, isInView, isMobile, mobilePaused]);
 
   // Setup auto-scrolling for desktop carousel
   useEffect(() => {
-    if (!desktopApi || featuredNews.length <= 1 || !isInView || isMobile) {
+    if (!desktopApi || featuredNews.length <= 1 || !isInView || isMobile || desktopPaused) {
       // Clear interval if conditions aren't met
       if (desktopIntervalRef.current !== null) {
         window.clearInterval(desktopIntervalRef.current);
@@ -91,7 +95,7 @@ const EducationNews = ({ onNewsClick }: EducationNewsProps = {}) => {
     // Start auto-scrolling when in view
     desktopIntervalRef.current = window.setInterval(() => {
       desktopApi.scrollNext();
-    }, 3000);
+    }, 2000);
     
     // Cleanup interval
     return () => {
@@ -100,7 +104,25 @@ const EducationNews = ({ onNewsClick }: EducationNewsProps = {}) => {
         desktopIntervalRef.current = null;
       }
     };
-  }, [desktopApi, featuredNews.length, isInView, isMobile]);
+  }, [desktopApi, featuredNews.length, isInView, isMobile, desktopPaused]);
+
+  // Handle touch events for mobile
+  const handleMobileTouchStart = () => {
+    setMobilePaused(true);
+  };
+
+  const handleMobileTouchEnd = () => {
+    setMobilePaused(false);
+  };
+
+  // Handle mouse events for desktop
+  const handleDesktopMouseEnter = () => {
+    setDesktopPaused(true);
+  };
+
+  const handleDesktopMouseLeave = () => {
+    setDesktopPaused(false);
+  };
 
   const handleNewsClick = (news: NewsItem) => {
     if (onNewsClick) {
@@ -177,6 +199,8 @@ const EducationNews = ({ onNewsClick }: EducationNewsProps = {}) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
+                  onTouchStart={handleMobileTouchStart}
+                  onTouchEnd={handleMobileTouchEnd}
                 >
                   <Carousel
                     opts={{
@@ -242,6 +266,8 @@ const EducationNews = ({ onNewsClick }: EducationNewsProps = {}) => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
+                  onMouseEnter={handleDesktopMouseEnter}
+                  onMouseLeave={handleDesktopMouseLeave}
                 >
                   <Carousel
                     opts={{
@@ -302,6 +328,7 @@ const EducationNews = ({ onNewsClick }: EducationNewsProps = {}) => {
 };
 
 export default EducationNews;
+
 
 
 

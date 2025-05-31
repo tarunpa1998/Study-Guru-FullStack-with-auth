@@ -105,14 +105,17 @@ router.post('/news', adminAuth, async (req: Request, res: Response) => {
       // Send notification in background to avoid delaying response
       notifySubscribersAboutNewNews(newsNotificationData)
         .then(result => {
-          console.log('Newsletter notification result:', result);
+          console.log('Newsletter notification result:', JSON.stringify(result));
         })
         .catch(err => {
           console.error('Error in newsletter notification:', err);
+          if (err instanceof Error) {
+            console.error('Error details:', err.message);
+            console.error('Error stack:', err.stack);
+          }
         });
     } catch (notificationError) {
       console.error('Failed to notify subscribers:', notificationError);
-      // Continue execution even if notification fails
     }
     
     res.status(201).json(newNews);
@@ -191,4 +194,5 @@ router.delete('/news/:id', adminAuth, async (req: Request, res: Response) => {
 });
 
 export default router;
+
 

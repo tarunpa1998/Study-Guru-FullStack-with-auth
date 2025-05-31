@@ -2,6 +2,8 @@ import nodemailer from 'nodemailer';
 import { log } from '../vite';
 import Article from '../models/Article';
 import News from '../models/News';
+import Newsletter from '../models/Newsletter';
+
 
 // Debug environment variables
 log(`Email config - HOST: ${process.env.EMAIL_HOST}`, 'email');
@@ -362,20 +364,36 @@ export const verifyEmailConnection = async () => {
   }
 };
 
+// Add this at the top of the file to improve error logging
+const logEmailError = (error: any, context: string) => {
+  log(`${context} - Error: ${error}`, 'email');
+  if (error instanceof Error) {
+    log(`${context} - Error details: ${error.message}`, 'email');
+    log(`${context} - Error stack: ${error.stack}`, 'email');
+  } else {
+    log(`${context} - Unknown error type: ${typeof error}`, 'email');
+  }
+};
+
 // Add this function to send emails to all newsletter subscribers
 export const notifySubscribersAboutNewArticle = async (articleData: { title: string, slug: string, summary: string }) => {
   try {
-    // Import Newsletter model
-    const Newsletter = require('../models/Newsletter');
     
-    // Define subscriber interface
+    // Define subscriber interface to match what comes from the database
     interface NewsletterSubscriber {
+      _id?: any;
       email: string;
       subscribed: boolean;
+      subscribedAt?: Date;
+      createdAt?: Date;
+      updatedAt?: Date;
+      __v?: number;
     }
     
     // Get all active subscribers
-    const subscribers = await Newsletter.find({ subscribed: true }).select('email').lean() as NewsletterSubscriber[];
+    const subscribers = await Newsletter.find({ subscribed: true })
+      .select('email')
+      .lean() as unknown as NewsletterSubscriber[];
     
     if (!subscribers || subscribers.length === 0) {
       log('No active subscribers found to notify about new article', 'email');
@@ -391,21 +409,30 @@ export const notifySubscribersAboutNewArticle = async (articleData: { title: str
     for (let i = 0; i < subscribers.length; i += batchSize) {
       const batch = subscribers.slice(i, i + batchSize);
       
-      // Process batch in parallel
-      const promises = batch.map((subscriber: NewsletterSubscriber) => 
-        sendEmail(subscriber.email, 'newArticleNotification', articleData)
-          .then(result => {
-            if (result.success) results.success++;
-            else results.failed++;
-            return result;
-          })
-      );
-      
-      await Promise.all(promises);
-      
-      // Add a small delay between batches
-      if (i + batchSize < subscribers.length) {
-        await new Promise(resolve => setTimeout(resolve, 5000));
+      try {
+        // Process batch in parallel
+        const promises = batch.map((subscriber: NewsletterSubscriber) => 
+          sendEmail(subscriber.email, 'newArticleNotification', articleData)
+            .then(result => {
+              if (result.success) results.success++;
+              else results.failed++;
+              return result;
+            })
+            .catch(err => {
+              log(`Failed to send article notification to ${subscriber.email}: ${err}`, 'email');
+              results.failed++;
+              return { success: false, error: err };
+            })
+        );
+        
+        await Promise.all(promises);
+        
+        // Add a small delay between batches
+        if (i + batchSize < subscribers.length) {
+          await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+      } catch (batchError) {
+        log(`Error processing batch ${i}-${i+batchSize}: ${batchError}`, 'email');
       }
     }
     
@@ -413,6 +440,10 @@ export const notifySubscribersAboutNewArticle = async (articleData: { title: str
     return { success: true, results };
   } catch (error) {
     log(`Error notifying subscribers about new article: ${error}`, 'email');
+    if (error instanceof Error) {
+      log(`Error details: ${error.message}`, 'email');
+      log(`Error stack: ${error.stack}`, 'email');
+    }
     return { success: false, error };
   }
 };
@@ -420,17 +451,22 @@ export const notifySubscribersAboutNewArticle = async (articleData: { title: str
 // Function to notify subscribers about new news items
 export const notifySubscribersAboutNewNews = async (newsData: { title: string, slug: string, summary: string }) => {
   try {
-    // Import Newsletter model
-    const Newsletter = require('../models/Newsletter');
     
-    // Define subscriber interface
+    // Define subscriber interface to match what comes from the database
     interface NewsletterSubscriber {
+      _id?: any;
       email: string;
       subscribed: boolean;
+      subscribedAt?: Date;
+      createdAt?: Date;
+      updatedAt?: Date;
+      __v?: number;
     }
     
     // Get all active subscribers
-    const subscribers = await Newsletter.find({ subscribed: true }).select('email').lean() as NewsletterSubscriber[];
+    const subscribers = await Newsletter.find({ subscribed: true })
+      .select('email')
+      .lean() as unknown as NewsletterSubscriber[];
     
     if (!subscribers || subscribers.length === 0) {
       log('No active subscribers found to notify about new news', 'email');
@@ -446,21 +482,30 @@ export const notifySubscribersAboutNewNews = async (newsData: { title: string, s
     for (let i = 0; i < subscribers.length; i += batchSize) {
       const batch = subscribers.slice(i, i + batchSize);
       
-      // Process batch in parallel
-      const promises = batch.map((subscriber: NewsletterSubscriber) => 
-        sendEmail(subscriber.email, 'newNewsNotification', newsData)
-          .then(result => {
-            if (result.success) results.success++;
-            else results.failed++;
-            return result;
-          })
-      );
-      
-      await Promise.all(promises);
-      
-      // Add a small delay between batches
-      if (i + batchSize < subscribers.length) {
-        await new Promise(resolve => setTimeout(resolve, 5000));
+      try {
+        // Process batch in parallel
+        const promises = batch.map((subscriber: NewsletterSubscriber) => 
+          sendEmail(subscriber.email, 'newNewsNotification', newsData)
+            .then(result => {
+              if (result.success) results.success++;
+              else results.failed++;
+              return result;
+            })
+            .catch(err => {
+              log(`Failed to send news notification to ${subscriber.email}: ${err}`, 'email');
+              results.failed++;
+              return { success: false, error: err };
+            })
+        );
+        
+        await Promise.all(promises);
+        
+        // Add a small delay between batches
+        if (i + batchSize < subscribers.length) {
+          await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+      } catch (batchError) {
+        log(`Error processing batch ${i}-${i+batchSize}: ${batchError}`, 'email');
       }
     }
     
@@ -468,9 +513,43 @@ export const notifySubscribersAboutNewNews = async (newsData: { title: string, s
     return { success: true, results };
   } catch (error) {
     log(`Error notifying subscribers about new news: ${error}`, 'email');
+    if (error instanceof Error) {
+      log(`Error details: ${error.message}`, 'email');
+      log(`Error stack: ${error.stack}`, 'email');
+    }
     return { success: false, error };
   }
 };
+
+// Add a new function to test email notifications
+export const testEmailNotification = async (email: string, type: 'article' | 'news') => {
+  try {
+    // Create test data
+    const testData = {
+      title: type === 'article' ? 'Test Article Notification' : 'Test News Notification',
+      slug: type === 'article' ? 'test-article' : 'test-news',
+      summary: `This is a test ${type} notification to verify email functionality.`
+    };
+    
+    // Send test email based on type
+    const template = type === 'article' ? 'newArticleNotification' : 'newNewsNotification';
+    const result = await sendEmail(email, template, testData);
+    
+    log(`Test ${type} notification sent to ${email}: ${JSON.stringify(result)}`, 'email');
+    return result;
+  } catch (error) {
+    log(`Error sending test ${type} notification: ${error}`, 'email');
+    if (error instanceof Error) {
+      log(`Error details: ${error.message}`, 'email');
+      log(`Error stack: ${error.stack}`, 'email');
+    }
+    return { success: false, error };
+  }
+};
+
+
+
+
 
 
 
