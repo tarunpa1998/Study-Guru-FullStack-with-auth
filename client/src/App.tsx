@@ -47,6 +47,13 @@ import Unsubscribe from './pages/Unsubscribe';
 import { useEffect } from "react";
 import NewsletterPopup from './components/NewsletterPopup';
 
+// Add type declaration for window.__ow
+declare global {
+  interface Window {
+    __ow: any;
+  }
+}
+
 function Router() {
   const [location] = useLocation();
   const isAdminRoute = location.startsWith('/admin');
@@ -135,6 +142,27 @@ function App() {
   const [location] = useLocation();
   const isAdminRoute = location.startsWith('/admin');
 
+  useEffect(() => {
+    if (!isAdminRoute) {
+      // ChatBot script
+      window.__ow = window.__ow || {};
+      window.__ow.organizationId = "a0017c0b-41d8-4a26-9506-2ae4aed745ca";
+      window.__ow.template_id = "ddbba88c-50ab-4536-91af-97eedae520f9";
+      window.__ow.integration_name = "manual_settings";
+      window.__ow.product_name = "chatbot";
+      
+      const script = document.createElement('script');
+      script.src = "https://cdn.openwidget.com/openwidget.js";
+      script.async = true;
+      document.head.appendChild(script);
+      
+      return () => {
+        // Cleanup on unmount
+        document.head.removeChild(script);
+      };
+    }
+  }, [isAdminRoute]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}>
@@ -152,6 +180,23 @@ function App() {
                 {!isAdminRoute && <FloatingWhatsApp />}
                 {!isAdminRoute && <ScrollProgressCircle />}
                 {!isAdminRoute && <NewsletterPopup />}
+                
+                {/* Start of ChatBot (www.chatbot.com) code */}
+                {!isAdminRoute && (
+                  <>
+                    <script dangerouslySetInnerHTML={{
+                      __html: `
+                        window.__ow = window.__ow || {};
+                        window.__ow.organizationId = "a0017c0b-41d8-4a26-9506-2ae4aed745ca";
+                        window.__ow.template_id = "ddbba88c-50ab-4536-91af-97eedae520f9";
+                        window.__ow.integration_name = "manual_settings";
+                        window.__ow.product_name = "chatbot";   
+                        ;(function(n,t,c){function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}var e={_q:[],_h:null,_v:"2.0",on:function(){i(["on",c.call(arguments)])},once:function(){i(["once",c.call(arguments)])},off:function(){i(["off",c.call(arguments)])},get:function(){if(!e._h)throw new Error("[OpenWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},call:function(){i(["call",c.call(arguments)])},init:function(){var n=t.createElement("script");n.async=!0,n.type="text/javascript",n.src="https://cdn.openwidget.com/openwidget.js",t.head.appendChild(n)}};!n.__ow.asyncInit&&e.init(),n.OpenWidget=n.OpenWidget||e}(window,document,[].slice))
+                      `
+                    }} />
+                  </>
+                )}
+                {/* End of ChatBot code */}
               </div>
             </TooltipProvider>
           </AuthProvider>
@@ -162,5 +207,3 @@ function App() {
 }
 
 export default App;
-
-
